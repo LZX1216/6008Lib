@@ -1,0 +1,9 @@
+com\ginger\config\GlobalCorsConfig$1.class
+com\ginger\config\GlobalCorsConfig.class
+com\ginger\DemoApplication.class
+com\ginger\pojo\Result.class
+com\ginger\service\impl\LoginServiceImpl.class
+com\ginger\pojo\User.class
+com\ginger\mapper\UserMapper.class
+com\ginger\service\LoginService.class
+com\ginger\controller\LoginController.class

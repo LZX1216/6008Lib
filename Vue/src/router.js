@@ -11,7 +11,7 @@ export const router = createRouter({
         { path: '/about', name: 'about', component: () => import('@/pages/AboutUs.vue') },
         { path: '/help', name: 'help', component: () => import('@/pages/HelpSupport.vue') },
         { path: '/login', name: 'login', component: () => import('@/pages/Login.vue') },
-        { path: '/register', name: 'register', component: () => import('@/pages/register.vue') },
+        { path: '/register', name: 'register', component: () => import('@/pages/Register.vue') },
         { path: '/user', name: 'user', component: () => import('@/pages/User.vue'), meta: { requiresAuth: true } },
         { path: '/book/:id', name: 'bookDetail', component: () => import('@/pages/BookDetail.vue') },
         {

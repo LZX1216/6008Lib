@@ -264,14 +264,14 @@ export default {
           id: 1,
           title: "三体",
           author: "刘慈欣",
-          cover: "/book-covers/1.jpg",
+          cover: "https://img3.doubanio.com/view/subject/m/public/s29517429.jpg",
           rating: 4.8
         },
         {
           id: 2,
           title: "百年孤独",
           author: "加西亚·马尔克斯",
-          cover: "/book-covers/2.jpg",
+          cover: "https://img3.doubanio.com/view/subject/m/public/s29517429.jpg",
           rating: 4.9
         },
         {

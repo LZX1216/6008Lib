@@ -71,21 +71,21 @@ export default {
     async logout() {
       try {
         await ElMessageBox.confirm(
-          'Are you sure you want to logout?',
-          'Warning',
+          '您确定要退出登录吗？',
+          '警告',
           {
-            confirmButtonText: 'OK',
-            cancelButtonText: 'Cancel',
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
             type: 'warning',
           }
         )
-        ElMessage.success('Log out completed')
+        ElMessage.success('退出成功')
         sessionStorage.removeItem('userInfo')
         auth.logoutstate()
-        this.$router.push('/Homepage')
+        this.$router.push('/')
         window.location.reload()
       } catch {
-        ElMessage.info('Log out canceled')
+        ElMessage.info('退出已取消')
       }
     }
   }

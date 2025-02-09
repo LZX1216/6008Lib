@@ -9,54 +9,31 @@
           v-model="searchQuery"
           placeholder="搜索书名、作者、ISBN..."
           class="search-input"
+          style="width: 100%;"
         >
           <template #append>
-            <el-button @click="searchBooks">
-              <el-icon><Search /></el-icon>
-            </el-button>
+            <el-button @click="searchBooks">搜索</el-button>
           </template>
         </el-input>
+      </div>
 
-        <div class="filter-section">
-          <div class="filter-group">
-            <el-select
-              v-model="selectedGenres"
-              multiple
-              collapse-tags
-              collapse-tags-tooltip
-              placeholder="选择类别"
-              class="filter-select"
-            >
-              <el-option
-                v-for="genre in genres"
-                :key="genre.value"
-                :label="genre.label"
-                :value="genre.value"
-              />
-            </el-select>
+      <div class="filter-section">
+        <el-select v-model="selectedGenres" multiple placeholder="选择类别" style="width: 150px;">
+          <el-option
+            v-for="genre in genres"
+            :key="genre.value"
+            :label="genre.label"
+            :value="genre.value"
+          />
+        </el-select>
 
-            <el-select
-              v-model="selectedLanguages"
-              multiple
-              collapse-tags
-              collapse-tags-tooltip
-              placeholder="选择语言"
-              class="filter-select"
-            >
-              <el-option
-                v-for="lang in languages"
-                :key="lang.value"
-                :label="lang.label"
-                :value="lang.value"
-              />
-            </el-select>
-          </div>
+        <el-select v-model="borrowStatus" placeholder="借阅状态" style="width: 150px;">
+          <el-option label="全部" value="" />
+          <el-option label="可借阅" value="available" />
+          <el-option label="已借出" value="borrowed" />
+        </el-select>
 
-          <el-radio-group v-model="displayMode" class="display-mode">
-            <el-radio-button label="card">卡片视图</el-radio-button>
-            <el-radio-button label="list">列表视图</el-radio-button>
-          </el-radio-group>
-        </div>
+        <el-button type="default" @click="resetFilters">重置</el-button>
       </div>
     </div>
 
@@ -65,7 +42,7 @@
       <!-- 卡片视图 -->
       <div v-if="displayMode === 'card'" class="book-grid">
         <el-card 
-          v-for="book in books" 
+          v-for="book in filteredBooks" 
           :key="book.id"
           :body-style="{ padding: '0px' }" 
           class="book-card"
@@ -94,7 +71,7 @@
       </div>
 
       <!-- 列表视图 -->
-      <el-table v-else :data="books">
+      <el-table v-else :data="filteredBooks">
         <el-table-column label="封面" width="100">
           <template #default="scope">
             <img :src="scope.row.cover" class="table-book-cover"/>
@@ -149,7 +126,7 @@ export default {
     return {
       searchQuery: '',
       selectedGenres: [],
-      selectedLanguages: [],
+      borrowStatus: '',
       languages: [
         { value: 'en', label: '英语' },
         { value: 'zh', label: '中文' },
@@ -165,48 +142,44 @@ export default {
       books: [
         {
           id: 1,
+          title: "人类简史",
+          author: "尤瓦尔·赫拉利",
+          cover: '/book-covers/1.jpg',
+          rating: 4.7
+        },
+        {
+          id: 2,
+          title: "1984",
+          author: "乔治·奥威尔",
+          cover: '/book-covers/2.jpg',
+          rating: 4.8
+        },
+        {
+          id: 3,
           title: '三体',
           author: '刘慈欣',
-          cover: '/book-covers/1.jpg',
+          cover: '/book-covers/3.jpg',
           rating: 4.8,
           isbn: '9787536692930',
           genre: '科幻'
         },
         {
-          id: 2,
+          id: 4,
           title: '百年孤独',
           author: '加西亚·马尔克斯', 
-          cover: '/book-covers/2.jpg',
+          cover: '/book-covers/4.jpg',
           rating: 4.9,
           isbn: '9787544253994',
           genre: '文学'
         },
         {
-          id: 3,
-          title: '人类简史',
-          author: '尤瓦尔·赫拉利',
-          cover: '/book-covers/3.jpg',
-          rating: 4.7,
-          isbn: '9787508647357',
-          genre: '历史'
-        },
-        {
-          id: 4,
+          id: 5,
           title: '活着',
           author: '余华',
-          cover: '/book-covers/4.jpg',
+          cover: '/book-covers/5.jpg',
           rating: 4.9,
           isbn: '9787506365437',
           genre: '文学'
-        },
-        {
-          id: 5,
-          title: '1984',
-          author: '乔治·奥威尔',
-          cover: '/book-covers/5.jpg',
-          rating: 4.8,
-          isbn: '9787532751471',
-          genre: '科幻'
         },
         {
           id: 6,
@@ -260,20 +233,33 @@ export default {
       displayMode: 'card'
     }
   },
+  computed: {
+    filteredBooks() {
+      return this.books.filter(book => {
+        const matchesSearch = book.title.includes(this.searchQuery) || book.author.includes(this.searchQuery);
+        const matchesGenre = this.selectedGenres.length ? this.selectedGenres.includes(book.genre) : true;
+        const matchesStatus = this.borrowStatus ? (this.borrowStatus === 'available' ? book.available : !book.available) : true;
+        return matchesSearch && matchesGenre && matchesStatus;
+      });
+    }
+  },
   methods: {
     searchBooks() {
-      // 实现搜索逻辑
+      console.log('搜索:', this.searchQuery);
+    },
+    resetFilters() {
+      this.searchQuery = '';
+      this.selectedGenres = [];
+      this.borrowStatus = '';
     },
     viewBookDetails(bookId) {
-      this.$router.push(`/book/${bookId}`)
+      this.$router.push(`/book/${bookId}`);
     },
     handleSizeChange(val) {
-      this.pageSize = val
-      // 重新加载数据
+      this.pageSize = val;
     },
     handleCurrentChange(val) {
-      this.currentPage = val
-      // 重新加载数据
+      this.currentPage = val;
     }
   }
 }
@@ -327,7 +313,7 @@ export default {
   max-width: 1200px;
   margin: 20px auto;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
 }
 

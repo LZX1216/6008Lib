@@ -4,7 +4,7 @@
       <!-- 左侧图书信息 -->
       <el-col :span="8">
         <el-card class="book-cover-card">
-          <img :src="book.cover" class="book-cover" />
+          <img :src="book.cover" class="book-cover" alt="书籍封面" />
           <div class="book-actions">
             <el-button type="primary" :disabled="!book.available" @click="borrowBook">
               {{ book.available ? '借阅' : '已借出' }}
@@ -125,8 +125,8 @@ export default {
         isbn: '9787536692930',
         publishDate: '2008-01-01',
         category: '科幻小说',
-        cover: '/book-covers/1.jpg',
-        rating: 4.5,
+        cover: 'https://img3.doubanio.com/view/subject/m/public/s29517429.jpg',
+        rating: 4.8,
         description: '文化大革命期间，一次偶然的机会，南京大学天体物理系女教授叶文洁成为了军方绝密雷达基地"红岸工程"的观察员，由此揭开了地球文明与三体文明三百年的恩怨情仇。',
         location: '科幻小说区',
         callNumber: 'I247.55/L783',

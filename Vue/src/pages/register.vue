@@ -9,15 +9,17 @@
           ref="registerFormref"
           label-width="80px"
           class="registerForm"
+          @submit.native.prevent="handleRegister"
       >
         <el-form-item label="用户名" prop="username">
-          <el-input v-model="registerForm.username"></el-input>
+          <el-input v-model="registerForm.username" @keyup.enter="handleRegister"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
           <el-input
               type="password"
               v-model="registerForm.password"
               autocomplete="off"
+              @keyup.enter="handleRegister"
           ></el-input>
         </el-form-item>
         <el-form-item label="确认密码" prop="pass">
@@ -134,6 +136,10 @@ export default {
     goBack() {
       this.$router.go(-1);
     },
+    handleRegister() {
+      // 注册逻辑
+      console.log('注册:', this.registerForm);
+    }
   },
 };
 </script>

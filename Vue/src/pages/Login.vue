@@ -10,15 +10,17 @@
         :model="loginForm"
         :rules="rules"
         label-width="80px"
+        @submit.native.prevent="handleLogin"
       >
         <el-form-item label="用户名" prop="username">
-          <el-input v-model="loginForm.username" placeholder="请输入用户名" />
+          <el-input v-model="loginForm.username" @keyup.enter="handleLogin" placeholder="请输入用户名" />
         </el-form-item>
         
         <el-form-item label="密码" prop="password">
           <el-input 
             v-model="loginForm.password" 
             type="password" 
+            @keyup.enter="handleLogin"
             placeholder="请输入密码"
             show-password
           />

@@ -34,15 +34,10 @@
           <template #header>
             <div class="card-header">
               <h3>借阅记录</h3>
-              <el-radio-group v-model="borrowFilter" size="small">
-                <el-radio-button label="all">全部</el-radio-button>
-                <el-radio-button label="current">当前借阅</el-radio-button>
-                <el-radio-button label="history">历史记录</el-radio-button>
-              </el-radio-group>
             </div>
           </template>
 
-          <el-table :data="filteredBorrows" style="width: 100%">
+          <el-table :data="borrows" style="width: 100%">
             <el-table-column prop="bookTitle" label="书名" />
             <el-table-column prop="borrowDate" label="借阅日期" width="120" />
             <el-table-column prop="dueDate" label="应还日期" width="120" />
@@ -52,18 +47,6 @@
                 <el-tag :type="getBorrowStatusType(scope.row.status)">
                   {{ getBorrowStatusText(scope.row.status) }}
                 </el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" width="120">
-              <template #default="scope">
-                <el-button 
-                  v-if="scope.row.status === 'borrowing'"
-                  type="primary" 
-                  size="small"
-                  @click="renewBook(scope.row)"
-                >
-                  续借
-                </el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -82,23 +65,8 @@
             <el-table-column prop="bookTitle" label="书名" />
             <el-table-column prop="author" label="作者" />
             <el-table-column prop="addDate" label="添加日期" width="120" />
-            <el-table-column prop="available" label="状态" width="100">
-              <template #default="scope">
-                <el-tag :type="scope.row.available ? 'success' : 'info'">
-                  {{ scope.row.available ? '可借阅' : '已借出' }}
-                </el-tag>
-              </template>
-            </el-table-column>
             <el-table-column label="操作" width="150">
               <template #default="scope">
-                <el-button 
-                  type="primary" 
-                  size="small"
-                  :disabled="!scope.row.available"
-                  @click="borrowBook(scope.row)"
-                >
-                  借阅
-                </el-button>
                 <el-button 
                   type="danger" 
                   size="small"
@@ -124,7 +92,6 @@ export default {
   data() {
     return {
       userInfo: auth.userInfo || {},
-      borrowFilter: 'all',
       borrowStats: {
         current: 2,
         history: 15,
@@ -166,31 +133,18 @@ export default {
       ]
     }
   },
-  computed: {
-    filteredBorrows() {
-      if (this.borrowFilter === 'current') {
-        return this.borrows.filter(b => b.status === 'borrowing')
-      }
-      if (this.borrowFilter === 'history') {
-        return this.borrows.filter(b => b.status === 'returned')
-      }
-      return this.borrows
-    }
-  },
   methods: {
     getBorrowStatusType(status) {
       const types = {
         borrowing: 'primary',
-        returned: 'success',
-        overdue: 'danger'
+        returned: 'success'
       }
       return types[status] || 'info'
     },
     getBorrowStatusText(status) {
       const texts = {
         borrowing: '借阅中',
-        returned: '已归还',
-        overdue: '已逾期'
+        returned: '已归还'
       }
       return texts[status] || status
     },
@@ -285,7 +239,6 @@ export default {
 .stat-item p {
   color: #666;
   font-size: 14px;
-  margin: 5px 0;
 }
 
 .content-card {

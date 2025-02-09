@@ -24,7 +24,7 @@
       <template #header>
         <div class="section-header">
           <h2>图书采购申请</h2>
-          <el-button type="primary" @click="showRequestForm">
+          <el-button type="primary" @click="showPurchaseRequestDialog">
             提交采购申请
           </el-button>
         </div>
@@ -95,38 +95,34 @@
 
     <!-- 采购申请表单对话框 -->
     <el-dialog
-      v-model="requestDialogVisible"
-      title="图书采购申请"
+      v-model="purchaseRequestDialogVisible"
+      title="提交采购申请"
       width="50%"
     >
       <el-form 
-        ref="requestForm"
-        :model="newRequest"
+        ref="form"
+        :model="purchaseRequest"
         :rules="requestRules"
         label-width="100px"
       >
         <el-form-item label="书名" prop="title">
-          <el-input v-model="newRequest.title" />
+          <el-input v-model="purchaseRequest.title" />
         </el-form-item>
         <el-form-item label="作者" prop="author">
-          <el-input v-model="newRequest.author" />
-        </el-form-item>
-        <el-form-item label="ISBN" prop="isbn">
-          <el-input v-model="newRequest.isbn" />
+          <el-input v-model="purchaseRequest.author" />
         </el-form-item>
         <el-form-item label="出版社" prop="publisher">
-          <el-input v-model="newRequest.publisher" />
+          <el-input v-model="purchaseRequest.publisher" />
         </el-form-item>
-        <el-form-item label="出版年份" prop="publishYear">
-          <el-date-picker
-            v-model="newRequest.publishYear"
-            type="year"
-            placeholder="选择年份"
-          />
+        <el-form-item label="ISBN" prop="isbn">
+          <el-input v-model="purchaseRequest.isbn" />
         </el-form-item>
-        <el-form-item label="推荐理由" prop="reason">
+        <el-form-item label="出版日期" prop="publishDate">
+          <el-input v-model="purchaseRequest.publishDate" />
+        </el-form-item>
+        <el-form-item label="理由" prop="reason">
           <el-input
-            v-model="newRequest.reason"
+            v-model="purchaseRequest.reason"
             type="textarea"
             :rows="4"
             placeholder="请说明推荐这本书的理由..."
@@ -135,8 +131,8 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="requestDialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitRequest">提交</el-button>
+          <el-button @click="purchaseRequestDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="submitRequest">提交申请</el-button>
         </span>
       </template>
     </el-dialog>
@@ -212,13 +208,13 @@ export default {
           status: 'pending'
         }
       ],
-      requestDialogVisible: false,
-      newRequest: {
+      purchaseRequestDialogVisible: false,
+      purchaseRequest: {
         title: '',
         author: '',
-        isbn: '',
         publisher: '',
-        publishYear: '',
+        isbn: '',
+        publishDate: '',
         reason: ''
       },
       requestRules: {
@@ -271,26 +267,26 @@ export default {
       }
       return texts[status] || status
     },
-    showRequestForm() {
+    showPurchaseRequestDialog() {
       if (!auth.isLoggedIn) {
         ElMessage.warning('请先登录')
         this.$router.push('/login')
         return
       }
-      this.requestDialogVisible = true
+      this.purchaseRequestDialogVisible = true
     },
     submitRequest() {
-      this.$refs.requestForm.validate((valid) => {
+      this.$refs.form.validate((valid) => {
         if (valid) {
           // 这里添加提交采购申请的API调用
           ElMessage.success('采购申请提交成功')
-          this.requestDialogVisible = false
-          this.newRequest = {
+          this.purchaseRequestDialogVisible = false
+          this.purchaseRequest = {
             title: '',
             author: '',
-            isbn: '',
             publisher: '',
-            publishYear: '',
+            isbn: '',
+            publishDate: '',
             reason: ''
           }
         }

@@ -10,6 +10,7 @@
         v-model="searchQuery"
         placeholder="搜索用户..."
         class="search-input"
+        style="width: 400px;"
       >
         <template #append>
           <el-button @click="searchUsers">
@@ -18,7 +19,7 @@
         </template>
       </el-input>
 
-      <el-select v-model="filterStatus" placeholder="用户状态" clearable>
+      <el-select v-model="filterStatus" placeholder="用户状态" clearable style="width: 150px;">
         <el-option label="全部" value="" />
         <el-option label="正常" value="active" />
         <el-option label="禁用" value="disabled" />
@@ -27,26 +28,21 @@
 
     <!-- 用户列表 -->
     <el-table :data="users" style="width: 100%">
-      <el-table-column prop="id" label="ID" width="80" />
+      <el-table-column prop="id" label="ID" />
       <el-table-column prop="username" label="用户名" />
-      <el-table-column prop="email" label="邮箱" />
-      <el-table-column prop="registerDate" label="注册日期" />
-      <el-table-column label="状态">
+      <el-table-column prop="name" label="姓名" />
+      <el-table-column prop="status" label="状态">
         <template #default="scope">
           <el-tag :type="scope.row.status === 'active' ? 'success' : 'danger'">
             {{ scope.row.status === 'active' ? '正常' : '禁用' }}
           </el-tag>
         </template>
       </el-table-column>
+      <el-table-column prop="currentBorrows" label="当前借阅" />
+      <el-table-column prop="totalBorrows" label="总借阅" />
+      <el-table-column prop="overdueTimes" label="逾期次数" />
       <el-table-column label="操作" width="250">
         <template #default="scope">
-          <el-button 
-            type="primary" 
-            size="small" 
-            @click="viewUserDetails(scope.row)"
-          >
-            查看详情
-          </el-button>
           <el-button 
             :type="scope.row.status === 'active' ? 'danger' : 'success'"
             size="small" 
@@ -90,8 +86,7 @@
         <h3>基本信息</h3>
         <el-descriptions :column="2">
           <el-descriptions-item label="用户名">{{ selectedUser.username }}</el-descriptions-item>
-          <el-descriptions-item label="邮箱">{{ selectedUser.email }}</el-descriptions-item>
-          <el-descriptions-item label="注册日期">{{ selectedUser.registerDate }}</el-descriptions-item>
+          <el-descriptions-item label="姓名">{{ selectedUser.name }}</el-descriptions-item>
           <el-descriptions-item label="状态">
             <el-tag :type="selectedUser.status === 'active' ? 'success' : 'danger'">
               {{ selectedUser.status === 'active' ? '正常' : '禁用' }}
@@ -104,14 +99,6 @@
           <el-descriptions-item label="当前借阅">{{ selectedUser.currentBorrows }}</el-descriptions-item>
           <el-descriptions-item label="历史借阅">{{ selectedUser.totalBorrows }}</el-descriptions-item>
           <el-descriptions-item label="逾期次数">{{ selectedUser.overdueTimes }}</el-descriptions-item>
-          <el-descriptions-item label="信用评分">
-            <el-rate
-              v-model="selectedUser.creditScore"
-              :max="5"
-              disabled
-              show-score
-            />
-          </el-descriptions-item>
         </el-descriptions>
       </div>
     </el-dialog>
@@ -135,13 +122,20 @@ export default {
         {
           id: 1,
           username: 'user1',
-          email: 'user1@example.com',
-          registerDate: '2024-01-01',
+          name: '用户一',
           status: 'active',
           currentBorrows: 2,
           totalBorrows: 10,
-          overdueTimes: 0,
-          creditScore: 4.5
+          overdueTimes: 1
+        },
+        {
+          id: 2,
+          username: 'user2',
+          name: '用户二',
+          status: 'inactive',
+          currentBorrows: 0,
+          totalBorrows: 5,
+          overdueTimes: 0
         }
       ],
       currentPage: 1,
@@ -240,7 +234,7 @@ export default {
 }
 
 .search-input {
-  width: 300px;
+  width: 400px;
 }
 
 .pagination {

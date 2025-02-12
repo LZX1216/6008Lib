@@ -1,9 +1,9 @@
 <template>
   <div class="book-comments">
-    <!-- 评分统计 -->
+    <!-- Rating Statistics -->
     <div class="rating-stats">
       <div class="average-rating">
-        <h3>总体评分</h3>
+        <h3>Overall Rating</h3>
         <div class="rating-number">{{ averageRating }}</div>
         <el-rate
           v-model="averageRating"
@@ -11,14 +11,14 @@
           show-score
           text-color="#ff9900"
         />
-        <div class="total-ratings">{{ totalRatings }}人评分</div>
+        <div class="total-ratings">{{ totalRatings }} ratings</div>
       </div>
       <div class="rating-distribution">
-        <div v-for="(count, stars) in ratingDistribution" 
-          :key="stars" 
+        <div v-for="(count, stars) in ratingDistribution"
+          :key="stars"
           class="rating-bar"
         >
-          <span class="stars">{{ stars }}星</span>
+          <span class="stars">{{ stars }} stars</span>
           <el-progress 
             :percentage="(count / totalRatings) * 100"
             :stroke-width="12"
@@ -29,15 +29,15 @@
       </div>
     </div>
 
-    <!-- 评论输入 -->
+    <!-- Comment Input -->
     <div v-if="auth.isLoggedIn" class="comment-input">
-      <h3>写评论</h3>
+      <h3>Write a Comment</h3>
       <el-form :model="commentForm" ref="commentForm" :rules="rules">
         <el-form-item prop="rating">
           <el-rate
             v-model="commentForm.rating"
             show-text
-            :texts="['很差', '较差', '一般', '较好', '很好']"
+            :texts="['Very Poor', 'Poor', 'Fair', 'Good', 'Excellent']"
           />
         </el-form-item>
         <el-form-item prop="content">
@@ -45,39 +45,39 @@
             v-model="commentForm.content"
             type="textarea"
             :rows="4"
-            placeholder="分享您的读书感受..."
+            placeholder="Share your thoughts about the book..."
           />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitComment">
-            发表评论
+            Post Comment
           </el-button>
         </el-form-item>
       </el-form>
     </div>
     <div v-else class="login-tip">
       <el-alert
-        title="请登录后发表评论"
+        title="Please log in to post a comment"
         type="info"
         :closable="false"
       >
         <template #default>
-          <router-link to="/login">去登录</router-link>
+          <router-link to="/login">Go to Login</router-link>
         </template>
       </el-alert>
     </div>
 
-    <!-- 评论列表 -->
+    <!-- Comments List -->
     <div class="comments-list">
-      <h3>全部评论 ({{ comments.length }})</h3>
+      <h3>All Comments ({{ comments.length }})</h3>
       <el-tabs v-model="activeTab">
-        <el-tab-pane label="最新" name="latest">
+        <el-tab-pane label="Latest" name="latest">
           <div v-if="comments.length === 0" class="no-comments">
-            暂无评论，快来发表第一条评论吧！
+            No comments yet. Be the first to comment!
           </div>
           <div v-else>
-            <div v-for="comment in sortedComments" 
-              :key="comment.id" 
+            <div v-for="comment in sortedComments"
+              :key="comment.id"
               class="comment-item"
             >
               <div class="comment-header">
@@ -96,35 +96,35 @@
               </div>
               <div class="comment-content">{{ comment.content }}</div>
               <div class="comment-actions">
-                <el-button 
-                  type="text" 
+                <el-button
+                  type="text"
                   size="small"
                   @click="likeComment(comment)"
                 >
                   <el-icon><ThumbsUp /></el-icon>
                   {{ comment.likes }}
                 </el-button>
-                <el-button 
-                  type="text" 
+                <el-button
+                  type="text"
                   size="small"
                   @click="replyComment(comment)"
                 >
-                  回复
+                  Reply
                 </el-button>
-                <el-button 
+                <el-button
                   v-if="canDelete(comment)"
-                  type="text" 
+                  type="text"
                   size="small"
                   @click="deleteComment(comment)"
                 >
-                  删除
+                  Delete
                 </el-button>
               </div>
-              <!-- 回复列表 -->
-              <div v-if="comment.replies && comment.replies.length > 0" 
+              <!-- Replies List -->
+              <div v-if="comment.replies && comment.replies.length > 0"
                 class="replies"
               >
-                <div v-for="reply in comment.replies" 
+                <div v-for="reply in comment.replies"
                   :key="reply.id"
                   class="reply-item"
                 >
@@ -134,7 +134,7 @@
                     </el-avatar>
                     <div class="reply-info">
                       <span class="username">{{ reply.username }}</span>
-                      <span class="reply-to">回复</span>
+                      <span class="reply-to">replied to</span>
                       <span class="username">{{ reply.replyTo }}</span>
                     </div>
                     <div class="reply-time">{{ formatDate(reply.createTime) }}</div>
@@ -142,28 +142,28 @@
                   <div class="reply-content">{{ reply.content }}</div>
                 </div>
               </div>
-              <!-- 回复输入框 -->
+              <!-- Reply Input -->
               <div v-if="showReplyInput === comment.id" class="reply-input">
                 <el-input
                   v-model="replyContent"
                   type="textarea"
                   :rows="2"
-                  placeholder="写下你的回复..."
+                  placeholder="Write your reply..."
                 >
                   <template #append>
-                    <el-button @click="submitReply(comment)">回复</el-button>
+                    <el-button @click="submitReply(comment)">Reply</el-button>
                   </template>
                 </el-input>
               </div>
             </div>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="最热" name="hot">
-          <!-- 按点赞数排序的评论列表 -->
+        <el-tab-pane label="Most Popular" name="hot">
+          <!-- Comments list sorted by likes -->
         </el-tab-pane>
       </el-tabs>
 
-      <!-- 分页 -->
+      <!-- Pagination -->
       <div class="pagination">
         <el-pagination
           :current-page="currentPage"
@@ -180,7 +180,6 @@
 </template>
 
 <script>
-import { ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ThumbsUp } from '@element-plus/icons-vue'
 import { auth } from '@/utils/auth.js'
@@ -218,30 +217,30 @@ export default {
       },
       rules: {
         rating: [
-          { required: true, message: '请选择评分', trigger: 'change' }
+          { required: true, message: 'Please select a rating', trigger: 'change' }
         ],
         content: [
-          { required: true, message: '请输入评论内容', trigger: 'blur' },
-          { min: 10, message: '评论内容不能少于10个字符', trigger: 'blur' }
+          { required: true, message: 'Please enter comment content', trigger: 'blur' },
+          { min: 10, message: 'Comment content must be at least 10 characters', trigger: 'blur' }
         ]
       },
       activeTab: 'latest',
       comments: [
         {
           id: 1,
-          username: '读者A',
+          username: 'Reader A',
           userAvatar: '/avatars/1.jpg',
           rating: 5,
-          content: '这本书真的很棒！强烈推荐！',
+          content: 'This book is really great! Highly recommended!',
           createTime: '2024-03-15 14:30:00',
           likes: 12,
           replies: [
             {
               id: 101,
-              username: '读者B',
+              username: 'Reader B',
               userAvatar: '/avatars/2.jpg',
-              replyTo: '读者A',
-              content: '同意，我也很喜欢这本书',
+              replyTo: 'Reader A',
+              content: 'I agree, I like this book too',
               createTime: '2024-03-15 15:00:00'
             }
           ]
@@ -269,12 +268,12 @@ export default {
     async submitComment() {
       try {
         await this.$refs.commentForm.validate()
-        // 调用API发表评论
+        // Call API to post comment
         // await addCommentApi({
         //   bookId: this.bookId,
         //   ...this.commentForm
         // })
-        ElMessage.success('评论发表成功')
+        ElMessage.success('Comment posted successfully')
         this.commentForm.content = ''
         this.fetchComments()
       } catch (error) {
@@ -283,31 +282,31 @@ export default {
     },
     async likeComment(comment) {
       if (!auth.isLoggedIn) {
-        ElMessage.warning('请先登录')
+        ElMessage.warning('Please log in first')
         return
       }
-      // 调用API点赞
+      // Call API to like
       // await likeCommentApi(comment.id)
       comment.likes++
     },
     replyComment(comment) {
       if (!auth.isLoggedIn) {
-        ElMessage.warning('请先登录')
+        ElMessage.warning('Please log in first')
         return
       }
       this.showReplyInput = comment.id
     },
     async submitReply(comment) {
       if (!this.replyContent.trim()) {
-        ElMessage.warning('请输入回复内容')
+        ElMessage.warning('Please enter reply content')
         return
       }
-      // 调用API发表回复
+      // Call API to post reply
       // await addReplyApi({
       //   commentId: comment.id,
       //   content: this.replyContent
       // })
-      ElMessage.success('回复成功')
+      ElMessage.success('Reply submitted successfully')
       this.showReplyInput = null
       this.replyContent = ''
       this.fetchComments()
@@ -315,28 +314,28 @@ export default {
     async deleteComment(comment) {
       try {
         await ElMessageBox.confirm(
-          '确定要删除这条评论吗？',
-          '提示',
+          'Are you sure you want to delete this comment?',
+          'Prompt',
           {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
+            confirmButtonText: 'Confirm',
+            cancelButtonText: 'Cancel',
             type: 'warning'
           }
         )
-        // 调用API删除评论
+        // Call API to delete comment
         // await deleteCommentApi(comment.id)
-        ElMessage.success('删除成功')
+        ElMessage.success('Deleted successfully')
         this.fetchComments()
       } catch (error) {
         if (error !== 'cancel') {
-          ElMessage.error('删除失败')
+          ElMessage.error('Delete failed')
         }
       }
     },
     canDelete(comment) {
       const userInfo = JSON.parse(sessionStorage.getItem('userInfo'))
       return userInfo && (
-        userInfo.id === comment.userId || 
+        userInfo.id === comment.userId ||
         userInfo.role === 'admin'
       )
     },
@@ -348,8 +347,8 @@ export default {
       this.fetchComments()
     },
     fetchComments() {
-      // 实现获取评论列表的逻辑
-      console.log('获取评论列表')
+      // Implement logic to fetch comment list
+      console.log('Fetching comment list')
     }
   },
   created() {

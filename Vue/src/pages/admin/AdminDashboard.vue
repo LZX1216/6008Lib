@@ -1,8 +1,8 @@
 <template>
   <div class="admin-dashboard">
     <el-container>
-      <!-- 侧边栏 -->
-      <el-aside width="200px">
+      <!-- Sidebar -->
+      <el-aside width="220px">
         <el-menu
           :default-active="activeMenu"
           class="admin-menu"
@@ -10,24 +10,24 @@
         >
           <el-menu-item index="overview">
             <el-icon><DataLine /></el-icon>
-            <span>总览</span>
+            <span>Overview</span>
           </el-menu-item>
           <el-menu-item index="books">
             <el-icon><Reading /></el-icon>
-            <span>图书管理</span>
+            <span>Book Management</span>
           </el-menu-item>
           <el-menu-item index="users">
             <el-icon><User /></el-icon>
-            <span>用户管理</span>
+            <span>User Management</span>
           </el-menu-item>
           <el-menu-item index="borrows">
             <el-icon><List /></el-icon>
-            <span>借阅管理</span>
+            <span>Borrow Management</span>
           </el-menu-item>
         </el-menu>
       </el-aside>
 
-      <!-- 主要内容区域 -->
+      <!-- Main content area -->
       <el-main>
         <router-view></router-view>
       </el-main>
@@ -68,13 +68,4 @@ export default {
   height: 100%;
   border-right: solid 1px #e6e6e6;
 }
-
-.el-aside {
-  background-color: #fff;
-}
-
-.el-main {
-  padding: 20px;
-  background-color: #f5f7fa;
-}
-</style> 
+</style>

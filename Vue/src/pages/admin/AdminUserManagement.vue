@@ -1,14 +1,14 @@
 <template>
   <div class="user-management">
     <div class="page-header">
-      <h2>用户管理</h2>
+      <h2>User Management</h2>
     </div>
 
-    <!-- 搜索和筛选 -->
+    <!-- Search and Filter -->
     <div class="search-section">
       <el-input
         v-model="searchQuery"
-        placeholder="搜索用户..."
+        placeholder="Search users..."
         class="search-input"
         style="width: 400px;"
       >
@@ -19,49 +19,49 @@
         </template>
       </el-input>
 
-      <el-select v-model="filterStatus" placeholder="用户状态" clearable style="width: 150px;">
-        <el-option label="全部" value="" />
-        <el-option label="正常" value="active" />
-        <el-option label="禁用" value="disabled" />
+      <el-select v-model="filterStatus" placeholder="User Status" clearable style="width: 150px;">
+        <el-option label="All" value="" />
+        <el-option label="Active" value="active" />
+        <el-option label="Disabled" value="disabled" />
       </el-select>
     </div>
 
-    <!-- 用户列表 -->
+    <!-- User List -->
     <el-table :data="users" style="width: 100%">
       <el-table-column prop="id" label="ID" />
-      <el-table-column prop="username" label="用户名" />
-      <el-table-column prop="name" label="姓名" />
-      <el-table-column prop="status" label="状态">
+      <el-table-column prop="username" label="Username" />
+      <el-table-column prop="name" label="Name" />
+      <el-table-column prop="status" label="Status">
         <template #default="scope">
           <el-tag :type="scope.row.status === 'active' ? 'success' : 'danger'">
-            {{ scope.row.status === 'active' ? '正常' : '禁用' }}
+            {{ scope.row.status === 'active' ? 'Active' : 'Disabled' }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="currentBorrows" label="当前借阅" />
-      <el-table-column prop="totalBorrows" label="总借阅" />
-      <el-table-column prop="overdueTimes" label="逾期次数" />
-      <el-table-column label="操作" width="250">
+      <el-table-column prop="currentBorrows" label="Current Borrows" />
+      <el-table-column prop="totalBorrows" label="Total Borrows" />
+      <el-table-column prop="overdueTimes" label="Overdue Times" />
+      <el-table-column label="Actions" width="250">
         <template #default="scope">
-          <el-button 
+          <el-button
             :type="scope.row.status === 'active' ? 'danger' : 'success'"
-            size="small" 
+            size="small"
             @click="toggleUserStatus(scope.row)"
           >
-            {{ scope.row.status === 'active' ? '禁用' : '启用' }}
+            {{ scope.row.status === 'active' ? 'Disable' : 'Enable' }}
           </el-button>
-          <el-button 
-            type="warning" 
-            size="small" 
+          <el-button
+            type="warning"
+            size="small"
             @click="resetPassword(scope.row)"
           >
-            重置密码
+            Reset Password
           </el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <!-- 分页 -->
+    <!-- Pagination -->
     <div class="pagination">
       <el-pagination
         :current-page="currentPage"
@@ -76,29 +76,29 @@
       />
     </div>
 
-    <!-- 用户详情对话框 -->
+    <!-- User Details Dialog -->
     <el-dialog
-      title="用户详情"
+      title="User Details"
       v-model="dialogVisible"
       width="50%"
     >
       <div v-if="selectedUser" class="user-details">
-        <h3>基本信息</h3>
+        <h3>Basic Information</h3>
         <el-descriptions :column="2">
-          <el-descriptions-item label="用户名">{{ selectedUser.username }}</el-descriptions-item>
-          <el-descriptions-item label="姓名">{{ selectedUser.name }}</el-descriptions-item>
-          <el-descriptions-item label="状态">
+          <el-descriptions-item label="Username">{{ selectedUser.username }}</el-descriptions-item>
+          <el-descriptions-item label="Name">{{ selectedUser.name }}</el-descriptions-item>
+          <el-descriptions-item label="Status">
             <el-tag :type="selectedUser.status === 'active' ? 'success' : 'danger'">
-              {{ selectedUser.status === 'active' ? '正常' : '禁用' }}
+              {{ selectedUser.status === 'active' ? 'Active' : 'Disabled' }}
             </el-tag>
           </el-descriptions-item>
         </el-descriptions>
 
-        <h3>借阅统计</h3>
+        <h3>Borrowing Statistics</h3>
         <el-descriptions :column="2">
-          <el-descriptions-item label="当前借阅">{{ selectedUser.currentBorrows }}</el-descriptions-item>
-          <el-descriptions-item label="历史借阅">{{ selectedUser.totalBorrows }}</el-descriptions-item>
-          <el-descriptions-item label="逾期次数">{{ selectedUser.overdueTimes }}</el-descriptions-item>
+          <el-descriptions-item label="Current Borrows">{{ selectedUser.currentBorrows }}</el-descriptions-item>
+          <el-descriptions-item label="Total Borrows">{{ selectedUser.totalBorrows }}</el-descriptions-item>
+          <el-descriptions-item label="Overdue Times">{{ selectedUser.overdueTimes }}</el-descriptions-item>
         </el-descriptions>
       </div>
     </el-dialog>
@@ -122,7 +122,7 @@ export default {
         {
           id: 1,
           username: 'user1',
-          name: '用户一',
+          name: 'User One',
           status: 'active',
           currentBorrows: 2,
           totalBorrows: 10,
@@ -131,7 +131,7 @@ export default {
         {
           id: 2,
           username: 'user2',
-          name: '用户二',
+          name: 'User Two',
           status: 'inactive',
           currentBorrows: 0,
           totalBorrows: 5,
@@ -147,48 +147,48 @@ export default {
   },
   methods: {
     searchUsers() {
-      // 实现搜索逻辑
-      console.log('搜索:', this.searchQuery)
+      // Implement search logic
+      console.log('Search:', this.searchQuery)
     },
     async toggleUserStatus(user) {
       try {
-        const action = user.status === 'active' ? '禁用' : '启用'
+        const action = user.status === 'active' ? 'disable' : 'enable'
         await ElMessageBox.confirm(
-          `确定要${action}该用户吗？`,
-          '警告',
+          `Are you sure you want to ${action} this user?`,
+          'Warning',
           {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
+            confirmButtonText: 'Confirm',
+            cancelButtonText: 'Cancel',
             type: 'warning'
           }
         )
-        // 调用API
+        // Call API
         // await toggleUserStatusApi(user.id)
         user.status = user.status === 'active' ? 'disabled' : 'active'
-        ElMessage.success(`${action}成功`)
+        ElMessage.success(`${action.charAt(0).toUpperCase() + action.slice(1)} successful`)
       } catch (error) {
         if (error !== 'cancel') {
-          ElMessage.error(`${action}失败`)
+          ElMessage.error(`Failed to ${action}`)
         }
       }
     },
     async resetPassword(user) {
       try {
         await ElMessageBox.confirm(
-          '确定要重置该用户的密码吗？',
-          '警告',
+          'Are you sure you want to reset this user\'s password?',
+          'Warning',
           {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
+            confirmButtonText: 'Confirm',
+            cancelButtonText: 'Cancel',
             type: 'warning'
           }
         )
-        // 调用API
+        // Call API
         // const newPassword = await resetPasswordApi(user.id)
-        ElMessage.success('密码重置成功，新密码已发送至用户邮箱')
+        ElMessage.success('Password reset successful, new password has been sent to the user\'s email')
       } catch (error) {
         if (error !== 'cancel') {
-          ElMessage.error('密码重置失败')
+          ElMessage.error('Failed to reset password')
         }
       }
     },
@@ -205,8 +205,8 @@ export default {
       this.fetchUsers()
     },
     fetchUsers() {
-      // 实现获取用户列表的逻辑
-      console.log('获取用户列表')
+      // Implement the logic of getting the user list
+      console.log('Getting the user list')
     }
   },
   created() {
@@ -235,6 +235,7 @@ export default {
 
 .search-input {
   width: 400px;
+  flex-grow: 1;
 }
 
 .pagination {

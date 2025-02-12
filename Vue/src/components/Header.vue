@@ -1,27 +1,27 @@
 <template>
   <el-menu class="header-menu" mode="horizontal" :router="true" :default-active="activeIndex">
-    <!-- 左侧菜单项 -->
+    <!-- Left menu items -->
     <el-menu-item index="/" class="logo-item">
       <router-link to="/" class="logo-link">
         <span class="logo-text">Library</span>
       </router-link>
     </el-menu-item>
-    
+
     <el-menu-item index="/books">
       <router-link to="/books">{{ $t('nav.books') }}</router-link>
     </el-menu-item>
-    
+
     <el-menu-item index="/about">
       <router-link to="/about">{{ $t('nav.about') }}</router-link>
     </el-menu-item>
-    
+
     <el-menu-item index="/help">
       <router-link to="/help">{{ $t('nav.help') }}</router-link>
     </el-menu-item>
 
-    <!-- 右侧菜单项 -->
+    <!-- Right menu items -->
     <div class="right-menu">
-      <!-- 未登录状态显示登录注册 -->
+      <!-- Display login and register when not logged in -->
       <template v-if="!auth.isLoggedIn">
         <el-menu-item index="/login">
           <router-link to="/login">{{ $t('common.login') }}</router-link>
@@ -30,8 +30,8 @@
           <router-link to="/register">{{ $t('common.register') }}</router-link>
         </el-menu-item>
       </template>
-      
-      <!-- 登录状态显示用户信息和登出 -->
+
+      <!-- Display user info and logout when logged in -->
       <template v-else>
         <el-menu-item index="/user">
           <router-link to="/user">{{ $t('user.profile') }}</router-link>
@@ -41,7 +41,7 @@
         </el-menu-item>
       </template>
 
-      <!-- 语言切换 -->
+      <!-- Language switch -->
       <div class="language-switch">
         <LanguageSwitch />
       </div>

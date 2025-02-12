@@ -3,20 +3,19 @@
     <div class="footer-divider"></div>
     <div class="footer-content">
       <div class="footer-section">
-        <h4>图书馆</h4>
-        <p>新加坡南洋理工大学</p>
+        <h4>Library</h4>
+        <p>Somewhere, Singapore</p>
         <p>© 2024 Library System. All rights reserved.</p>
       </div>
       <div class="footer-section">
-        <h4>快速链接</h4>
-        <router-link to="/about">关于我们</router-link>
-        <router-link to="/help">帮助中心</router-link>
-        <router-link to="/books">馆藏资源</router-link>
+        <h4>Quick Links</h4>
+        <router-link to="/about">About Us</router-link>
+        <router-link to="/help">Help Center</router-link>
       </div>
       <div class="footer-section">
-        <h4>联系我们</h4>
-        <p>电话：+65 1234 5678</p>
-        <p>邮箱：library@example.com</p>
+        <h4>Contact Us</h4>
+        <p>Phone: +65 1234 5678</p>
+        <p>Email: library@library.com</p>
       </div>
     </div>
   </el-footer>

@@ -1,13 +1,13 @@
 <template>
   <div class="Homepage">
-    <!-- 搜索栏 -->
+    <!-- Search bar -->
     <div class="hero-section">
-      <h1>欢迎来到图书馆</h1>
-      <p class="subtitle">发现知识的海洋</p>
+      <h1>Welcome to the Library</h1>
+      <p class="subtitle">Discover an Ocean of Knowledge</p>
       <div class="search-section">
         <el-input
           v-model="searchQuery"
-          placeholder="搜索书籍、作者或关键词..."
+          placeholder="Search for books, authors, or keywords..."
           class="search-input"
         >
           <template #append>
@@ -20,9 +20,9 @@
     </div>
 
     <el-main>
-      <!-- 近期活动 -->
+      <!-- Recent events -->
       <section class="recent-events">
-        <h2>近期活动</h2>
+        <h2>Recent Events</h2>
         <el-carousel :interval="4000" type="card" height="300px">
           <el-carousel-item v-for="event in recentEvents" :key="event.id">
             <div class="event-card" :style="{ backgroundImage: `url(${event.image})` }">
@@ -36,10 +36,10 @@
         </el-carousel>
       </section>
 
-      <!-- 热门书籍 -->
+      <!-- Popular books -->
       <section class="popular-books">
         <div class="section-header">
-          <h2>热门书籍</h2>
+          <h2>Popular Books</h2>
         </div>
         <el-scrollbar>
           <div class="books-container">
@@ -61,10 +61,10 @@
         </el-scrollbar>
       </section>
 
-      <!-- 为你推荐 -->
+      <!-- Recommended for you -->
       <section class="recommended-books">
         <div class="section-header">
-          <h2>为你推荐</h2>
+          <h2>Recommended for You</h2>
         </div>
         <el-scrollbar>
           <div class="books-container">
@@ -86,10 +86,10 @@
         </el-scrollbar>
       </section>
 
-      <!-- 新书上架 -->
+      <!-- New arrivals -->
       <section class="new-books">
         <div class="section-header">
-          <h2>新书上架</h2>
+          <h2>New Arrivals</h2>
         </div>
         <el-scrollbar>
           <div class="books-container">
@@ -117,6 +117,7 @@
 <script>
 import { Search } from '@element-plus/icons-vue'
 import BookRecommendations from '@/components/BookRecommendations.vue'
+import axios from 'axios'
 
 export default {
   name: "Homepage",
@@ -130,200 +131,122 @@ export default {
       recentEvents: [
         {
           id: 1,
-          title: "读书分享会：《百年孤独》",
-          description: "本周六下午2点，我们将举办加西亚·马尔克斯《百年孤独》读书分享会...",
+          title: "Book Sharing: 'One Hundred Years of Solitude'",
+          description: "This Saturday at 2 PM, we will host a book sharing event for Gabriel García Márquez's 'One Hundred Years of Solitude'...",
           date: "2024-03-23",
           image: "/events/event1.jpg"
         },
         {
           id: 2,
-          title: "儿童故事会",
-          description: "每周日上午10点，带领孩子们一起探索故事的世界...",
+          title: "Children's Story Time",
+          description: "Every Sunday at 10 AM, join us to explore the world of stories with your children...",
           date: "2024-03-24",
           image: "/events/event2.jpg"
         },
         {
           id: 3,
-          title: "作家见面会",
-          description: "著名作家王小波作品研讨会，探讨《黄金时代》...",
+          title: "Author Meet and Greet",
+          description: "A discussion on famous author Wang Xiaobo's works, exploring 'The Golden Age'...",
           date: "2024-03-30",
           image: "/events/event3.jpg"
         },
         {
           id: 4,
-          title: "科技讲座",
-          description: "人工智能与未来图书馆发展专题讲座...",
+          title: "Technology Lecture",
+          description: "Special lecture on Artificial Intelligence and the Future Development of Libraries...",
           date: "2024-04-05",
           image: "/events/event4.jpg"
         }
       ],
-      popularBooks: [
-        {
-          id: 1,
-          title: "三体",
-          author: "刘慈欣",
-          cover: "/book-covers/1.jpg",
-          rating: 4.8
-        },
-        {
-          id: 2,
-          title: "百年孤独",
-          author: "加西亚·马尔克斯",
-          cover: "/book-covers/2.jpg",
-          rating: 4.9
-        },
-        {
-          id: 3,
-          title: "人类简史",
-          author: "尤瓦尔·赫拉利",
-          cover: "/book-covers/3.jpg",
-          rating: 4.7
-        },
-        {
-          id: 4,
-          title: "活着",
-          author: "余华",
-          cover: "/book-covers/4.jpg",
-          rating: 4.9
-        },
-        {
-          id: 5,
-          title: "1984",
-          author: "乔治·奥威尔",
-          cover: "/book-covers/5.jpg",
-          rating: 4.8
-        },
-        {
-          id: 6,
-          title: "动物农场",
-          author: "乔治·奥威尔",
-          cover: "/book-covers/6.jpg",
-          rating: 4.7
-        },
-        {
-          id: 7,
-          title: "围城",
-          author: "钱钟书",
-          cover: "/book-covers/7.jpg",
-          rating: 4.8
-        }
-      ],
+      popularBooks: [],
       recommendedBooks: [
         {
           id: 1,
-          title: "三体",
-          author: "刘慈欣",
+          title: "The Three-Body Problem",
+          author: "Cixin Liu",
           cover: "/book-covers/1.jpg",
           rating: 4.8
         },
         {
           id: 2,
-          title: "百年孤独",
-          author: "加西亚·马尔克斯",
+          title: "One Hundred Years of Solitude",
+          author: "Gabriel García Márquez",
           cover: "/book-covers/2.jpg",
           rating: 4.9
         },
         {
           id: 3,
-          title: "人类简史",
-          author: "尤瓦尔·赫拉利",
+          title: "Sapiens: A Brief History of Humankind",
+          author: "Yuval Noah Harari",
           cover: "/book-covers/3.jpg",
           rating: 4.7
         },
         {
           id: 4,
-          title: "活着",
-          author: "余华",
+          title: "To Live",
+          author: "Yu Hua",
           cover: "/book-covers/4.jpg",
           rating: 4.9
         },
         {
           id: 5,
           title: "1984",
-          author: "乔治·奥威尔",
+          author: "George Orwell",
           cover: "/book-covers/5.jpg",
           rating: 4.8
         },
         {
           id: 6,
-          title: "动物农场",
-          author: "乔治·奥威尔",
+          title: "Animal Farm",
+          author: "George Orwell",
           cover: "/book-covers/6.jpg",
           rating: 4.7
         },
         {
           id: 7,
-          title: "围城",
-          author: "钱钟书",
+          title: "Fortress Besieged",
+          author: "Qian Zhongshu",
           cover: "/book-covers/7.jpg",
           rating: 4.8
         }
       ],
-      newBooks: [
-        {
-          id: 1,
-          title: "三体",
-          author: "刘慈欣",
-          cover: "https://img3.doubanio.com/view/subject/m/public/s29517429.jpg",
-          rating: 4.8
-        },
-        {
-          id: 2,
-          title: "百年孤独",
-          author: "加西亚·马尔克斯",
-          cover: "https://img3.doubanio.com/view/subject/m/public/s29517429.jpg",
-          rating: 4.9
-        },
-        {
-          id: 3,
-          title: "人类简史",
-          author: "尤瓦尔·赫拉利",
-          cover: "/book-covers/3.jpg",
-          rating: 4.7
-        },
-        {
-          id: 4,
-          title: "活着",
-          author: "余华",
-          cover: "/book-covers/4.jpg",
-          rating: 4.9
-        },
-        {
-          id: 5,
-          title: "1984",
-          author: "乔治·奥威尔",
-          cover: "/book-covers/5.jpg",
-          rating: 4.8
-        },
-        {
-          id: 6,
-          title: "动物农场",
-          author: "乔治·奥威尔",
-          cover: "/book-covers/6.jpg",
-          rating: 4.7
-        },
-        {
-          id: 7,
-          title: "围城",
-          author: "钱钟书",
-          cover: "/book-covers/7.jpg",
-          rating: 4.8
-        }
-      ]
+      newBooks: [],
     };
   },
+  created() {
+    this.fetchBooks();
+  },
   methods: {
+    fetchBooks() {
+      // Fetch popular books
+      axios.get('http://localhost:8080/api/popular-books') // Make sure this URL is correct
+        .then(response => {
+          this.popularBooks = response.data; // Assuming the returned data is an array of books
+        })
+        .catch(error => {
+          console.error('Failed to fetch popular books:', error);
+        });
+
+      // Fetch new arrivals
+      axios.get('http://localhost:8080/api/new-books') // Replace with the actual backend API address
+        .then(response => {
+          this.newBooks = response.data; // Assuming the returned data is an array of books
+        })
+        .catch(error => {
+          console.error('Failed to fetch new arrivals:', error);
+        });
+    },
     searchBooks() {
-      // 实现搜索功能
-      console.log('搜索:', this.searchQuery);
-      // 跳转到搜索结果页面
+      // Implement search functionality
+      console.log('Searching:', this.searchQuery);
+      // Navigate to search results page
       this.$router.push({
         path: '/books',
         query: { search: this.searchQuery }
       });
     },
     viewBookDetails(bookId) {
-      // 跳转到书籍详情页
+      // Navigate to book details page
       this.$router.push(`/book/${bookId}`);
     }
   }
@@ -386,7 +309,7 @@ footer {
 }
 
 .hero-section {
-  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/library-bg.jpg');
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://example.com/hero-image.jpg');
   background-size: cover;
   background-position: center;
   color: white;
@@ -415,11 +338,6 @@ footer {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-}
-
-.view-all {
-  color: #409EFF;
-  text-decoration: none;
 }
 
 .event-card {

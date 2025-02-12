@@ -3,7 +3,7 @@
     <el-card class="faq-section">
       <template #header>
         <div class="section-header">
-          <h2>常见问题</h2>
+          <h2>Frequently Asked Questions</h2>
         </div>
       </template>
       
@@ -19,24 +19,24 @@
       </el-collapse>
     </el-card>
 
-    <!-- 图书采购申请 -->
+    <!-- Book Purchase Request -->
     <el-card class="purchase-request-section">
       <template #header>
         <div class="section-header">
-          <h2>图书采购申请</h2>
+          <h2>Book Purchase Request</h2>
           <el-button type="primary" @click="showPurchaseRequestDialog">
-            提交采购申请
+            Submit Purchase Request
           </el-button>
         </div>
       </template>
 
-      <!-- 采购申请列表 -->
+      <!-- Purchase Request List -->
       <el-table :data="purchaseRequests" style="width: 100%">
-        <el-table-column prop="title" label="书名" />
-        <el-table-column prop="author" label="作者" />
+        <el-table-column prop="title" label="Title" />
+        <el-table-column prop="author" label="Author" />
         <el-table-column prop="isbn" label="ISBN" width="120" />
-        <el-table-column prop="requestDate" label="申请日期" width="120" />
-        <el-table-column prop="status" label="状态" width="100">
+        <el-table-column prop="requestDate" label="Request Date" width="120" />
+        <el-table-column prop="status" label="Status" width="100">
           <template #default="scope">
             <el-tag :type="getStatusType(scope.row.status)">
               {{ getStatusText(scope.row.status) }}
@@ -46,93 +46,93 @@
       </el-table>
     </el-card>
 
-    <!-- 联系表单 -->
+    <!-- Contact Form -->
     <el-card class="contact-form">
       <template #header>
         <div class="section-header">
-          <h2>联系我们</h2>
+          <h2>Contact Us</h2>
         </div>
       </template>
 
-      <el-form 
+      <el-form
         ref="contactForm"
         :model="contactForm"
         :rules="rules"
         label-width="80px"
       >
-        <el-form-item label="姓名" prop="name">
+        <el-form-item label="Name" prop="name">
           <el-input v-model="contactForm.name" />
         </el-form-item>
-        
-        <el-form-item label="邮箱" prop="email">
+
+        <el-form-item label="Email" prop="email">
           <el-input v-model="contactForm.email" />
         </el-form-item>
-        
-        <el-form-item label="主题" prop="subject">
-          <el-select v-model="contactForm.subject" placeholder="请选择咨询主题">
-            <el-option label="借阅问题" value="borrow" />
-            <el-option label="账户问题" value="account" />
-            <el-option label="技术支持" value="technical" />
-            <el-option label="其他" value="other" />
+
+        <el-form-item label="Subject" prop="subject">
+          <el-select v-model="contactForm.subject" placeholder="Please select a subject">
+            <el-option label="Borrowing Issues" value="borrow" />
+            <el-option label="Account Issues" value="account" />
+            <el-option label="Technical Support" value="technical" />
+            <el-option label="Other" value="other" />
           </el-select>
         </el-form-item>
-        
-        <el-form-item label="消息" prop="message">
+
+        <el-form-item label="Message" prop="message">
           <el-input
             v-model="contactForm.message"
             type="textarea"
             :rows="4"
-            placeholder="请详细描述您的问题..."
+            placeholder="Please describe your issue in detail..."
           />
         </el-form-item>
         
         <el-form-item>
-          <el-button type="primary" @click="submitForm">提交</el-button>
-          <el-button @click="resetForm">重置</el-button>
+          <el-button type="primary" @click="submitForm">Submit</el-button>
+          <el-button @click="resetForm">Reset</el-button>
         </el-form-item>
       </el-form>
     </el-card>
 
-    <!-- 采购申请表单对话框 -->
+    <!-- Purchase Request Form Dialog -->
     <el-dialog
       v-model="purchaseRequestDialogVisible"
-      title="提交采购申请"
+      title="Submit Purchase Request"
       width="50%"
     >
-      <el-form 
+      <el-form
         ref="form"
         :model="purchaseRequest"
         :rules="requestRules"
         label-width="100px"
       >
-        <el-form-item label="书名" prop="title">
+        <el-form-item label="Title" prop="title">
           <el-input v-model="purchaseRequest.title" />
         </el-form-item>
-        <el-form-item label="作者" prop="author">
+        <el-form-item label="Author" prop="author">
           <el-input v-model="purchaseRequest.author" />
         </el-form-item>
-        <el-form-item label="出版社" prop="publisher">
+        <el-form-item label="Publisher" prop="publisher">
           <el-input v-model="purchaseRequest.publisher" />
         </el-form-item>
         <el-form-item label="ISBN" prop="isbn">
           <el-input v-model="purchaseRequest.isbn" />
         </el-form-item>
-        <el-form-item label="出版日期" prop="publishDate">
+        <el-form-item label="Publish Date" prop="publishDate">
           <el-input v-model="purchaseRequest.publishDate" />
         </el-form-item>
-        <el-form-item label="理由" prop="reason">
+        <el-form-item label="Reason" prop="reason">
           <el-input
             v-model="purchaseRequest.reason"
             type="textarea"
             :rows="4"
-            placeholder="请说明推荐这本书的理由..."
+            placeholder="Please explain why you recommend this book..."
           />
         </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="purchaseRequestDialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitRequest">提交申请</el-button>
+          <el-button @click="purchaseRequestDialogVisible = false">Cancel</el-button>
+          <el-button type="primary" @click="submitRequest">Submit Request</el-button>
         </span>
       </template>
     </el-dialog>
@@ -162,47 +162,47 @@ export default {
       },
       rules: {
         name: [
-          { required: true, message: '请输入姓名', trigger: 'blur' },
-          { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
+          { required: true, message: 'Please enter your name', trigger: 'blur' },
+          { min: 2, max: 20, message: 'Length should be 2 to 20 characters', trigger: 'blur' }
         ],
         email: [
-          { required: true, message: '请输入邮箱地址', trigger: 'blur' },
-          { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
+          { required: true, message: 'Please enter your email address', trigger: 'blur' },
+          { type: 'email', message: 'Please enter a valid email address', trigger: 'blur' }
         ],
         subject: [
-          { required: true, message: '请选择咨询主题', trigger: 'change' }
+          { required: true, message: 'Please select a subject', trigger: 'change' }
         ],
         message: [
-          { required: true, message: '请输入消息内容', trigger: 'blur' },
-          { min: 10, message: '消息内容不能少于10个字符', trigger: 'blur' }
+          { required: true, message: 'Please enter your message', trigger: 'blur' },
+          { min: 10, message: 'Message must be at least 10 characters', trigger: 'blur' }
         ]
       },
       faqs: [
         {
           id: '1',
-          question: '如何借阅图书？',
-          answer: '登录账号后，可以在图书详情页面点击"借阅"按钮进行借阅。每人最多可同时借阅5本图书，借阅期限为30天。'
+          question: 'How to borrow books?',
+          answer: 'After logging in, you can click the "Borrow" button on the book details page to borrow. Each person can borrow up to 5 books at a time, with a loan period of 30 days.'
         },
         {
           id: '2',
-          question: '如何续借图书？',
-          answer: '在"我的借阅"页面中，对于未逾期的图书可以进行续借操作。每本图书最多可续借2次，每次续借30天。'
+          question: 'How to renew books?',
+          answer: 'On the "My Borrowings" page, you can renew books that are not overdue. Each book can be renewed up to 2 times, with each renewal extending the loan period by 30 days.'
         },
         {
           id: '3',
-          question: '忘记还书会怎样？',
-          answer: '逾期未还将产生罚金，每天每本书0.5元。同时会影响您的信用评分，可能会限制后续借阅权限。'
+          question: 'What happens if I forget to return a book?',
+          answer: 'Overdue books will incur a fine of 0.5 yuan per book per day. It will also affect your credit score and may restrict your future borrowing privileges.'
         }
       ],
       teamMembers: [
-        { id: 1, name: '张馆长', avatar: '/avatars/1.jpg' },
-        { id: 2, name: '李主任', avatar: '/avatars/2.jpg' },
-        { id: 3, name: '王老师', avatar: '/avatars/3.jpg' }
+        { id: 1, name: 'Director Zhang', avatar: '/avatars/1.jpg' },
+        { id: 2, name: 'Deputy Director Li', avatar: '/avatars/2.jpg' },
+        { id: 3, name: 'Teacher Wang', avatar: '/avatars/3.jpg' }
       ],
       purchaseRequests: [
         {
-          title: '深度学习实战',
-          author: '张三',
+          title: 'Deep Learning in Action',
+          author: 'Zhang San',
           isbn: '9787111111111',
           requestDate: '2024-03-15',
           status: 'pending'
@@ -219,17 +219,17 @@ export default {
       },
       requestRules: {
         title: [
-          { required: true, message: '请输入书名', trigger: 'blur' }
+          { required: true, message: 'Please enter the book title', trigger: 'blur' }
         ],
         author: [
-          { required: true, message: '请输入作者', trigger: 'blur' }
+          { required: true, message: 'Please enter the author', trigger: 'blur' }
         ],
         isbn: [
-          { required: true, message: '请输入ISBN', trigger: 'blur' }
+          { required: true, message: 'Please enter the ISBN', trigger: 'blur' }
         ],
         reason: [
-          { required: true, message: '请输入推荐理由', trigger: 'blur' },
-          { min: 20, message: '推荐理由不能少于20个字符', trigger: 'blur' }
+          { required: true, message: 'Please enter the reason for recommendation', trigger: 'blur' },
+          { min: 20, message: 'The reason should be at least 20 characters', trigger: 'blur' }
         ]
       }
     }
@@ -238,9 +238,9 @@ export default {
     async submitForm() {
       try {
         await this.$refs.contactForm.validate()
-        // 调用API发送消息
+        // Call API to send message
         // await sendContactMessage(this.contactForm)
-        ElMessage.success('消息已发送，我们会尽快回复您！')
+        ElMessage.success('Message sent, we will get back to you as soon as possible!')
         this.resetForm()
       } catch (error) {
         console.error(error)
@@ -260,16 +260,16 @@ export default {
     },
     getStatusText(status) {
       const texts = {
-        pending: '待审核',
-        approved: '已通过',
-        rejected: '已拒绝',
-        purchased: '已采购'
+        pending: 'Pending',
+        approved: 'Approved',
+        rejected: 'Rejected',
+        purchased: 'Purchased'
       }
       return texts[status] || status
     },
     showPurchaseRequestDialog() {
       if (!auth.isLoggedIn) {
-        ElMessage.warning('请先登录')
+        ElMessage.warning('Please log in first')
         this.$router.push('/login')
         return
       }
@@ -279,7 +279,7 @@ export default {
       this.$refs.form.validate((valid) => {
         if (valid) {
           // 这里添加提交采购申请的API调用
-          ElMessage.success('采购申请提交成功')
+          ElMessage.success('Purchase request submitted successfully')
           this.purchaseRequestDialogVisible = false
           this.purchaseRequest = {
             title: '',
@@ -326,24 +326,6 @@ export default {
   margin-top: 20px;
 }
 
-.contact-info {
-  margin-bottom: 20px;
-}
-
-.info-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 15px;
-  color: #606266;
-}
-
-.opening-hours {
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid #ebeef5;
-}
-
 .opening-hours h3 {
   font-size: 16px;
   margin-bottom: 10px;
@@ -354,16 +336,6 @@ export default {
   margin: 5px 0;
 }
 
-.about-team {
-  margin-top: 20px;
-}
-
-.team-intro {
-  color: #606266;
-  line-height: 1.6;
-  margin-bottom: 20px;
-}
-
 .team-members h3 {
   font-size: 16px;
   margin-bottom: 15px;
@@ -371,9 +343,5 @@ export default {
 
 .purchase-request-section {
   margin-bottom: 20px;
-}
-
-.el-collapse-item {
-  margin-bottom: 10px;
 }
 </style> 

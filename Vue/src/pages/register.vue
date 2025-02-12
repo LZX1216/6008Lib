@@ -1,147 +1,120 @@
 <template>
-  <div>
-    <el-card class="box-card">
-      <h2>注册</h2>
+  <div class="register-container">
+    <el-card class="register-card">
+      <template #header>
+        <h2>Register</h2>
+      </template>
+
       <el-form
-          :model="registerForm"
-          status-icon
-          :rules="rules"
-          ref="registerFormref"
-          label-width="80px"
-          class="registerForm"
-          @submit.native.prevent="handleRegister"
+        ref="registerForm"
+        :model="registerForm"
+        :rules="rules"
+        label-width="150px"
+        @submit.native.prevent="handleRegister"
       >
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="registerForm.username" @keyup.enter="handleRegister"></el-input>
+        <el-form-item label="Username" prop="username">
+          <el-input v-model="registerForm.username" @keyup.enter="handleRegister" placeholder="Please enter username" />
         </el-form-item>
-        <el-form-item label="密码" prop="password">
+
+        <el-form-item label="Password" prop="password">
           <el-input
-              type="password"
-              v-model="registerForm.password"
-              autocomplete="off"
-              @keyup.enter="handleRegister"
-          ></el-input>
+            v-model="registerForm.password"
+            type="password"
+            @keyup.enter="handleRegister"
+            placeholder="Please enter password"
+            show-password
+          />
         </el-form-item>
-        <el-form-item label="确认密码" prop="pass">
+
+        <el-form-item label="Confirm Password" prop="confirmPassword">
           <el-input
-              type="password"
-              v-model="registerForm.pass"
-              autocomplete="off"
-          ></el-input>
+            v-model="registerForm.confirmPassword"
+            type="password"
+            @keyup.enter="handleRegister"
+            placeholder="Please confirm password"
+            show-password
+          />
+        </el-form-item>
+
+        <el-form-item>
+          <el-button type="primary" @click="handleRegister">Register</el-button>
+          <el-button @click="resetForm">Reset</el-button>
         </el-form-item>
       </el-form>
-      <div class="btnGroup">
-        <el-button type="primary"
-                   @click="submitForm('registerFormref')"
-        >提交
-        </el-button
-        >
-        <el-button
-            @click="resetForm('registerFormref')">重置
-        </el-button>
-        <el-button
-            @click="goBack">返回
-        </el-button>
-      </div>
     </el-card>
   </div>
 </template>
 
 <script>
+import { ElMessage } from 'element-plus'
+import { hashSHA256 } from "@/utils/CryptoHelper.js";
 
-import {hashSHA256} from "@/utils/CryptoHelper.js";
-import {ref} from "vue";
-
-const hashedPassword = ref("");
 export default {
+  name: 'Register',
   data() {
-    // var validatePass = (rule, value, callback) => {
-    //   if (value === "") {
-    //     callback(new Error("请输入密码"));
-    //   } else {
-    //     if (this.registerForm.password=== '') {
-    //       if (!registerFormref.value) return
-    //       registerFormref.value.validateField('checkPass')
-    //     }
-    //     callback();
-    //   }
-    // };
-    var validatePass2 = (rule, value, callback) => {
+    const validatePass2 = (rule, value, callback) => {
       if (value === "") {
-        callback(new Error("请再次输入密码"));
+        callback(new Error("Please confirm your password"));
       } else if (value !== this.registerForm.password) {
-        callback(new Error("两次输入密码不一致!"));
+        callback(new Error("The two passwords do not match!"));
       } else {
         callback();
       }
     };
     return {
       registerForm: {
-        username: "",
-        password: "",
-        pass: "",
-
+        username: '',
+        password: '',
+        confirmPassword: ''
       },
       rules: {
         username: [
-          {required: true, message: "用户名不能为空！", trigger: "blur"},
+          { required: true, message: 'Please enter username', trigger: 'blur' }
         ],
-        password: [{required: true, message: "密码不能为空！", trigger: "blur"}],
-        pass: [
-          {required: true, validator: validatePass2, trigger: "blur"},
+        password: [
+          { required: true, message: 'Please enter password', trigger: 'blur' }
         ],
-      },
-    };
+        confirmPassword: [
+          { required: true, validator: validatePass2, trigger: 'blur' }
+        ]
+      }
+    }
   },
   methods: {
-    submitForm(formName) {
-      this.$refs[formName].validate(async (valid) => {
+    async handleRegister() {
+      this.$refs.registerForm.validate(async (valid) => {
         if (valid) {
-          hashedPassword.value = await hashSHA256(this.registerForm.password);
-          let _this = this;
-          this.axios({
-            url: 'http://localhost:8080/register',
-            method: "post",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            data: {
-              username: this.registerForm.username,
-              password: hashedPassword.value,
-            },
-          }).then((res) => {
-            if (res.data.code === '0') {
-              // 显示后端响应的成功信息
-              this.$message({
-                message: res.data.msg,
-                type: "success",
-              });
+          const hashedPassword = await hashSHA256(this.registerForm.password);
+          try {
+            const response = await this.axios({
+              url: 'http://localhost:8080/register',
+              method: "post",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              data: {
+                username: this.registerForm.username,
+                password: hashedPassword,
+              },
+            });
+            if (response.data.code === '0') {
+              ElMessage.success(response.data.msg);
+              this.$router.push('/login');
             } else {
-              this.$message({
-                message: res.data.msg,
-                type: "warning",
-              });
+              ElMessage.warning(response.data.msg);
             }
-            console.log(res);
-          });
-        } else {
-          console.log("error submit!!");
-          return false;
+          } catch (error) {
+            console.error('Registration failed:', error);
+            ElMessage.error('Registration failed. Please try again.');
+          }
         }
       });
     },
-    resetForm(formName) {
-      this.$refs[formName].resetFields();
-    },
-    goBack() {
-      this.$router.go(-1);
-    },
-    handleRegister() {
-      // 注册逻辑
-      console.log('注册:', this.registerForm);
+    resetForm() {
+      this.$refs.registerForm.resetFields();
     }
-  },
-};
+  }
+}
 </script>
 
 <style scoped>
@@ -149,22 +122,21 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: calc(100vh - 240px);
+  min-height: calc(100vh - 240px); /* Subtract header and footer height */
   padding: 40px 20px;
 }
 
 .register-card {
-  width: 400px;
+  width: 500px;
 }
 
-/* 设置登录面板居中，宽度为400px */
-.box-card {
-  margin: auto auto;
-  width: 400px;
+:deep(.el-form-item__content) {
+  display: flex;
+  justify-content: flex-start;
 }
 
-/* 设置登录面板中的表单居中 */
-.login-from {
-  margin: auto auto;
+:deep(.el-button) {
+  width: 120px;
+  margin-right: 20px;
 }
 </style>

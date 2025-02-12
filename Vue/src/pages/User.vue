@@ -1,48 +1,48 @@
 <template>
   <div class="user-center">
     <el-row :gutter="20">
-      <!-- 左侧用户信息卡片 -->
+      <!-- Left side user info card -->
       <el-col :span="6">
         <el-card class="user-info-card">
           <div class="user-avatar">
             <el-avatar :size="100">{{ userInfo.username.charAt(0).toUpperCase() }}</el-avatar>
           </div>
           <h2>{{ userInfo.username }}</h2>
-          <p class="user-role">{{ userInfo.role === 'admin' ? '管理员' : '普通用户' }}</p>
+          <p class="user-role">{{ userInfo.role === 'admin' ? 'Administrator' : 'Regular User' }}</p>
           <el-divider />
           <div class="user-stats">
             <div class="stat-item">
               <h3>{{ borrowStats.current }}</h3>
-              <p>当前借阅</p>
+              <p>Current Borrowings</p>
             </div>
             <div class="stat-item">
               <h3>{{ borrowStats.history }}</h3>
-              <p>历史借阅</p>
+              <p>Borrowing History</p>
             </div>
             <div class="stat-item">
               <h3>{{ borrowStats.overdue }}</h3>
-              <p>逾期次数</p>
+              <p>Overdue Count</p>
             </div>
           </div>
         </el-card>
       </el-col>
 
-      <!-- 右侧内容区 -->
+      <!-- Right side content area -->
       <el-col :span="18">
-        <!-- 借阅记录 -->
+        <!-- Borrowing records -->
         <el-card class="content-card">
           <template #header>
             <div class="card-header">
-              <h3>借阅记录</h3>
+              <h3>Borrowing Records</h3>
             </div>
           </template>
 
           <el-table :data="borrows" style="width: 100%">
-            <el-table-column prop="bookTitle" label="书名" />
-            <el-table-column prop="borrowDate" label="借阅日期" width="120" />
-            <el-table-column prop="dueDate" label="应还日期" width="120" />
-            <el-table-column prop="returnDate" label="实际归还日期" width="120" />
-            <el-table-column prop="status" label="状态" width="100">
+            <el-table-column prop="bookTitle" label="Book Title"/>
+            <el-table-column prop="borrowDate" label="Borrow Date" width="120" />
+            <el-table-column prop="dueDate" label="Due Date" width="120" />
+            <el-table-column prop="returnDate" label="Actual Return Date" width="180" />
+            <el-table-column prop="status" label="Status" width="120">
               <template #default="scope">
                 <el-tag :type="getBorrowStatusType(scope.row.status)">
                   {{ getBorrowStatusText(scope.row.status) }}
@@ -52,27 +52,27 @@
           </el-table>
         </el-card>
 
-        <!-- 我的书单 -->
+        <!-- My Wishlist -->
         <el-card class="content-card">
           <template #header>
             <div class="card-header">
-              <h3>我的书单</h3>
-              <el-button type="primary" size="small">添加图书</el-button>
+              <h3>My Wishlist</h3>
+              <el-button type="primary" size="small">Add Book</el-button>
             </div>
           </template>
 
           <el-table :data="wishlist" style="width: 100%">
-            <el-table-column prop="bookTitle" label="书名" />
-            <el-table-column prop="author" label="作者" />
-            <el-table-column prop="addDate" label="添加日期" width="120" />
-            <el-table-column label="操作" width="150">
+            <el-table-column prop="bookTitle" label="Book Title" />
+            <el-table-column prop="author" label="Author" />
+            <el-table-column prop="addDate" label="Date Added" width="120" />
+            <el-table-column label="Actions" width="150">
               <template #default="scope">
-                <el-button 
-                  type="danger" 
+                <el-button
+                  type="danger"
                   size="small"
                   @click="removeFromWishlist(scope.row)"
                 >
-                  删除
+                  Remove
                 </el-button>
               </template>
             </el-table-column>
@@ -100,7 +100,7 @@ export default {
       borrows: [
         {
           id: 1,
-          bookTitle: '三体',
+          bookTitle: 'The Three-Body Problem',
           borrowDate: '2024-03-01',
           dueDate: '2024-04-01',
           returnDate: null,
@@ -108,7 +108,7 @@ export default {
         },
         {
           id: 2,
-          bookTitle: '百年孤独',
+          bookTitle: 'One Hundred Years of Solitude',
           borrowDate: '2024-02-15',
           dueDate: '2024-03-15',
           returnDate: '2024-03-10',
@@ -118,15 +118,15 @@ export default {
       wishlist: [
         {
           id: 1,
-          bookTitle: '人类简史',
-          author: '尤瓦尔·赫拉利',
+          bookTitle: 'Sapiens: A Brief History of Humankind',
+          author: 'Yuval Noah Harari',
           addDate: '2024-03-15',
           available: true
         },
         {
           id: 2,
-          bookTitle: '置身事内',
-          author: '兰小欢',
+          bookTitle: 'Thinking, Fast and Slow',
+          author: 'Daniel Kahneman',
           addDate: '2024-03-10',
           available: false
         }
@@ -143,60 +143,60 @@ export default {
     },
     getBorrowStatusText(status) {
       const texts = {
-        borrowing: '借阅中',
-        returned: '已归还'
+        borrowing: 'Borrowing',
+        returned: 'Returned'
       }
       return texts[status] || status
     },
     async renewBook(book) {
       try {
         await ElMessageBox.confirm(
-          '确定要续借这本书吗？',
-          '续借确认',
+          'Are you sure you want to renew this book?',
+          'Renew Confirmation',
           {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
+            confirmButtonText: 'Confirm',
+            cancelButtonText: 'Cancel',
             type: 'warning'
           }
         )
-        // 这里添加续借的API调用
-        ElMessage.success('续借成功')
+        // Add API call for book renewal here
+        ElMessage.success('Renewal successful')
       } catch {
-        ElMessage.info('已取消续借')
+        ElMessage.info('Renewal cancelled')
       }
     },
     async borrowBook(book) {
       try {
         await ElMessageBox.confirm(
-          '确定要借阅这本书吗？',
-          '借阅确认',
+          'Are you sure you want to borrow this book?',
+          'Borrow Confirmation',
           {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
+            confirmButtonText: 'Confirm',
+            cancelButtonText: 'Cancel',
             type: 'info'
           }
         )
-        // 这里添加借阅的API调用
-        ElMessage.success('借阅成功')
+        // Add API call for borrowing book here
+        ElMessage.success('Book borrowed successfully')
       } catch {
-        ElMessage.info('已取消借阅')
+        ElMessage.info('Borrowing cancelled')
       }
     },
     async removeFromWishlist(book) {
       try {
         await ElMessageBox.confirm(
-          '确定要从书单中删除这本书吗？',
-          '删除确认',
+          'Are you sure you want to remove this book from your wishlist?',
+          'Remove Confirmation',
           {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
+            confirmButtonText: 'Confirm',
+            cancelButtonText: 'Cancel',
             type: 'warning'
           }
         )
-        // 这里添加删除的API调用
-        ElMessage.success('已从书单中删除')
+        // Add API call for removing from wishlist here
+        ElMessage.success('Removed from wishlist')
       } catch {
-        ElMessage.info('已取消删除')
+        ElMessage.info('Removal cancelled')
       }
     }
   }

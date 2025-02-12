@@ -3,21 +3,21 @@
     <el-row :gutter="20">
       <el-col :span="16">
         <el-card class="intro-section">
-          <h2>关于我们</h2>
+          <h2>About Us</h2>
           <p class="intro-text">
-            我们是一家现代化的图书馆，致力于为读者提供优质的阅读体验和知识服务。
-            成立于2020年，我们不断创新服务模式，融合传统与现代化的管理方式。
+            We are a modern library dedicated to providing readers with high-quality reading experiences and knowledge services.
+            Founded in 2020, we continuously innovate our service model, integrating traditional and modern management approaches.
           </p>
-          
-          <h3>我们的使命</h3>
-          <p>传播知识，促进学习，服务社会，推动文化发展。</p>
-          
-          <h3>我们的愿景</h3>
-          <p>成为最受欢迎的现代化智慧图书馆，为读者提供优质的阅读体验和知识服务。</p>
+
+          <h3>Our Mission</h3>
+          <p>Spread knowledge, promote learning, serve society, and advance cultural development.</p>
+
+          <h3>Our Vision</h3>
+          <p>To become the most popular modern smart library, providing readers with excellent reading experiences and knowledge services.</p>
         </el-card>
 
         <el-card class="features-section">
-          <h3>我们的特色</h3>
+          <h3>Our Features</h3>
           <el-row :gutter="20">
             <el-col :span="8" v-for="feature in features" :key="feature.title">
               <div class="feature-item">
@@ -34,7 +34,7 @@
 
       <el-col :span="8">
         <el-card class="stats-section">
-          <h3>图书馆概况</h3>
+          <h3>Library Overview</h3>
           <div class="stat-item" v-for="stat in stats" :key="stat.label">
             <div class="stat-value">{{ stat.value }}</div>
             <div class="stat-label">{{ stat.label }}</div>
@@ -42,16 +42,16 @@
         </el-card>
 
         <el-card class="contact-section">
-          <h3>联系方式</h3>
+          <h3>Contact Information</h3>
           <div class="contact-info">
-            <p><el-icon><Location /></el-icon> 地址：新加坡南洋理工大学</p>
-            <p><el-icon><Phone /></el-icon> 电话：+65 1234 5678</p>
-            <p><el-icon><Message /></el-icon> 邮箱：library@example.com</p>
+            <p><el-icon><Location /></el-icon> Address: Nanyang Technological University, Singapore</p>
+            <p><el-icon><Phone /></el-icon> Phone: +65 1234 5678</p>
+            <p><el-icon><Message /></el-icon> Email: library@example.com</p>
             <div class="opening-hours">
-              <h4>开放时间</h4>
-              <p>周一至周五：8:00 - 22:00</p>
-              <p>周六至周日：9:00 - 21:00</p>
-              <p>法定节假日：9:00 - 17:00</p>
+              <h4>Opening Hours</h4>
+              <p>Monday to Friday: 8:00 - 22:00</p>
+              <p>Saturday and Sunday: 9:00 - 21:00</p>
+              <p>Public Holidays: 9:00 - 17:00</p>
             </div>
           </div>
         </el-card>
@@ -61,49 +61,35 @@
 </template>
 
 <script>
-import { 
-  Collection, 
-  Reading, 
-  Service,
-  Location,
-  Phone,
-  Message
-} from '@element-plus/icons-vue'
+// ... existing code ...
 
 export default {
   name: 'AboutUs',
-  components: {
-    Collection,
-    Reading,
-    Service,
-    Location,
-    Phone,
-    Message
-  },
+  // ... existing code ...
   data() {
     return {
       features: [
         {
           icon: 'Collection',
-          title: '丰富馆藏',
-          description: '超过10万册图书和丰富的电子资源'
+          title: 'Rich Collection',
+          description: 'Over 100,000 books and abundant electronic resources'
         },
         {
           icon: 'Reading',
-          title: '智能借阅',
-          description: '24小时自助借还，线上预约服务'
+          title: 'Smart Borrowing',
+          description: '24-hour self-service borrowing and online reservation'
         },
         {
           icon: 'Service',
-          title: '专业服务',
-          description: '专业馆员提供参考咨询服务'
+          title: 'Professional Service',
+          description: 'Professional librarians provide reference consultation services'
         }
       ],
       stats: [
-        { label: '馆藏图书', value: '100,000+' },
-        { label: '注册读者', value: '50,000+' },
-        { label: '年借阅量', value: '200,000+' },
-        { label: '电子资源', value: '30,000+' }
+        { label: 'Books in Collection', value: '100,000+' },
+        { label: 'Registered Readers', value: '50,000+' },
+        { label: 'Annual Loans', value: '200,000+' },
+        { label: 'Electronic Resources', value: '30,000+' }
       ]
     }
   }
@@ -185,7 +171,4 @@ export default {
   color: #666;
 }
 
-.contact-info .el-icon {
-  color: #409EFF;
-}
 </style> 

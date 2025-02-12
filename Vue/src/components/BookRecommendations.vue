@@ -41,7 +41,7 @@ export default {
   props: {
     title: {
       type: String,
-      default: '推荐图书'
+      default: 'Recommended Books'
     },
     type: {
       type: String,
@@ -58,13 +58,13 @@ export default {
       recommendations: [
         {
           id: 1,
-          title: '三体',
-          author: '刘慈欣',
+          title: 'The Three-Body Problem',
+          author: 'Cixin Liu',
           cover: '/book-covers/1.jpg',
           rating: 4.5,
-          reason: '与您喜欢的科幻小说类似'
+          reason: 'Similar to the sci-fi novels you like'
         }
-        // 更多推荐图书...
+        // More recommended books...
       ]
     }
   },
@@ -74,7 +74,7 @@ export default {
     },
     async fetchRecommendations() {
       try {
-        // 根据不同类型调用不同的推荐API
+        // Call different recommendation APIs based on type
         switch (this.type) {
           case 'similar':
             // await getSimilarBooksApi(this.bookId)
@@ -87,7 +87,7 @@ export default {
             break
         }
       } catch (error) {
-        console.error('获取推荐图书失败:', error)
+        console.error('Failed to fetch recommended books:', error)
       }
     }
   },

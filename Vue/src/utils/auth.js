@@ -18,14 +18,17 @@ export const auth = reactive({
     isLoggedIn: sessionStorage.getItem('isLoggedIn') === 'true',
     userInfo: null,
 
-    loginstate() {
-        sessionStorage.setItem('isLoggedIn', 'true')
-        this.isLoggedIn = true
+    loginstate(user) {
+      sessionStorage.setItem('isLoggedIn', 'true')
+      sessionStorage.setItem('userInfo', JSON.stringify(user))
+      this.isLoggedIn = true
+      this.userInfo = user
     },
 
     logoutstate() {
         sessionStorage.removeItem('isLoggedIn')
         this.isLoggedIn = false
+        this.userInfo = null; // 清空用户信息
     },
 
     login(username, password) {

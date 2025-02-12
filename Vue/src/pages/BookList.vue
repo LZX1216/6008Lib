@@ -1,24 +1,24 @@
 <template>
   <div class="book-list">
     <div class="page-header">
-      <h2>图书列表</h2>
+      <h2>Book List</h2>
       
-      <!-- 搜索和筛选 -->
+      <!-- Search and Filter -->
       <div class="search-section">
         <el-input
           v-model="searchQuery"
-          placeholder="搜索书名、作者、ISBN..."
+          placeholder="Search by title, author, ISBN..."
           class="search-input"
           style="width: 100%;"
         >
           <template #append>
-            <el-button @click="searchBooks">搜索</el-button>
+            <el-button @click="searchBooks">Search</el-button>
           </template>
         </el-input>
       </div>
 
       <div class="filter-section">
-        <el-select v-model="selectedGenres" multiple placeholder="选择类别" style="width: 150px;">
+        <el-select v-model="selectedGenres" multiple placeholder="Select genres" style="width: 150px;">
           <el-option
             v-for="genre in genres"
             :key="genre.value"
@@ -27,19 +27,19 @@
           />
         </el-select>
 
-        <el-select v-model="borrowStatus" placeholder="借阅状态" style="width: 150px;">
-          <el-option label="全部" value="" />
-          <el-option label="可借阅" value="available" />
-          <el-option label="已借出" value="borrowed" />
+        <el-select v-model="borrowStatus" placeholder="Borrow status" style="width: 150px;">
+          <el-option label="All" value="" />
+          <el-option label="Available" value="available" />
+          <el-option label="Borrowed" value="borrowed" />
         </el-select>
 
-        <el-button type="default" @click="resetFilters">重置</el-button>
+        <el-button @click="resetFilters">重置</el-button>
       </div>
     </div>
 
-    <!-- 内容区域容器 -->
+    <!-- Content container -->
     <div class="content-container">
-      <!-- 卡片视图 -->
+      <!-- Card view -->
       <div v-if="displayMode === 'card'" class="book-grid">
         <el-card 
           v-for="book in filteredBooks" 
@@ -64,42 +64,42 @@
               size="small" 
               @click="viewBookDetails(book.id)"
             >
-              查看详情
+              View Details
             </el-button>
           </div>
         </el-card>
       </div>
 
-      <!-- 列表视图 -->
+      <!-- List view -->
       <el-table v-else :data="filteredBooks">
         <el-table-column label="封面" width="100">
           <template #default="scope">
             <img :src="scope.row.cover" class="table-book-cover"/>
           </template>
         </el-table-column>
-        <el-table-column prop="title" label="书名" />
-        <el-table-column prop="author" label="作者" width="200" />
+        <el-table-column prop="title" label="Title" />
+        <el-table-column prop="author" label="Author" width="200" />
         <el-table-column prop="isbn" label="ISBN" width="150" />
-        <el-table-column prop="genre" label="类别" width="150" />
-        <el-table-column prop="rating" label="评分" width="250">
+        <el-table-column prop="genre" label="Genre" width="150" />
+        <el-table-column prop="rating" label="Rating" width="250">
           <template #default="scope">
             <el-rate v-model="scope.row.rating" disabled show-score />
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="120">
+        <el-table-column label="Actions" width="120">
           <template #default="scope">
             <el-button 
               type="primary" 
               size="small"
               @click="viewBookDetails(scope.row.id)"
             >
-              查看详情
+              View Details
             </el-button>
           </template>
         </el-table-column>
       </el-table>
 
-      <!-- 分页 -->
+      <!-- Pagination -->
       <div class="pagination">
         <el-pagination
           :page-sizes="[10, 20, 50]"
@@ -128,104 +128,104 @@ export default {
       selectedGenres: [],
       borrowStatus: '',
       languages: [
-        { value: 'en', label: '英语' },
-        { value: 'zh', label: '中文' },
-        { value: 'es', label: '西班牙语' },
-        { value: 'fr', label: '法语' }
+        { value: 'en', label: 'English' },
+        { value: 'zh', label: 'Chinese' },
+        { value: 'es', label: 'Spanish' },
+        { value: 'fr', label: 'French' }
       ],
       genres: [
-        { value: 'fiction', label: '小说' },
-        { value: 'science', label: '科学' },
-        { value: 'history', label: '历史' },
-        { value: 'philosophy', label: '哲学' }
+        { value: 'fiction', label: 'Fiction' },
+        { value: 'science', label: 'Science' },
+        { value: 'history', label: 'History' },
+        { value: 'philosophy', label: 'Philosophy' }
       ],
       books: [
         {
           id: 1,
-          title: "人类简史",
-          author: "尤瓦尔·赫拉利",
+          title: "Sapiens: A Brief History of Humankind",
+          author: "Yuval Noah Harari",
           cover: '/book-covers/1.jpg',
           rating: 4.7
         },
         {
           id: 2,
           title: "1984",
-          author: "乔治·奥威尔",
+          author: "George Orwell",
           cover: '/book-covers/2.jpg',
           rating: 4.8
         },
         {
           id: 3,
-          title: '三体',
-          author: '刘慈欣',
+          title: 'The Three-Body Problem',
+          author: 'Cixin Liu',
           cover: '/book-covers/3.jpg',
           rating: 4.8,
           isbn: '9787536692930',
-          genre: '科幻'
+          genre: 'Science Fiction'
         },
         {
           id: 4,
-          title: '百年孤独',
-          author: '加西亚·马尔克斯', 
+          title: 'One Hundred Years of Solitude',
+          author: 'Gabriel García Márquez',
           cover: '/book-covers/4.jpg',
           rating: 4.9,
           isbn: '9787544253994',
-          genre: '文学'
+          genre: 'Literature'
         },
         {
           id: 5,
-          title: '活着',
-          author: '余华',
+          title: 'To Live',
+          author: 'Yu Hua',
           cover: '/book-covers/5.jpg',
           rating: 4.9,
           isbn: '9787506365437',
-          genre: '文学'
+          genre: 'Literature'
         },
         {
           id: 6,
-          title: '动物农场',
-          author: '乔治·奥威尔',
+          title: 'Animal Farm',
+          author: 'George Orwell',
           cover: '/book-covers/6.jpg',
           rating: 4.7,
           isbn: '9787532751464',
-          genre: '寓言'
+          genre: 'Allegory'
         },
         {
           id: 7,
-          title: '围城',
-          author: '钱钟书',
+          title: 'Fortress Besieged',
+          author: 'Qian Zhongshu',
           cover: '/book-covers/7.jpg',
           rating: 4.8,
           isbn: '9787020090006',
-          genre: '文学'
+          genre: 'Literature'
         },
         {
           id: 8,
-          title: '平凡的世界',
-          author: '路遥',
+          title: 'Ordinary World',
+          author: 'Lu Yao',
           cover: '/book-covers/8.jpg',
           rating: 4.9,
           isbn: '9787530216781',
-          genre: '文学'
+          genre: 'Literature'
         },
         {
           id: 9,
-          title: '追风筝的人',
-          author: '卡勒德·胡赛尼',
+          title: 'The Kite Runner',
+          author: 'Khaled Hosseini',
           cover: '/book-covers/9.jpg',
           rating: 4.8,
           isbn: '9787208061644',
-          genre: '文学'
+          genre: 'Literature'
         },
         {
           id: 10,
-          title: '月亮与六便士',
-          author: '威廉·萨默塞特·毛姆',
+          title: 'The Moon and Sixpence',
+          author: 'W. Somerset Maugham',
           cover: '/book-covers/10.jpg',
           rating: 4.7,
           isbn: '9787544277617',
-          genre: '文学'
-        }
+          genre: 'Literature'
+        },
       ],
       currentPage: 1,
       pageSize: 10,
@@ -245,7 +245,7 @@ export default {
   },
   methods: {
     searchBooks() {
-      console.log('搜索:', this.searchQuery);
+      console.log('Search:', this.searchQuery);
     },
     resetFilters() {
       this.searchQuery = '';
@@ -295,15 +295,15 @@ export default {
   }
 }
 
-.search-input :deep(.el-input__wrapper) {
+.search-input :deep() {
   height: 60px;
 }
 
-.search-input :deep(.el-input__inner) {
+.search-input :deep() {
   font-size: 18px;
 }
 
-.search-input :deep(.el-input-group__append) button {
+.search-input :deep() button {
   height: 60px;
   width: 60px;
   font-size: 20px;
@@ -315,19 +315,6 @@ export default {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-}
-
-.filter-group {
-  display: flex;
-  gap: 20px;
-}
-
-.filter-select {
-  width: 200px;
-}
-
-.display-mode {
-  margin-left: auto;
 }
 
 .content-container {

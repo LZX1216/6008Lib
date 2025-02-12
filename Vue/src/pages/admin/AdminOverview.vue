@@ -1,13 +1,13 @@
 <template>
   <div class="admin-overview">
-    <!-- 统计卡片 -->
+    <!-- Statistic Cards -->
     <el-row :gutter="20">
       <el-col :span="6">
         <el-card class="stat-card">
           <template #header>
             <div class="card-header">
-              <span>总借阅量</span>
-              <el-tag size="small">本月</el-tag>
+              <span>Total Borrows</span>
+              <el-tag size="small">This Month</el-tag>
             </div>
           </template>
           <div class="stat-value">
@@ -23,8 +23,8 @@
         <el-card class="stat-card">
           <template #header>
             <div class="card-header">
-              <span>活跃用户</span>
-              <el-tag size="small" type="success">本月</el-tag>
+              <span>Active Users</span>
+              <el-tag size="small" type="success">This Month</el-tag>
             </div>
           </template>
           <div class="stat-value">
@@ -40,8 +40,8 @@
         <el-card class="stat-card">
           <template #header>
             <div class="card-header">
-              <span>新增图书</span>
-              <el-tag size="small" type="warning">本月</el-tag>
+              <span>New Books</span>
+              <el-tag size="small" type="warning">This Month</el-tag>
             </div>
           </template>
           <div class="stat-value">
@@ -57,8 +57,8 @@
         <el-card class="stat-card">
           <template #header>
             <div class="card-header">
-              <span>逾期数</span>
-              <el-tag size="small" type="danger">当前</el-tag>
+              <span>Overdue Count</span>
+              <el-tag size="small" type="danger">Current</el-tag>
             </div>
           </template>
           <div class="stat-value">
@@ -72,63 +72,112 @@
       </el-col>
     </el-row>
 
-    <!-- 图表区域 -->
+    <!-- Chart Area -->
     <el-row :gutter="20" class="charts-row">
-      <el-col :span="12">
+      <!-- Borrowing Trend Chart -->
+      <el-col :span="6">
         <el-card class="chart-card">
           <template #header>
             <div class="card-header">
-              <span>借阅趋势</span>
+              <span>Borrowing Trend</span>
               <el-radio-group v-model="borrowChartPeriod" size="small">
-                <el-radio-button label="week">周</el-radio-button>
-                <el-radio-button label="month">月</el-radio-button>
-                <el-radio-button label="year">年</el-radio-button>
+                <el-radio-button label="week">Week</el-radio-button>
+                <el-radio-button label="month">Month</el-radio-button>
+                <el-radio-button label="year">Year</el-radio-button>
               </el-radio-group>
             </div>
           </template>
-          <!-- 这里需要集成图表库，如 ECharts -->
+          <!-- Integration of chart library like ECharts is needed here -->
           <div class="chart-container">
-            借阅趋势图表
+            Borrowing Trend Chart
           </div>
         </el-card>
       </el-col>
+
+      <!-- Book Category Statistics -->
+      <el-col :span="6">
+        <el-card class="chart-card">
+          <template #header>
+            <div class="card-header">
+              <span>Book Category Statistics</span>
+            </div>
+          </template>
+          <div class="chart-container">
+            Category Pie Chart
+          </div>
+        </el-card>
+      </el-col>
+
+    <!-- Recent Activities -->
       <el-col :span="12">
         <el-card class="chart-card">
           <template #header>
             <div class="card-header">
-              <span>图书分类统计</span>
+              <span>Recent Activities</span>
             </div>
           </template>
-          <div class="chart-container">
-            分类饼图
+          <div class="recent-activity">
+            <el-timeline>
+              <el-timeline-item
+                v-for="activity in recentActivities"
+                :key="activity.id"
+                :timestamp="activity.time"
+                :type="activity.type"
+              >
+                {{ activity.content }}
+              </el-timeline-item>
+            </el-timeline>
           </div>
         </el-card>
       </el-col>
     </el-row>
 
-    <!-- 最近活动 -->
-    <el-card class="recent-activity">
+    <!-- Purchase Requests -->
+    <el-card class="purchase-requests">
       <template #header>
         <div class="card-header">
-          <span>最近活动</span>
+          <span>Purchase Requests</span>
         </div>
       </template>
-      <el-timeline>
-        <el-timeline-item
-          v-for="activity in recentActivities"
-          :key="activity.id"
-          :timestamp="activity.time"
-          :type="activity.type"
-        >
-          {{ activity.content }}
-        </el-timeline-item>
-      </el-timeline>
+      <el-table :data="purchaseRequests" style="width: 100%">
+        <el-table-column prop="title" label="Title" />
+        <el-table-column prop="author" label="Author" />
+        <el-table-column prop="isbn" label="ISBN" width="120" />
+        <el-table-column prop="requestDate" label="Request Date" width="120" />
+        <el-table-column prop="status" label="Status" width="120">
+          <template #default="scope">
+            <el-tag :type="getStatusType(scope.row.status)">
+              {{ scope.row.status }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="Actions" width="200">
+          <template #default="scope">
+            <el-button
+              size="small"
+              @click="handleApprove(scope.row)"
+              :disabled="scope.row.status !== 'Pending'"
+            >
+              Approve
+            </el-button>
+            <el-button
+              size="small"
+              type="danger"
+              @click="handleReject(scope.row)"
+              :disabled="scope.row.status !== 'Pending'"
+            >
+              Reject
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
     </el-card>
   </div>
 </template>
 
 <script>
 import { CaretTop, CaretBottom } from '@element-plus/icons-vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 export default {
   name: 'AdminOverview',
@@ -154,42 +203,117 @@ export default {
           id: 1,
           time: '2024-03-15 14:30',
           type: 'success',
-          content: '用户 张三 归还了《三体》'
+          content: 'User Zhang San returned "The Three-Body Problem"'
         },
         {
           id: 2,
           time: '2024-03-15 13:20',
           type: 'warning',
-          content: '新增图书《球状闪电》入库'
+          content: 'New book "Ball Lightning" added to inventory'
         },
         {
           id: 3,
           time: '2024-03-15 11:45',
           type: 'danger',
-          content: '用户 李四 的借阅已逾期'
+          content: 'User Li Si\'s loan is overdue'
+        } ,
+        {
+          id: 4,
+          time: '2024-03-15 10:00',
+          type: 'info',
+          content: 'User Wang Wu requested to borrow "The Dark Forest"'
         }
+      ] ,
+      purchaseRequests: [
+        {
+          id: 1,
+          title: 'The Three-Body Problem',
+          author: 'Cixin Liu',
+          isbn: '9787229030933',
+          requestDate: '2024-03-15',
+          status: 'Pending'
+        },
       ]
     }
   },
   methods: {
     fetchOverviewData() {
-      // 实现获取总览数据的逻辑
-      console.log('获取总览数据')
+      // Implement logic to fetch overview data
+      console.log('Fetching overview data')
+    },
+
+    getStatusType(status) {
+      const types = {
+        Pending: 'warning',
+        Approved: 'success',
+        Rejected: 'danger'
+      }
+      return types[status] || 'info'
+    },
+
+    async handleApprove(request) {
+      try {
+        await ElMessageBox.confirm(
+          `Are you sure you want to approve the purchase request for "${request.title}"?`,
+          'Confirm Approval',
+          {
+            confirmButtonText: 'Approve',
+            cancelButtonText: 'Cancel',
+            type: 'warning'
+          }
+        )
+        // Call an API to update the request status
+        request.status = 'Approved'
+        ElMessage.success('Purchase request approved successfully')
+      } catch (error) {
+        if (error !== 'cancel') {
+          ElMessage.error('Failed to approve purchase request')
+        }
+      }
+    },
+
+    async handleReject(request) {
+      try {
+        await ElMessageBox.confirm(
+          `Are you sure you want to reject the purchase request for "${request.title}"?`,
+          'Confirm Rejection',
+          {
+            confirmButtonText: 'Reject',
+            cancelButtonText: 'Cancel',
+            type: 'warning'
+          }
+        )
+        // Call an API to update the request status
+        request.status = 'Rejected'
+        ElMessage.success('Purchase request rejected successfully')
+      } catch (error) {
+        if (error !== 'cancel') {
+          ElMessage.error('Failed to reject purchase request')
+        }
+      }
+    },
+
+    fetchPurchaseRequests() {
+      // Implement logic to fetch purchase requests
+      console.log('Fetching purchase requests')
     }
   },
   created() {
-    this.fetchOverviewData()
+    // Existing created hook...
+    this.fetchPurchaseRequests()
   }
 }
 </script>
 
 <style scoped>
 .admin-overview {
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 .stat-card {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .card-header {
@@ -221,11 +345,11 @@ export default {
 }
 
 .charts-row {
-  margin: 20px 0;
+  margin: 10px 0;
 }
 
 .chart-card {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .chart-container {
@@ -237,6 +361,16 @@ export default {
 }
 
 .recent-activity {
-  margin-top: 20px;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  background: #f5f7fa;
 }
-</style> 
+
+.purchase-requests {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+
+</style>

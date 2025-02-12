@@ -1,0 +1,32 @@
+<template>
+  <div class="admin-overview">
+    <!-- Statistic Cards -->
+    <el-row :gutter="20">
+    </el-row>
+
+    <!-- Chart Area -->
+    <el-row :gutter="20" class="charts-row">
+    </el-row>
+
+    <!-- Recent Activities -->
+    <el-card class="recent-activity">
+    </el-card>
+
+    <!-- Purchase Requests -->
+    <el-card class="purchase-requests">
+    </el-card>
+  </div>
+</template>
+
+<script>
+</script>
+
+<style scoped>
+.admin-overview {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 60px); /* Adjust 60px to match your header and footer height */
+  margin-bottom: 60px; /* Ensure space for the footer */
+}
+
+</style>

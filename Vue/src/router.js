@@ -55,22 +55,30 @@ export const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-
+    // If the user is already logged in, redirect to the user page
     if ((to.path === '/login' || to.path === '/register') && auth.isLoggedIn) {
-        next({ path: '/user' })
+        next({ path: '/user' });
         ElMessage({
             message: 'Already logged in!',
             type: "warning",
         });
     }
-    else if ((to.path === '/user') && !auth.isLoggedIn) {
-        next({ path: '/login' })
+    // If the user is not logged in and tries to access a page that requires login (e.g., /user), redirect to the login page
+    else if (to.path === '/user' && !auth.isLoggedIn) {
+        next({ path: '/login' });
         ElMessage({
             message: 'Not logged in!',
             type: "warning",
         });
     }
-    else next()
+    // If the user is not logged in and tries to access the home page (/), allow them to stay on the home page
+    else if (!auth.isLoggedIn && to.path === '/') {
+        next(); // Allow staying on the home page
+    }
+    // Otherwise, proceed with the normal redirect
+    else {
+        next();
+    }
 })
 
 export default router

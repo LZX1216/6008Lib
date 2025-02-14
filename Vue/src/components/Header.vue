@@ -36,9 +36,7 @@
         <el-menu-item index="/user">
           <router-link to="/user">{{ $t('user.profile') }}</router-link>
         </el-menu-item>
-        <el-menu-item index="/logout">
-          <a @click="logout">{{ $t('common.logout') }}</a>
-        </el-menu-item>
+        <el-button type="text" @click="logout">{{ $t('common.logout') }}</el-button>
       </template>
 
       <!-- Language switch -->
@@ -71,21 +69,21 @@ export default {
     async logout() {
       try {
         await ElMessageBox.confirm(
-          '您确定要退出登录吗？',
-          '警告',
+          'Are you sure you want to log out?',
+          'Warning',
           {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
+            confirmButtonText: 'Confirm',
+            cancelButtonText: 'Cancel',
             type: 'warning',
           }
         )
-        ElMessage.success('退出成功')
+        ElMessage.success('Logged out successfully')
         sessionStorage.removeItem('userInfo')
         auth.logoutstate()
         this.$router.push('/')
         window.location.reload()
       } catch {
-        ElMessage.info('退出已取消')
+        ElMessage.info('Logout cancelled')
       }
     }
   }

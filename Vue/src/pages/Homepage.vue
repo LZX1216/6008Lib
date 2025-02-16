@@ -11,7 +11,7 @@
           class="search-input"
         >
           <template #append>
-            <el-button @click="searchBooks">
+            <el-button @click="searchBooks" class="search-button">
               <el-icon><Search /></el-icon>
             </el-button>
           </template>
@@ -23,7 +23,7 @@
       <!-- Recent events -->
       <section class="recent-events">
         <h2>Recent Events</h2>
-        <el-carousel :interval="4000" type="card" height="300px">
+        <el-carousel :interval="4000" type="card" height="300px" :autoplay="true" arrow="always">
           <el-carousel-item v-for="event in recentEvents" :key="event.id">
             <div class="event-card" :style="{ backgroundImage: `url(${event.image})` }">
               <div class="event-content">
@@ -260,15 +260,15 @@ html, body {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .Homepage {
   font-family: Arial, sans-serif;
   text-align: center;
   padding: 20px;
-  max-width: 1200px;
   width: 100%;
-  height: 100%;
+
   margin: 0 auto;
 }
 
@@ -304,8 +304,9 @@ footer {
   font-family: Arial, sans-serif;
   text-align: center;
   padding: 20px;
+  border-radius: 10px;
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 30px auto 0;
 }
 
 .hero-section {
@@ -314,23 +315,46 @@ footer {
   background-position: center;
   color: white;
   text-align: center;
-  padding: 100px 20px;
-  margin-bottom: 40px;
+  padding: 80px 20px;
+  border-radius: 10px;
 }
 
 .hero-section h1 {
-  font-size: 48px;
-  margin-bottom: 20px;
+  font-size: 42px;
+  margin-bottom: 15px;
 }
 
 .subtitle {
-  font-size: 24px;
-  margin-bottom: 40px;
+  font-size: 20px;
+  margin-bottom: 30px;
 }
 
 .search-section {
-  max-width: 800px;
+  max-width: 600px;
   margin: 0 auto;
+  position: relative;
+}
+
+.search-input {
+  border-radius: 25px;
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+
+.search-input:hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  transform: scale(1.02);
+}
+
+.search-button {
+  background-color: #004d40;
+  color: white;
+  border-radius: 25px;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.search-button:hover {
+  background-color: #00796b;
+  transform: scale(1.05);
 }
 
 .section-header {
@@ -340,52 +364,72 @@ footer {
   margin-bottom: 20px;
 }
 
+.recent-events {
+  margin-top: 40px;
+}
+
 .event-card {
-  height: 100%;
+  height: 280px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 20px;
+  color: white;
+  border-radius: 10px;
   background-size: cover;
   background-position: center;
-  border-radius: 8px;
   position: relative;
 }
 
-.event-content {
+.event-card::after {
+  content: "";
   position: absolute;
-  bottom: 0;
+  top: 0;
   left: 0;
   right: 0;
-  padding: 20px;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-  color: white;
-  border-radius: 0 0 8px 8px;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+
+.event-content {
+  position: relative;
+  z-index: 1;
+  text-align: left;
 }
 
 .book-card {
-  margin-bottom: 20px;
-  transition: transform 0.3s;
+  flex: 0 0 auto;
+  width: 180px;
+  border-radius: 10px;
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .book-card:hover {
-  transform: translateY(-5px);
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .book-cover {
   width: 100%;
-  aspect-ratio: 37/52; /* 设置图片比例 */
+  height: 250px;
   object-fit: cover;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
 
 .book-info {
-  padding: 15px;
+  padding: 10px;
 }
 
 .book-info h3 {
-  margin: 0;
   font-size: 16px;
+  margin: 5px 0;
 }
 
 .book-info p {
-  color: #666;
-  margin: 5px 0;
+  font-size: 14px;
+  color: #777;
 }
 
 .event-date {
@@ -395,12 +439,37 @@ footer {
 
 .books-container {
   display: flex;
-  gap: 20px;
-  padding: 20px 0;
+  flex-wrap: nowrap;
+  gap: 15px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+.books-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.books-container::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
+}
+
+.books-container::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
 }
 
 .book-card {
   flex: 0 0 200px;
   margin-bottom: 0;
+}
+
+.el-carousel {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.el-main {
+  padding: 0;
+  box-sizing: border-box;
 }
 </style>

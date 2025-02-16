@@ -99,6 +99,8 @@ export default {
 <style scoped>
 .about-us {
   padding: 20px;
+
+  margin: 0 auto;
 }
 
 .intro-section {

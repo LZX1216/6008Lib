@@ -2,74 +2,59 @@
   <div class="book-list">
     <!-- Title -->
     <div class="header-section">
-      <h2 class="page-title">Books</h2>
+      <h2 class="page-title">📚 Books</h2>
     </div>
 
     <!-- Search bar & View control -->
     <div class="search-section">
-      <el-select 
-        v-model="selectedFilter" 
-        placeholder="Filter by"
-        class="filter-select"
-        @change="updatePlaceholder"
+      <el-select
+          v-model="selectedFilter"
+          placeholder="Filter by"
+          class="filter-select"
+          @change="updatePlaceholder"
       >
-          <el-option label="Title" value="title" />
-          <el-option label="Author" value="author" />
-          <el-option label="ISBN" value="isbn" />
-        </el-select>
+        <el-option label="Title" value="title"/>
+        <el-option label="Author" value="author"/>
+        <el-option label="ISBN" value="isbn"/>
+      </el-select>
 
-        <el-input
+      <el-input
           v-model="searchQuery"
           :placeholder="inputPlaceholder"
           class="search-input"
           clearable
           @clear="clearSearch"
-        >
-          <template #append>
-            <el-button 
-              type="primary" 
+      >
+        <template #append>
+          <el-button
+              type="primary"
               class="search-btn"
               @click="searchBooks"
-            >
-            <svg
-      t="1739607142653"
-      class="icon"
-      viewBox="0 0 1024 1024"
-      version="1.1"
-      xmlns="http://www.w3.org/2000/svg"
-      p-id="9530"
-      width="20"
-      height="20"
-    >
-      <path
-        d="M998.059 876.893L799.245 678.079c47.386-69.553 75.115-153.559 75.115-244.06C874.36 194.305 680.018 0.005 440.341 0.005 200.648 0.005 6.332 194.305 6.332 434.019c0 239.715 194.315 434.015 434.009 434.015 84.01 0 162.395-23.937 228.848-65.271 0.646 0.71 1.219 1.462 1.896 2.14l199.481 199.481c29.669 29.658 82.246 25.166 117.457-10.034 35.202-35.211 39.694-87.788 10.036-117.457zM93.135 434.02c0-191.46 155.756-347.211 347.206-347.211 191.455 0 347.216 155.751 347.216 347.211S631.796 781.231 440.341 781.231c-191.449 0-347.206-155.752-347.206-347.211z"
-        fill="#ffffff"
-        p-id="9531"
-      ></path>
-    </svg>
-            </el-button>
-          </template>
-        </el-input>
+          >
+            <el-icon><Search /></el-icon>
+          </el-button>
+        </template>
+      </el-input>
 
-        <!-- View Control -->
-        <div class="view-controls">
-          <el-button-group>
-    <el-button
-      :type="displayMode === 'card' ? 'primary' : ''"
-      @click="displayMode = 'card'"
-      class="view-btn"
-    >
-      <IconCardList :color="displayMode === 'card' ? '#fff' : '#090909'" />
-    </el-button>
-    <el-button
-      :type="displayMode === 'list' ? 'primary' : ''"
-      @click="displayMode = 'list'"
-      class="view-btn"
-    >
-      <IconCardList :color="displayMode === 'list' ? '#fff' : '#090909'" />
-    </el-button>
-  </el-button-group>
-        </div>
+      <!-- View Control -->
+      <div class="view-controls">
+        <el-button-group>
+          <el-button
+              :type="displayMode === 'card' ? 'primary' : ''"
+              @click="displayMode = 'card'"
+              class="view-btn"
+          >
+            <el-icon><Grid /></el-icon>
+          </el-button>
+          <el-button
+              :type="displayMode === 'list' ? 'primary' : ''"
+              @click="displayMode = 'list'"
+              class="view-btn"
+          >
+            <el-icon><Memo /></el-icon>
+          </el-button>
+        </el-button-group>
+      </div>
 
     </div>
 
@@ -77,156 +62,183 @@
       <!-- Sidebar -->
       <div class="filter-sidebar">
         <h3 class="filter-title">🔍 Advanced Filters</h3>
+        
+        <!-- Sort Options -->
+        <div class="filter-group">
+          <h4>Sort By</h4>
+          <el-select v-model="sortOption" placeholder="Select Sort Option">
+            <el-option label="Publication Year" value="publishYear" />
+            <el-option label="Rating" value="rating" />
+            <el-option label="Comment Count" value="commentCount" />
+          </el-select>
+          <el-select v-model="sortOrder" placeholder="Order">
+            <el-option label="Ascending" value="asc" />
+            <el-option label="Descending" value="desc" />
+          </el-select>
+        </div>
+
         <!-- Rating Filter -->
         <div class="filter-group">
           <h4>Rating Range</h4>
-          <el-slider 
-            v-model="ratingRange" 
-            range 
-            :marks="{0: '0', 5: '5'}"
-            :min="0"
-            :max="5"
-            :step="0.1"
-            :format-tooltip="formatRating"
+          <el-slider
+              v-model="ratingRange"
+              range
+              :marks="{0: '0', 5: '5'}"
+              :min="0"
+              :max="5"
+              :step="0.1"
+              :format-tooltip="formatRating"
           />
         </div>
-        
+
         <!-- Year Filter -->
         <div class="filter-group">
           <h4>Publication Year</h4>
-          <el-slider 
-            v-model="yearRange" 
-            range 
-            :marks="{1990: '1990', 2025: '2025'}"
-            :min="1990" 
-            :max="2025"
-            :step="1"
-            :format-tooltip="formatYear"
+          <el-slider
+              v-model="yearRange"
+              range
+              :marks="{1990: '1990', 2025: '2025'}"
+              :min="1990"
+              :max="2025"
+              :step="1"
+              :format-tooltip="formatYear"
           />
         </div>
 
         <!-- Language Tags -->
         <div class="filter-group">
-            <h4>Popular Tags</h4>
-            <div class="tag-container">
-              <el-tag 
+          <h4>Popular Tags</h4>
+          <div class="tag-container">
+            <el-tag
                 v-for="language in languages"
                 :key="language.value"
                 :type="selectedLanguages.includes(language.value) ? 'primary' : 'info'"
                 @click="toggleLanguage(language.value)"
                 class="sidebar-tag"
-              >
-                {{ language.label }}
-              </el-tag>
-            </div>
+            >
+              {{ language.label }}
+            </el-tag>
+          </div>
         </div>
 
-        
+
         <!-- Genre Tags -->
-          <div class="filter-group">
-            <h4>Popular Tags</h4>
-            <div class="tag-container">
-              <el-tag 
+        <div class="filter-group">
+          <h4>Popular Tags</h4>
+          <div class="tag-container">
+            <el-tag
                 v-for="genre in genres"
                 :key="genre.value"
                 :type="selectedGenres.includes(genre.value) ? 'primary' : 'info'"
                 @click="toggleGenre(genre.value)"
                 class="sidebar-tag"
-              >
-                {{ genre.label }}
-              </el-tag>
-            </div>
+            >
+              {{ genre.label }}
+            </el-tag>
+          </div>
         </div>
-        <el-button 
-          @click="resetFilters" 
-          class="reset-btn"
+        <el-button
+            @click="resetFilters"
+            class="reset-btn"
         >
           Reset All
         </el-button>
       </div>
 
-    <!-- Content container -->
-    <div class="content-container">
-      <!-- Card view -->
-      <div v-if="displayMode === 'card' && filteredBooks.length" class="book-grid">
-        <el-card 
-          v-for="book in filteredBooks" 
-          :key="book.id" 
-          class="book-card"
-        >
-          <div class="book-cover-container">
-            <img :src="book.cover" class="book-cover" />
-          </div>
-          <div class="book-info">
-            <h3 class="book-title">{{ book.title }}</h3>
-            <p class="book-author">{{ book.author }}</p>
-            <div class="book-rating">
-                <el-rate v-model="book.rating" disabled show-score text-color="#ff9900" />
+      <!-- Content container -->
+      <div class="content-container">
+        <!-- Card view -->
+        <div v-if="displayMode === 'card' && filteredBooks.length" class="book-grid">
+          <el-card
+              v-for="book in sortedBooks"
+              :key="book.id"
+              class="book-card"
+          >
+            <div class="book-cover-container">
+              <img :src="book.cover" class="book-cover" alt=""/>
             </div>
-
-              
+            <div class="book-info">
+              <h3 class="book-title">{{ book.title }}</h3>
+              <p class="book-author">{{ book.author }}</p>
+              <div class="book-rating">
+                <el-rate v-model="book.rating" disabled show-score text-color="#ff9900"/>
+              </div>
               <el-button-group class="book-actions">
-              <el-button type="primary" size="small" @click="addToList(book.id)">
-                Add to list
-              </el-button>
-              <el-button type="primary" size="small" @click="viewBookDetails(book.id)">
-                View Details
-              </el-button>
-            </el-button-group>
+                <el-button type="primary" size="big" @click="addToList(book.id)">
+                  <el-icon><Plus /></el-icon>
+                  <span class="button-text">List</span>
+                </el-button>
+                <el-button type="primary" size="big" @click="viewBookDetails(book.id)">
+                  <el-icon><View /></el-icon>
+                  <span class="button-text">Detail</span>
+                </el-button>
+              </el-button-group>
+            </div>
+          </el-card>
+        </div>
 
-          </div>
-        </el-card>
-      </div>
+        <!-- List view -->
+        <el-table v-else-if="displayMode === 'list' && filteredBooks.length" :data="sortedBooks">
+          <el-table-column label="Cover" width="100">
+            <template #default="scope">
+              <img :src="scope.row.cover" class="table-book-cover" alt=""/>
+            </template>
+          </el-table-column>
+          <el-table-column prop="title" label="Title"/>
+          <el-table-column prop="author" label="Author" width="200"/>
+          <el-table-column prop="isbn" label="ISBN" width="150"/>
+          <el-table-column prop="genre" label="Genre" width="150"/>
+          <el-table-column label="Rating" width="200">
+            <template #default="scope">
+              <el-rate
+                  v-model="scope.row.rating"
+                  disabled
+                  show-score
+                  text-color="#ff9900"
+              />
+            </template>
+          </el-table-column>
+          <el-table-column label="Actions" width="200">
+            <el-button-group class="book-actions">
+                <el-button type="primary" size="small" @click="addToList(book.id)">
+                  Add to list
+                </el-button>
+                <el-button type="primary" size="small" @click="viewBookDetails(book.id)">
+                  View Details
+                </el-button>
+              </el-button-group>
+          </el-table-column>
+        </el-table>
 
-      <!-- List view -->
-      <el-table v-else-if="displayMode === 'list' && filteredBooks.length" :data="filteredBooks">
-        <el-table-column label="Cover" width="100">
-          <template #default="scope">
-            <img :src="scope.row.cover" class="table-book-cover"/>
-          </template>
-        </el-table-column>
-        <el-table-column prop="title" label="Title" />
-        <el-table-column prop="author" label="Author" width="200" />
-        <el-table-column prop="isbn" label="ISBN" width="150" />
-        <el-table-column prop="genre" label="Genre" width="150" />
-        <el-table-column label="Rating" width="200">
-          <template #default="scope">
-            <el-rate
-              v-model="scope.row.rating"
-              disabled
-              show-score
-              text-color="#ff9900"
-            />
-          </template>
-        </el-table-column>
-      </el-table>
-
-      <!-- Pagination -->
-      <div class="pagination-container">
-        <el-pagination
-          :page-sizes="[10, 20, 50]"
-          :page-size="pageSize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
+        <!-- Pagination -->
+        <div class="pagination-container">
+          <el-pagination
+              :page-sizes="[10, 20, 50]"
+              :page-size="pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="total"
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+          />
+        </div>
       </div>
     </div>
-  </div>
   </div>
 </template>
 
 <script>
-import { Search } from '@element-plus/icons-vue'
-import IconCardList from '@/components/IconCardList.vue';
-
+import {Search} from '@element-plus/icons-vue'
+import { Grid, Memo } from '@element-plus/icons-vue'
+import { Plus, View } from '@element-plus/icons-vue'
 
 export default {
   name: 'BookList',
   components: {
     Search,
-    IconCardList
+    Grid,
+    Memo,
+    Plus,
+    View
   },
   data() {
     return {
@@ -236,142 +248,142 @@ export default {
       selectedFilter: 'title',
       selectedGenres: [],
       selectedLanguages: [],
-      sortOption: '',
-      sortOrder: 'asc', // Default sort order
+      sortOption: 'rating',
+      sortOrder: 'desc', // Default sort order
       learningProgress: 0,
       languages: [
-        {value: 'Chinese', label: 'Chinese' },
-        {value: 'English', label: 'English' },
-        {value: 'Spanish', label: 'Spanish' }
+        {value: 'Chinese', label: 'Chinese'},
+        {value: 'English', label: 'English'},
+        {value: 'Spanish', label: 'Spanish'}
       ],
       genres: [
-        { value: 'Algorithms', label: 'Algorithms' },
-        { value: 'Artificial Intelligence', label: 'Artificial Intelligence' },
-        { value: 'Networking', label: 'Networking' },
-        { value: 'Databases', label: 'Databases' },
-        { value: 'Operating Systems', label: 'Operating Systems' },
-        { value: 'Computer Architecture', label: 'Computer Architecture' },
-        { value: 'Software Engineering', label: 'Software Engineering' },
-        { value: 'Software Design', label: 'Software Design' },
-        { value: 'Compilers', label: 'Compilers' }
+        {value: 'Algorithms', label: 'Algorithms'},
+        {value: 'Artificial Intelligence', label: 'Artificial Intelligence'},
+        {value: 'Networking', label: 'Networking'},
+        {value: 'Databases', label: 'Databases'},
+        {value: 'Operating Systems', label: 'Operating Systems'},
+        {value: 'Computer Architecture', label: 'Computer Architecture'},
+        {value: 'Software Engineering', label: 'Software Engineering'},
+        {value: 'Software Design', label: 'Software Design'},
+        {value: 'Compilers', label: 'Compilers'}
       ],
       sortOptions: [
-        { key: 'releaseTime', label: 'Release Time' },
-        { key: 'rating', label: 'Rating' },
-        { key: 'comments', label: 'Comments' },
-        { key: 'borrows', label: 'Borrows' }
+        {key: 'releaseTime', label: 'Release Time'},
+        {key: 'rating', label: 'Rating'},
+        {key: 'comments', label: 'Comments'},
+        {key: 'borrows', label: 'Borrows'}
       ],
       books: [
-      {
-        id: 1,
-        title: "Introduction to Algorithms",
-        author: "Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein",
-        cover: "https://m.media-amazon.com/images/I/61Mw06x2XcL._AC_UL320_.jpg",
-        rating: 4.5,
-        isbn: "9780262033848",
-        publishYear: "2000",
-        language: "English",
-        genre: "Algorithms"
-      },
-      {
-        id: 2,
-        title: "Artificial Intelligence: A Modern Approach",
-        author: "Stuart Russell, Peter Norvig",
-        cover: "https://m.media-amazon.com/images/I/81CDIGTNNFL._AC_UL320_.jpg",
-        rating: 4.6,
-        isbn: "9780136042594",
-        publishYear: "2004",
-        language: "English",
-        genre: "Artificial Intelligence"
-      },
-      {
-        id: 3,
-        title: "Computer Networks",
-        author: "Andrew S. Tanenbaum, David J. Wetherall",
-        cover: "https://m.media-amazon.com/images/I/71pIJGRBg7L._AC_UL320_.jpg",
-        rating: 4.4,
-        isbn: "9780132126953",
-        publishYear: "2005",
-        language: "English",
-        genre: "Networking"
-      },
-      {
-        id: 4,
-        title: "Database System Concepts",
-        author: "Abraham Silberschatz, Henry F. Korth, S. Sudarshan",
-        cover: "https://m.media-amazon.com/images/I/81B3Cv13cYL._AC_UL320_.jpg",
-        rating: 4.3,
-        isbn: "9780073523323",
-        publishYear: "2013",
-        language: "English",
-        genre: "Databases"
-      },
-      {
-        id: 5,
-        title: "Operating System Concepts",
-        author: "Abraham Silberschatz, Peter B. Galvin, Greg Gagne",
-        cover: "https://m.media-amazon.com/images/I/81SwKCia7VL._AC_UL320_.jpg",
-        rating: 4.5,
-        isbn: "9781118063330",
-        publishYear: "2017",
-        language: "English",
-        genre: "Operating Systems"
-      },
-      {
-        id: 6,
-        title: "Compilers: Principles, Techniques, and Tools",
-        author: "Alfred V. Aho, Monica S. Lam, Ravi Sethi, Jeffrey D. Ullman",
-        cover: "https://m.media-amazon.com/images/I/71MvtEJneKL._AC_UL320_.jpg",
-        rating: 4.4,
-        isbn: "9780321486813",
-        publishYear: "2011",
-        language: "English",
-        genre: "Compilers"
-      },
-      {
-        id: 7,
-        title: "Computer Architecture: A Quantitative Approach",
-        author: "John L. Hennessy, David A. Patterson",
-        cover: "https://m.media-amazon.com/images/I/71zrCDfb73S._AC_UL320_.jpg",
-        rating: 4.7,
-        isbn: "9780123838728",
-        publishYear: "2020",
-        language: "English",
-        genre: "Computer Architecture"
-      },
-      {
-        id: 8,
-        title: "The Elements of Computing Systems: Building a Modern Computer from First Principles",
-        author: "Noam Nisan, Shimon Schocken",
-        cover: "https://m.media-amazon.com/images/I/71tRTKR3NOL._AC_UL320_.jpg",
-        rating: 4.6,
-        isbn: "9780262640688",
-        publishYear: "2016",
-        language: "English",
-        genre: "Computer Systems"
-      },
-      {
-        id: 9,
-        title: "Clean Code: A Handbook of Agile Software Craftsmanship",
-        author: "Robert C. Martin",
-        cover: "https://m.media-amazon.com/images/I/51E2055ZGUL._AC_UL320_.jpg",
-        rating: 4.7,
-        isbn: "9780132350885",
-        publishYear: "2005",
-        language: "Chinese",
-        genre: "Software Engineering"
-      },
-      {
-        id: 10,
-        title: "Design Patterns: Elements of Reusable Object-Oriented Software",
-        author: "Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides",
-        cover: "https://m.media-amazon.com/images/I/81IGFC6oFmL._AC_UL320_.jpg",
-        rating: 4.6,
-        isbn: "9780201633610",
-        publishYear: "2018",
-        language: "Spanish",
-        genre: "Software Design"
-      },
+        {
+          id: 1,
+          title: "Introduction to Algorithms",
+          author: "Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein",
+          cover: "https://m.media-amazon.com/images/I/61Mw06x2XcL._AC_UL320_.jpg",
+          rating: 4.5,
+          isbn: "9780262033848",
+          publishYear: "2000",
+          language: "English",
+          genre: "Algorithms"
+        },
+        {
+          id: 2,
+          title: "Artificial Intelligence: A Modern Approach",
+          author: "Stuart Russell, Peter Norvig",
+          cover: "https://m.media-amazon.com/images/I/81CDIGTNNFL._AC_UL320_.jpg",
+          rating: 4.6,
+          isbn: "9780136042594",
+          publishYear: "2004",
+          language: "English",
+          genre: "Artificial Intelligence"
+        },
+        {
+          id: 3,
+          title: "Computer Networks",
+          author: "Andrew S. Tanenbaum, David J. Wetherall",
+          cover: "https://m.media-amazon.com/images/I/71pIJGRBg7L._AC_UL320_.jpg",
+          rating: 4.4,
+          isbn: "9780132126953",
+          publishYear: "2005",
+          language: "English",
+          genre: "Networking"
+        },
+        {
+          id: 4,
+          title: "Database System Concepts",
+          author: "Abraham Silberschatz, Henry F. Korth, S. Sudarshan",
+          cover: "https://m.media-amazon.com/images/I/81B3Cv13cYL._AC_UL320_.jpg",
+          rating: 4.3,
+          isbn: "9780073523323",
+          publishYear: "2013",
+          language: "English",
+          genre: "Databases"
+        },
+        {
+          id: 5,
+          title: "Operating System Concepts",
+          author: "Abraham Silberschatz, Peter B. Galvin, Greg Gagne",
+          cover: "https://m.media-amazon.com/images/I/81SwKCia7VL._AC_UL320_.jpg",
+          rating: 4.5,
+          isbn: "9781118063330",
+          publishYear: "2017",
+          language: "English",
+          genre: "Operating Systems"
+        },
+        {
+          id: 6,
+          title: "Compilers: Principles, Techniques, and Tools",
+          author: "Alfred V. Aho, Monica S. Lam, Ravi Sethi, Jeffrey D. Ullman",
+          cover: "https://m.media-amazon.com/images/I/71MvtEJneKL._AC_UL320_.jpg",
+          rating: 4.4,
+          isbn: "9780321486813",
+          publishYear: "2011",
+          language: "English",
+          genre: "Compilers"
+        },
+        {
+          id: 7,
+          title: "Computer Architecture: A Quantitative Approach",
+          author: "John L. Hennessy, David A. Patterson",
+          cover: "https://m.media-amazon.com/images/I/71zrCDfb73S._AC_UL320_.jpg",
+          rating: 4.7,
+          isbn: "9780123838728",
+          publishYear: "2020",
+          language: "English",
+          genre: "Computer Architecture"
+        },
+        {
+          id: 8,
+          title: "The Elements of Computing Systems: Building a Modern Computer from First Principles",
+          author: "Noam Nisan, Shimon Schocken",
+          cover: "https://m.media-amazon.com/images/I/71tRTKR3NOL._AC_UL320_.jpg",
+          rating: 4.6,
+          isbn: "9780262640688",
+          publishYear: "2016",
+          language: "English",
+          genre: "Computer Systems"
+        },
+        {
+          id: 9,
+          title: "Clean Code: A Handbook of Agile Software Craftsmanship",
+          author: "Robert C. Martin",
+          cover: "https://m.media-amazon.com/images/I/51E2055ZGUL._AC_UL320_.jpg",
+          rating: 4.7,
+          isbn: "9780132350885",
+          publishYear: "2005",
+          language: "Chinese",
+          genre: "Software Engineering"
+        },
+        {
+          id: 10,
+          title: "Design Patterns: Elements of Reusable Object-Oriented Software",
+          author: "Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides",
+          cover: "https://m.media-amazon.com/images/I/81IGFC6oFmL._AC_UL320_.jpg",
+          rating: 4.6,
+          isbn: "9780201633610",
+          publishYear: "2018",
+          language: "Spanish",
+          genre: "Software Design"
+        },
       ].map(book => ({
         ...book,
       })),
@@ -390,21 +402,34 @@ export default {
   computed: {
     filteredBooks() {
       return this.books.filter(book => {
-        const matchesRating = book.rating >= this.ratingRange[0] && 
-                            book.rating <= this.ratingRange[1];
-        const matchesYear = book.publishYear >= this.yearRange[0] && 
-                          book.publishYear <= this.yearRange[1];
-        const matchesLanguage = this.selectedLanguages.length ? 
-                          this.selectedLanguages.includes(book.language) : true;
-        const matchesGenre = this.selectedGenres.length ? 
-                          this.selectedGenres.includes(book.genre) : true;
+        const matchesRating = book.rating >= this.ratingRange[0] &&
+            book.rating <= this.ratingRange[1];
+        const matchesYear = book.publishYear >= this.yearRange[0] &&
+            book.publishYear <= this.yearRange[1];
+        const matchesLanguage = this.selectedLanguages.length ?
+            this.selectedLanguages.includes(book.language) : true;
+        const matchesGenre = this.selectedGenres.length ?
+            this.selectedGenres.includes(book.genre) : true;
         const searchFields = this.searchFieldMap[this.selectedFilter] || ['title'];
-        const matchesSearch = this.searchQuery === '' || 
-                            searchFields.some(field => 
-                              String(book[field]).toLowerCase()
-                              .includes(this.searchQuery.toLowerCase()));
-        
+        const matchesSearch = this.searchQuery === '' ||
+            searchFields.some(field =>
+                String(book[field]).toLowerCase()
+                    .includes(this.searchQuery.toLowerCase()));
+
         return matchesRating && matchesYear && matchesLanguage && matchesGenre && matchesSearch;
+      });
+    },
+    sortedBooks() {
+      return this.filteredBooks.sort((a, b) => {
+        let comparison = 0;
+        if (this.sortOption === 'publishYear') {
+          comparison = a.publishYear - b.publishYear;
+        } else if (this.sortOption === 'rating') {
+          comparison = a.rating - b.rating;
+        } else if (this.sortOption === 'commentCount') {
+          comparison = (a.commentCount || 0) - (b.commentCount || 0);
+        }
+        return this.sortOrder === 'asc' ? comparison : -comparison;
       });
     }
   },
@@ -418,7 +443,9 @@ export default {
     resetFilters() {
       this.searchQuery = '';
       this.selectedGenres = [];
-      this.selectedLanguage = [];
+      this.selectedLanguages = [];
+      this.ratingRange = [0, 5];
+      this.yearRange = [1990, 2025];
     },
     toggleSort(option) {
       if (this.sortOption === option) {
@@ -446,15 +473,15 @@ export default {
       return `${value}`
     },
     sortIcon(key) {
-      return this.sortOption === key 
-        ? (this.sortOrder === 'asc' ? 'el-icon-top' : 'el-icon-bottom')
-        : 'el-icon-bottom'
+      return this.sortOption === key
+          ? (this.sortOrder === 'asc' ? 'el-icon-top' : 'el-icon-bottom')
+          : 'el-icon-bottom'
     },
     sortStyle(key) {
       return {
-        color: this.sortOption === key 
-          ? (this.sortOrder === 'asc' ? '#409EFF' : '#F56C6C')
-          : '#C0C4CC',
+        color: this.sortOption === key
+            ? (this.sortOrder === 'asc' ? '#409EFF' : '#F56C6C')
+            : '#C0C4CC',
         marginLeft: '5px'
       }
     },
@@ -495,31 +522,29 @@ export default {
 }
 
 .header-section {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .page-title {
-  color: #303133;
   font-size: 28px;
-  font-weight: 700;
-  border-bottom: 3px solid #409EFF;
-  padding-bottom: 12px;
+  color: #2c3e50;
+  font-weight: 600;
+  border-bottom: 3px solid #3b82f6;
+  padding-bottom: 8px;
   display: inline-block;
 }
 
 .main-container {
   display: flex;
-  gap: 2rem;
-  margin: 0 auto;
+  gap: 24px;
 }
 
 .filter-sidebar {
-  width: 280px;
+  flex: 0 0 250px;
   background: #ffffff;
   padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: var(--el-box-shadow-light);
-  margin-right: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .full-width-select {
@@ -529,13 +554,13 @@ export default {
 
 .search-section {
   display: flex;
-  gap: 1rem;
   align-items: center;
-  margin-bottom: 2rem;
-  background: #ffffff;
-  padding: 1rem;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background-color: #f8fafc;
   border-radius: 8px;
-  box-shadow: var(--el-box-shadow-light);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .search-container {
@@ -546,26 +571,21 @@ export default {
 }
 
 .filter-select {
-  width: 160px;
+  width: 120px;
 }
 
 .search-input {
   flex: 1;
-  height: 60px;
-  font-size: large;
-  border-radius: 8px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  margin-right: 20px;
 }
 
 .search-input :deep(.el-input__inner) {
   transition: all 0.3s;
-  background: rgba(248,250,252,0.8);
+  background: rgba(248, 250, 252, 0.8);
 }
 
 .search-input:hover :deep(.el-input__inner) {
-  background: rgba(255,255,255,1);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .search-input :deep(.el-input-group__append) {
@@ -574,15 +594,23 @@ export default {
 }
 
 .search-btn {
-  background: var(--gradient-primary);
-  border: none;
+  padding: 12px 20px;
+}
+
+.search-btn .el-icon {
+    color: #ffffff;
+}
+
+.search-btn:hover {
+  transform: scale(1.02);
+  box-shadow: 0 2px 12px rgba(59, 130, 246, 0.3);
 }
 
 .search-section {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  background: rgba(255,255,255,0.9);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(4px);
-  border: 1px solid rgba(0,0,0,0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .filter-title {
@@ -627,8 +655,6 @@ export default {
 
 .view-controls {
   margin-left: auto;
-  display: flex;
-  gap: 0.5rem;
 }
 
 
@@ -644,28 +670,26 @@ export default {
   padding: 16px 20px;
   border-radius: 8px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
 }
 
 .filter-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 20px;
 }
 
 .filter-group h4 {
-  color: var(--el-text-color-primary);
-  font-size: 14px;
-  margin-bottom: 0.8rem;
-  font-weight: 600;
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #333;
 }
 
 .sidebar-tag {
-  width: 100%;
-  justify-content: flex-start;
-  border-radius: 6px;
-  padding: 10px 16px;
-  margin: 2px 0;
-  transition: all 0.2s;
-  border: 1px solid var(--el-border-color);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 16px;
+  padding: 4px 12px;
+  font-size: 14px;
+  border: none;
 }
 
 .sidebar-tag.primary {
@@ -680,18 +704,37 @@ export default {
 }
 
 .sidebar-tag:hover {
-  transform: translateX(5px);
-  box-shadow: var(--el-box-shadow-light);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-tag:active {
   transform: scale(0.98);
 }
 
+.sidebar-tag.el-tag--info {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+.sidebar-tag.el-tag--info:hover {
+  background-color: #e5e7eb;
+  color: #1f2937;
+}
+
+.sidebar-tag.el-tag--primary {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.sidebar-tag.el-tag--primary:hover {
+  background-color: #2563eb;
+}
+
 .tag-container {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .view-toggle {
@@ -706,14 +749,14 @@ export default {
   padding: 20px;
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
 }
 
 .book-card {
   position: relative;
   overflow: hidden;
-  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), 
-             box-shadow 0.3s ease;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+  box-shadow 0.3s ease;
 }
 
 .book-card::before {
@@ -723,14 +766,14 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(45deg, rgba(255,255,255,0.1), transparent);
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), transparent);
   opacity: 0;
   transition: opacity 0.3s;
 }
 
 .book-card:hover {
   transform: translateY(-5px) scale(1.02);
-  box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .book-card:hover::before {
@@ -739,7 +782,7 @@ export default {
 
 .book-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(149,157,165,0.2);
+  box-shadow: 0 8px 24px rgba(149, 157, 165, 0.2);
   transform: scale(1.05);
 }
 
@@ -791,12 +834,44 @@ export default {
 }
 
 .book-actions {
-
-
+  display: flex;
   justify-content: space-between;
-
-  height: 40px;
+  width: 100%;
+  margin-top: 15px;
 }
+
+.book-actions .el-button {
+  flex: 1;
+  margin: 0 5px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  width: 45px;
+}
+
+.book-actions .el-button:first-child {
+  margin-left: 0;
+}
+
+.book-actions .el-button:last-child {
+  margin-right: 0;
+}
+
+.book-actions .el-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.book-actions .el-button--primary {
+  border: none;
+}
+
+.book-actions .el-button--default {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+}
+
 
 .book-info {
   display: flex;
@@ -824,15 +899,15 @@ export default {
 }
 
 .pagination-container {
-  background: rgba(255,255,255,0.9);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(4px);
-  border: 1px solid rgba(0,0,0,0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .el-table {
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 .table-book-cover {
@@ -841,16 +916,21 @@ export default {
   max-height: 100px;
   object-fit: cover;
   border-radius: 4px;
-  object-fit: contain;
-  border-radius: 8px 8px 0 0;
 }
 
 .content-container {
   flex: 1;
-  background: #ffffff;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: var(--el-box-shadow-light);
+}
+
+.el-button {
+  transition: all 0.3s ease;
+  height: 40px;
+}
+
+.el-button--default:hover {
+  background-color: #e5e7eb;
+  border-color: #d1d5db;
+  color: #1f2937;
 }
 
 .el-button--primary {
@@ -859,8 +939,10 @@ export default {
 }
 
 .el-button--primary:hover {
-  background: var(--gradient-primary);
-  opacity: 0.9;
+  background-color: #2c6ecb;
+  border-color: #2c6ecb;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transform: translateY(-2px);
 }
 
 .el-tag--primary {
@@ -869,9 +951,11 @@ export default {
   color: #409EFF;
 }
 
-.el-select, .el-input, .el-button {
+.el-select, .el-input {
   height: 40px;
 }
+
+
 
 .el-input__wrapper {
   height: 100%;
@@ -898,9 +982,40 @@ export default {
 }
 
 .pagination-container {
-  background: rgba(255,255,255,0.9);
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(0,0,0,0.05);
+  margin-top: 24px;
+  padding: 16px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: center;
+}
+
+:deep(.el-pagination) {
+  font-weight: normal;
+}
+
+:deep(.el-pagination .el-select .el-input) {
+  width: 110px;
+}
+
+:deep(.el-pagination .el-select .el-input .el-input__inner) {
+  padding-right: 25px;
+}
+
+:deep(.el-pagination button:disabled) {
+  background-color: #f8fafc;
+}
+
+:deep(.el-pager li) {
+  background-color: #ffffff;
+
+}
+
+:deep(.el-pager li.active) {
+  background-color: #3b82f6;
+  color: #ffffff;
+  border-color: #3b82f6;
 }
 
 :deep(.el-pagination.is-background .btn-prev),
@@ -908,18 +1023,159 @@ export default {
 :deep(.el-pagination.is-background .el-pager li) {
   transition: all 0.3s;
   border-radius: 8px;
-  background: rgba(248,250,252,0.8);
-  border: 1px solid rgba(0,0,0,0.05);
+  background: rgba(248, 250, 252, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 :deep(.el-pagination.is-background .el-pager li:not(.is-disabled).is-active) {
   background: var(--el-color-primary);
-  box-shadow: 0 2px 8px rgba(64,158,255,0.2);
+  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.2);
 }
 
 :root {
   --el-color-primary: #3b82f6;
   --el-color-primary-light-3: #60a5fa;
   --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+}
+
+:deep(.el-select__wrapper),
+:deep(.el-input__wrapper) {
+  height: 100%;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: none;
+  background: rgba(248, 250, 252, 0.8);
+}
+
+:deep(.el-select__wrapper:hover),
+:deep(.el-input__wrapper:hover) {
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+:deep(.el-select .el-input__inner),
+:deep(.el-input .el-input__inner) {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .main-container {
+    flex-direction: column;
+  }
+
+  .filter-sidebar {
+    flex: none;
+    width: 100%;
+    margin-bottom: 24px;
+  }
+
+  .book-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.header-section {
+  animation: fadeIn 0.8s ease-out;
+}
+
+.search-section {
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.main-container {
+  animation: fadeIn 1s ease-out 0.4s both;
+}
+
+.filter-sidebar {
+  animation: fadeInUp 0.8s ease-out 0.6s both;
+}
+
+.content-container {
+  animation: fadeInUp 0.8s ease-out 0.8s both;
+}
+
+.book-card, .el-table__row {
+  opacity: 0;
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.book-card:nth-child(10n+1), .el-table__row:nth-child(10n+1) { animation-delay: 0.1s; }
+.book-card:nth-child(10n+2), .el-table__row:nth-child(10n+2) { animation-delay: 0.2s; }
+.book-card:nth-child(10n+3), .el-table__row:nth-child(10n+3) { animation-delay: 0.3s; }
+.book-card:nth-child(10n+4), .el-table__row:nth-child(10n+4) { animation-delay: 0.4s; }
+.book-card:nth-child(10n+5), .el-table__row:nth-child(10n+5) { animation-delay: 0.5s; }
+.book-card:nth-child(10n+6), .el-table__row:nth-child(10n+6) { animation-delay: 0.6s; }
+.book-card:nth-child(10n+7), .el-table__row:nth-child(10n+7) { animation-delay: 0.7s; }
+.book-card:nth-child(10n+8), .el-table__row:nth-child(10n+8) { animation-delay: 0.8s; }
+.book-card:nth-child(10n+9), .el-table__row:nth-child(10n+9) { animation-delay: 0.9s; }
+.book-card:nth-child(10n), .el-table__row:nth-child(10n) { animation-delay: 1s; }
+
+.book-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.book-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.el-table__row {
+  transition: background-color 0.3s ease;
+}
+
+.el-table__row:hover {
+  background-color: #f5f7fa;
+}
+
+.pagination-container {
+  animation: fadeIn 0.8s ease-out 1.2s both;
+}
+
+@media (max-width: 768px) {
+  .header-section,
+  .search-section,
+  .main-container,
+  .filter-sidebar,
+  .content-container,
+  .book-card,
+  .el-table__row,
+  .pagination-container {
+    animation-name: fadeIn;
+    animation-duration: 0.5s;
+    animation-delay: 0s;
+  }
+}
+
+.button-text {
+  margin-left: 8px; /* Add some space between icon and text */
+}
+
+@media (max-width: 768px) {
+  .button-text {
+    display: none; /* Hide text on small screens */
+  }
 }
 </style>

@@ -2,13 +2,20 @@
   <div class="admin-dashboard">
     <el-container>
       <!-- Sidebar -->
-      <el-aside width="220px">
+      <el-aside :width="isCollapse ? '64px' : '220px'" class="sidebar">
+        <div class="sidebar-header">
+          <span v-if="!isCollapse">Admin Panel</span>
+          <el-icon class="toggle-sidebar" @click="toggleSidebar">
+            <component :is="isCollapse ? 'Expand' : 'Fold'" />
+          </el-icon>
+        </div>
         <el-menu
           :default-active="activeMenu"
           class="admin-menu"
+          :collapse="isCollapse"
           @select="handleMenuSelect"
         >
-          <el-menu-item index="overview">
+        <el-menu-item index="overview">
             <el-icon><DataLine /></el-icon>
             <span>Overview</span>
           </el-menu-item>
@@ -29,14 +36,18 @@
 
       <!-- Main content area -->
       <el-main>
-        <router-view></router-view>
+        <transition name="fade" mode="out-in">
+          <router-view></router-view>
+        </transition>
       </el-main>
     </el-container>
   </div>
 </template>
 
 <script>
-import { DataLine, Reading, User, List } from '@element-plus/icons-vue'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { DataLine, Reading, User, List, Expand, Fold } from '@element-plus/icons-vue'
 
 export default {
   name: 'AdminDashboard',
@@ -44,16 +55,35 @@ export default {
     DataLine,
     Reading,
     User,
-    List
+    List,
+    Expand,
+    Fold
   },
-  data() {
-    return {
-      activeMenu: 'overview'
+  setup() {
+    const router = useRouter()
+    const activeMenu = ref('overview')
+    const isCollapse = ref(false)
+
+    const handleMenuSelect = (index) => {
+      activeMenu.value = index
+      router.push(`/admin/${index}`)
     }
-  },
-  methods: {
-    handleMenuSelect(index) {
-      this.$router.push(`/admin/${index}`)
+
+    const toggleSidebar = () => {
+      isCollapse.value = !isCollapse.value
+    }
+
+    const navigateTo = (route) => {
+      // 使用 Vue Router 进行页面跳转
+      router.push({ name: route })
+    }
+
+    return {
+      activeMenu,
+      isCollapse,
+      handleMenuSelect,
+      toggleSidebar,
+      navigateTo
     }
   }
 }
@@ -64,8 +94,66 @@ export default {
   height: 100vh;
 }
 
+.sidebar {
+  background-color: #fff;
+  transition: width 0.3s;
+  overflow-x: hidden;
+  border-right: 1px solid #e6e6e6;
+}
+
+.sidebar-header {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  color: #303133;
+  font-size: 18px;
+  font-weight: bold;
+  border-bottom: 1px solid #e6e6e6;
+}
+
+.toggle-sidebar {
+  cursor: pointer;
+  font-size: 20px;
+  color: #909399;
+}
+
 .admin-menu {
-  height: 100%;
-  border-right: solid 1px #e6e6e6;
+  border-right: none;
+}
+
+:deep(.el-menu) {
+  border-right: none;
+}
+
+:deep(.el-menu-item) {
+  color: #303133;
+}
+
+:deep(.el-menu-item.is-active) {
+  color: #409EFF;
+  background-color: #ecf5ff;
+}
+
+:deep(.el-menu-item:hover) {
+  background-color: #f5f7fa;
+}
+
+.el-main {
+  padding: 20px;
+  background-color: #fff;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    z-index: 1000;
+    height: 100vh;
+  }
+
+  .el-main {
+    margin-left: 64px;
+  }
 }
 </style>

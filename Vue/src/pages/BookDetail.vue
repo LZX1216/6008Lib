@@ -2,7 +2,7 @@
   <div class="book-detail">
     <el-row :gutter="20">
       <!-- Left side book information -->
-      <el-col :span="8">
+      <el-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
         <el-card class="book-cover-card">
           <img :src="book.cover" class="book-cover" alt="Book cover" />
           <div class="book-actions">
@@ -17,29 +17,29 @@
       </el-col>
 
       <!-- Right side detailed information -->
-      <el-col :span="16">
+      <el-col :xs="24" :sm="24" :md="16" :lg="16" :xl="16">
         <el-card class="book-info-card">
-          <h1>{{ book.title }}</h1>
+          <h1 class="book-title">{{ book.title }}</h1>
           <div class="book-meta">
-            <p class="author">Author: {{ book.author }}</p>
-            <p class="publisher">Publisher: {{ book.publisher }}</p>
-            <p class="isbn">ISBN: {{ book.isbn }}</p>
-            <p class="publish-date">Publication Date: {{ book.publishDate }}</p>
-            <p class="category">Category: {{ book.category }}</p>
+            <p class="author"><i class="el-icon-user"></i> Author: {{ book.author }}</p>
+            <p class="publisher"><i class="el-icon-office-building"></i> Publisher: {{ book.publisher }}</p>
+            <p class="isbn"><i class="el-icon-document"></i> ISBN: {{ book.isbn }}</p>
+            <p class="publish-date"><i class="el-icon-date"></i> Publication Date: {{ book.publishDate }}</p>
+            <p class="category"><i class="el-icon-collection-tag"></i> Category: {{ book.category }}</p>
             <div class="rating">
               <span>Rating: </span>
               <el-rate v-model="book.rating" disabled show-score />
             </div>
           </div>
 
-          <el-divider />
+          <el-divider></el-divider>
 
           <div class="book-description">
             <h3>Book Description</h3>
             <p>{{ book.description }}</p>
           </div>
 
-          <el-divider />
+          <el-divider></el-divider>
 
           <div class="book-status">
             <h3>Library Information</h3>
@@ -119,18 +119,18 @@ export default {
     return {
       book: {
         id: 1,
-        title: 'The Three-Body Problem',
-        author: 'Cixin Liu',
-        publisher: 'Chongqing Publishing House',
-        isbn: '9787536692930',
-        publishDate: '2008-01-01',
-        category: 'Science Fiction',
-        cover: 'https://img3.doubanio.com/view/subject/m/public/s29517429.jpg',
-        rating: 4.8,
-        description: 'During the Cultural Revolution, a chance event leads Ye Wenjie, a female professor of astrophysics at Nanjing University, to become an observer at the military\'s top-secret radar base "Red Coast Project", thus unveiling the three-hundred-year entanglement between Earth civilization and the Three-Body civilization.',
-        location: 'Science Fiction Section',
-        callNumber: 'I247.55/L783',
-        availableCopies: 2,
+        title: 'Introduction to Algorithms',
+        author: 'Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein',
+        publisher: 'The MIT Press',
+        isbn: '9780262033848',
+        publishDate: '2000-01-01',
+        category: 'Algorithms',
+        cover: 'https://m.media-amazon.com/images/I/61Mw06x2XcL._AC_UL320_.jpg',
+        rating: 4.5,
+        description: 'A comprehensive introduction to the modern study of computer algorithms. It presents many algorithms and covers them in considerable depth, yet makes their design and analysis accessible to all levels of readers.',
+        location: 'Computer Science Section',
+        callNumber: 'QA76.6.I5858',
+        availableCopies: 3,
         totalCopies: 5,
         available: true
       },
@@ -140,14 +140,14 @@ export default {
           username: 'Reader A',
           date: '2024-03-15',
           rating: 5,
-          content: 'A fascinating sci-fi novel that makes you think deeply.'
+          content: 'This book is a must-have for any computer science student. The explanations are clear and detailed.'
         },
         {
           id: 2,
           username: 'Reader B',
           date: '2024-03-14',
           rating: 4,
-          content: 'Ingenious concept with a tight plot.'
+          content: 'Great resource for understanding complex algorithms. Highly recommended!'
         }
       ],
       commentDialogVisible: false,
@@ -231,16 +231,24 @@ export default {
 <style scoped>
 .book-detail {
   padding: 20px;
+  animation: fadeIn 0.8s ease-out;
 }
 
 .book-cover-card {
   text-align: center;
+  animation: slideInUp 0.8s ease-out 0.2s both;
 }
 
 .book-cover {
   width: 100%;
   max-width: 300px;
   height: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.book-cover:hover {
+  transform: scale(1.05);
 }
 
 .book-actions {
@@ -252,54 +260,185 @@ export default {
 
 .book-info-card {
   margin-bottom: 20px;
+  animation: slideInUp 0.8s ease-out 0.4s both;
+}
+
+.book-title {
+  font-size: 2rem;
+  color: #303133;
+  margin-bottom: 20px;
 }
 
 .book-meta {
-  color: #666;
+  color: #606266;
   line-height: 1.8;
+}
+
+.book-meta p {
+  margin: 10px 0;
+}
+
+.book-meta i {
+  margin-right: 8px;
 }
 
 .book-description {
   margin: 20px 0;
 }
 
+.book-description h3 {
+  font-size: 1.5rem;
+  color: #303133;
+  margin-bottom: 10px;
+}
+
+.book-status h3 {
+  font-size: 1.5rem;
+  color: #303133;
+  margin-bottom: 10px;
+}
+
+.book-status .el-descriptions {
+  animation: fadeIn 0.8s ease-out;
+}
+
+.book-status .el-descriptions__body {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.book-status .el-descriptions__label {
+  background-color: #f5f7fa;
+  font-weight: bold;
+  padding: 12px 15px;
+}
+
+.book-status .el-descriptions__content {
+  padding: 12px 15px;
+}
+
+.book-status .el-descriptions__label,
+.book-status .el-descriptions__content {
+  transition: background-color 0.3s ease;
+}
+
+.book-status .el-descriptions__row:hover .el-descriptions__label,
+.book-status .el-descriptions__row:hover .el-descriptions__content {
+  background-color: #ecf5ff;
+}
+
+.comments-card {
+  margin-top: 20px;
+  animation: fadeInUp 0.8s ease-out;
+}
+
 .comments-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 15px;
+}
+
+.comments-list {
+  max-height: 400px;
+  overflow-y: auto;
 }
 
 .comment-item {
-  padding: 15px 0;
-  border-bottom: 1px solid #EBEEF5;
+  padding: 15px;
+  border-bottom: 1px solid #ebeef5;
+  transition: background-color 0.3s ease;
+  animation: fadeIn 0.5s ease-out;
 }
 
 .comment-item:last-child {
   border-bottom: none;
 }
 
+.comment-item:hover {
+  background-color: #f5f7fa;
+}
+
 .comment-header {
   display: flex;
   align-items: center;
-  gap: 10px;
   margin-bottom: 10px;
+}
+
+.comment-header .el-avatar {
+  margin-right: 10px;
 }
 
 .username {
   font-weight: bold;
+  margin-right: 10px;
 }
 
 .comment-date {
-  color: #999;
-  font-size: 12px;
+  color: #909399;
+  font-size: 0.9rem;
 }
 
 .comment-rating {
-  margin: 5px 0;
+  margin-bottom: 5px;
 }
 
 .comment-content {
-  margin: 10px 0;
-  color: #666;
+  color: #606266;
+  line-height: 1.5;
 }
+
+@keyframes slideInUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .book-status .el-descriptions__label,
+  .book-status .el-descriptions__content {
+    padding: 8px 10px;
+  }
+
+  .comments-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .comments-header h3 {
+    margin-bottom: 10px;
+  }
+
+  .comment-item {
+    padding: 10px;
+  }
+
+  .comment-header {
+    flex-wrap: wrap;
+  }
+
+  .username, .comment-date {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+}
+
+
+.comment-item:nth-child(1) { animation-delay: 0.1s; }
+.comment-item:nth-child(2) { animation-delay: 0.2s; }
+.comment-item:nth-child(3) { animation-delay: 0.3s; }
+.comment-item:nth-child(4) { animation-delay: 0.4s; }
+.comment-item:nth-child(5) { animation-delay: 0.5s; }
 </style> 

@@ -1,7 +1,7 @@
 <template>
   <div class="about-us">
     <el-row :gutter="20">
-      <el-col :span="16">
+      <el-col :xs="24" :sm="24" :md="16" :lg="16" :xl="16">
         <el-card class="intro-section">
           <h2>About Us</h2>
           <p class="intro-text">
@@ -19,7 +19,7 @@
         <el-card class="features-section">
           <h3>Our Features</h3>
           <el-row :gutter="20">
-            <el-col :span="8" v-for="feature in features" :key="feature.title">
+            <el-col :xs="24" :sm="12" :md="8" v-for="feature in features" :key="feature.title">
               <div class="feature-item">
                 <el-icon :size="40" class="feature-icon">
                   <component :is="feature.icon" />
@@ -32,7 +32,7 @@
         </el-card>
       </el-col>
 
-      <el-col :span="8">
+      <el-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
         <el-card class="stats-section">
           <h3>Library Overview</h3>
           <div class="stat-item" v-for="stat in stats" :key="stat.label">
@@ -98,13 +98,9 @@ export default {
 
 <style scoped>
 .about-us {
-  padding: 20px;
-
+  max-width: 1200px;
   margin: 0 auto;
-}
-
-.intro-section {
-  margin-bottom: 20px;
+  padding: 20px;
 }
 
 .intro-text {
@@ -112,7 +108,7 @@ export default {
   color: #666;
 }
 
-.features-section {
+.intro-section, .features-section, .stats-section, .contact-section {
   margin-bottom: 20px;
 }
 
@@ -136,10 +132,6 @@ export default {
   font-size: 14px;
 }
 
-.stats-section {
-  margin-bottom: 20px;
-}
-
 .stat-item {
   text-align: center;
   padding: 15px;
@@ -161,10 +153,6 @@ export default {
   margin-top: 5px;
 }
 
-.contact-section {
-  margin-bottom: 20px;
-}
-
 .contact-info p {
   display: flex;
   align-items: center;
@@ -173,4 +161,132 @@ export default {
   color: #666;
 }
 
+@media (max-width: 768px) {
+  .about-us {
+    padding: 10px;
+  }
+
+  .intro-section h2, .features-section h3, .stats-section h3, .contact-section h3 {
+    font-size: 24px;
+  }
+
+  .intro-text, .feature-item p, .stat-label, .contact-info p {
+    font-size: 14px;
+  }
+
+  .stat-value {
+    font-size: 20px;
+  }
+
+  .feature-item {
+    padding: 15px;
+  }
+
+  .feature-icon {
+    font-size: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .intro-section h2, .features-section h3, .stats-section h3, .contact-section h3 {
+    font-size: 20px;
+  }
+
+  .intro-text, .feature-item p, .stat-label, .contact-info p {
+    font-size: 12px;
+  }
+
+  .stat-value {
+    font-size: 18px;
+  }
+
+  .feature-item {
+    padding: 10px;
+  }
+
+  .feature-icon {
+    font-size: 24px;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.about-us {
+  animation: fadeIn 0.8s ease-out;
+}
+
+.intro-section {
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.features-section {
+  animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+.feature-item {
+  opacity: 0;
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.feature-item:nth-child(1) { animation-delay: 0.6s; }
+.feature-item:nth-child(2) { animation-delay: 0.8s; }
+.feature-item:nth-child(3) { animation-delay: 1s; }
+
+.stats-section {
+  animation: fadeInUp 0.8s ease-out 1.2s both;
+}
+
+.stat-item {
+  opacity: 0;
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.stat-item:nth-child(1) { animation-delay: 1.4s; }
+.stat-item:nth-child(2) { animation-delay: 1.6s; }
+.stat-item:nth-child(3) { animation-delay: 1.8s; }
+.stat-item:nth-child(4) { animation-delay: 2s; }
+
+.contact-section {
+  animation: fadeInUp 0.8s ease-out 2.2s both;
+}
+
+.feature-item, .stat-item {
+  transition: transform 0.3s ease;
+}
+
+.feature-item:hover, .stat-item:hover {
+  transform: translateY(-5px);
+}
+
+@media (max-width: 768px) {
+  .about-us,
+  .intro-section,
+  .features-section,
+  .feature-item,
+  .stats-section,
+  .stat-item,
+  .contact-section {
+    animation-name: fadeIn;
+    animation-duration: 0.5s;
+    animation-delay: 0s;
+  }
+}
 </style> 

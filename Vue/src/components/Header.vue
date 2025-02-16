@@ -36,7 +36,7 @@
         <el-menu-item index="/user">
           <router-link to="/user">{{ $t('user.profile') }}</router-link>
         </el-menu-item>
-        <el-button type="text" @click="logout">{{ $t('common.logout') }}</el-button>
+        <el-menu-item index="/logout" @click="logout">{{ $t('common.logout') }}</el-menu-item>
       </template>
 
       <!-- Language switch -->
@@ -96,6 +96,8 @@ export default {
   align-items: center;
   border-bottom: solid 1px #e6e6e6;
   padding: 0 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 .logo-item {
@@ -107,9 +109,10 @@ export default {
 }
 
 .logo-text {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: bold;
   color: #409EFF;
+  transition: all 0.3s ease;
 }
 
 .right-menu {
@@ -126,14 +129,87 @@ export default {
 :deep(.el-menu-item) {
   height: 60px;
   line-height: 60px;
+  transition: all 0.3s ease;
+}
+
+:deep(.el-menu-item:hover) {
+  background-color: #ecf5ff;
 }
 
 :deep(.router-link-active) {
   color: var(--el-menu-active-color);
+  font-weight: bold;
 }
 
 a {
   text-decoration: none;
   color: inherit;
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.el-menu-item {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .header-menu {
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .logo-item {
+    padding: 0;
+  }
+
+  .logo-text {
+    font-size: 20px;
+  }
+
+  .right-menu {
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: 10px;
+  }
+
+  :deep(.el-menu-item) {
+    padding: 0 10px;
+  }
+
+  .language-switch {
+    margin-left: 10px;
+  }
+}
+
+.menu-toggle {
+  display: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .el-menu {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .el-menu.show {
+    display: flex;
+  }
+
+  :deep(.el-menu-item) {
+    width: 100%;
+    text-align: center;
+  }
 }
 </style>

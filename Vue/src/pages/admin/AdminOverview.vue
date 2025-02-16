@@ -2,70 +2,19 @@
   <div class="admin-overview">
     <!-- Statistic Cards -->
     <el-row :gutter="20">
-      <el-col :span="6">
-        <el-card class="stat-card">
+      <el-col :xs="24" :sm="12" :md="6" v-for="(stat, index) in statsList" :key="index">
+        <el-card class="stat-card animate__animated animate__fadeInUp" :style="{ animationDelay: `${index * 0.1}s` }">
           <template #header>
             <div class="card-header">
-              <span>Total Borrows</span>
-              <el-tag size="small">This Month</el-tag>
+              <span>{{ stat.title }}</span>
+              <el-tag :type="stat.tagType" size="small">{{ stat.tagText }}</el-tag>
             </div>
           </template>
           <div class="stat-value">
-            <span class="number">{{ stats.totalBorrows }}</span>
-            <span class="trend" :class="{ 'up': stats.borrowTrend > 0 }">
-              {{ stats.borrowTrend }}%
-              <el-icon><CaretTop /></el-icon>
-            </span>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="stat-card">
-          <template #header>
-            <div class="card-header">
-              <span>Active Users</span>
-              <el-tag size="small" type="success">This Month</el-tag>
-            </div>
-          </template>
-          <div class="stat-value">
-            <span class="number">{{ stats.activeUsers }}</span>
-            <span class="trend" :class="{ 'up': stats.userTrend > 0 }">
-              {{ stats.userTrend }}%
-              <el-icon><CaretTop /></el-icon>
-            </span>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="stat-card">
-          <template #header>
-            <div class="card-header">
-              <span>New Books</span>
-              <el-tag size="small" type="warning">This Month</el-tag>
-            </div>
-          </template>
-          <div class="stat-value">
-            <span class="number">{{ stats.newBooks }}</span>
-            <span class="trend" :class="{ 'up': stats.bookTrend > 0 }">
-              {{ stats.bookTrend }}%
-              <el-icon><CaretTop /></el-icon>
-            </span>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="stat-card">
-          <template #header>
-            <div class="card-header">
-              <span>Overdue Count</span>
-              <el-tag size="small" type="danger">Current</el-tag>
-            </div>
-          </template>
-          <div class="stat-value">
-            <span class="number">{{ stats.overdueCount }}</span>
-            <span class="trend" :class="{ 'down': stats.overdueTrend < 0 }">
-              {{ stats.overdueTrend }}%
-              <el-icon><CaretBottom /></el-icon>
+            <span class="number">{{ stat.value }}</span>
+            <span class="trend" :class="{ 'up': stat.trend > 0, 'down': stat.trend < 0 }">
+              {{ Math.abs(stat.trend) }}%
+              <el-icon><component :is="stat.trend > 0 ? 'CaretTop' : 'CaretBottom'" /></el-icon>
             </span>
           </div>
         </el-card>
@@ -75,8 +24,8 @@
     <!-- Chart Area -->
     <el-row :gutter="20" class="charts-row">
       <!-- Borrowing Trend Chart -->
-      <el-col :span="6">
-        <el-card class="chart-card">
+      <el-col :xs="24" :sm="24" :md="12" :lg="12">
+        <el-card class="chart-card animate__animated animate__fadeInLeft">
           <template #header>
             <div class="card-header">
               <span>Borrowing Trend</span>
@@ -87,7 +36,6 @@
               </el-radio-group>
             </div>
           </template>
-          <!-- Integration of chart library like ECharts is needed here -->
           <div class="chart-container">
             Borrowing Trend Chart
           </div>
@@ -95,8 +43,8 @@
       </el-col>
 
       <!-- Book Category Statistics -->
-      <el-col :span="6">
-        <el-card class="chart-card">
+      <el-col :xs="24" :sm="24" :md="12" :lg="12">
+        <el-card class="chart-card animate__animated animate__fadeInUp">
           <template #header>
             <div class="card-header">
               <span>Book Category Statistics</span>
@@ -107,10 +55,12 @@
           </div>
         </el-card>
       </el-col>
+    </el-row>
 
     <!-- Recent Activities -->
-      <el-col :span="12">
-        <el-card class="chart-card">
+    <el-row :gutter="20">
+      <el-col :xs="24">
+        <el-card class="chart-card animate__animated animate__fadeInRight">
           <template #header>
             <div class="card-header">
               <span>Recent Activities</span>
@@ -131,47 +81,6 @@
         </el-card>
       </el-col>
     </el-row>
-
-    <!-- Purchase Requests -->
-    <el-card class="purchase-requests">
-      <template #header>
-        <div class="card-header">
-          <span>Purchase Requests</span>
-        </div>
-      </template>
-      <el-table :data="purchaseRequests" style="width: 100%">
-        <el-table-column prop="title" label="Title" />
-        <el-table-column prop="author" label="Author" />
-        <el-table-column prop="isbn" label="ISBN" width="120" />
-        <el-table-column prop="requestDate" label="Request Date" width="120" />
-        <el-table-column prop="status" label="Status" width="120">
-          <template #default="scope">
-            <el-tag :type="getStatusType(scope.row.status)">
-              {{ scope.row.status }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="Actions" width="200">
-          <template #default="scope">
-            <el-button
-              size="small"
-              @click="handleApprove(scope.row)"
-              :disabled="scope.row.status !== 'Pending'"
-            >
-              Approve
-            </el-button>
-            <el-button
-              size="small"
-              type="danger"
-              @click="handleReject(scope.row)"
-              :disabled="scope.row.status !== 'Pending'"
-            >
-              Reject
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </el-card>
   </div>
 </template>
 
@@ -189,50 +98,30 @@ export default {
     return {
       borrowChartPeriod: 'month',
       stats: {
-        totalBorrows: 1234,
-        borrowTrend: 15,
-        activeUsers: 456,
-        userTrend: 8,
-        newBooks: 89,
-        bookTrend: -3,
-        overdueCount: 12,
-        overdueTrend: -5
+        totalBorrows: { value: 1234, trend: 15, title: 'Total Borrows', tagType: 'success', tagText: 'Active' },
+        activeUsers: { value: 456, trend: 8, title: 'Active Users', tagType: 'warning', tagText: 'Growing' },
+        newBooks: { value: 89, trend: -3, title: 'New Books', tagType: 'info', tagText: 'This Month' },
+        overdueCount: { value: 12, trend: -5, title: 'Overdue Books', tagType: 'danger', tagText: 'Attention' }
       },
       recentActivities: [
         {
           id: 1,
           time: '2024-03-15 14:30',
           type: 'success',
-          content: 'User Zhang San returned "The Three-Body Problem"'
+          content: 'User Zhang San returned "Introduction to Algorithms"'
         },
         {
           id: 2,
           time: '2024-03-15 13:20',
           type: 'warning',
-          content: 'New book "Ball Lightning" added to inventory'
+          content: 'New book "Artificial Intelligence: A Modern Approach" added to inventory'
         },
         {
           id: 3,
           time: '2024-03-15 11:45',
           type: 'danger',
           content: 'User Li Si\'s loan is overdue'
-        } ,
-        {
-          id: 4,
-          time: '2024-03-15 10:00',
-          type: 'info',
-          content: 'User Wang Wu requested to borrow "The Dark Forest"'
         }
-      ] ,
-      purchaseRequests: [
-        {
-          id: 1,
-          title: 'The Three-Body Problem',
-          author: 'Cixin Liu',
-          isbn: '9787229030933',
-          requestDate: '2024-03-15',
-          status: 'Pending'
-        },
       ]
     }
   },
@@ -241,66 +130,11 @@ export default {
       // Implement logic to fetch overview data
       console.log('Fetching overview data')
     },
-
-    getStatusType(status) {
-      const types = {
-        Pending: 'warning',
-        Approved: 'success',
-        Rejected: 'danger'
-      }
-      return types[status] || 'info'
-    },
-
-    async handleApprove(request) {
-      try {
-        await ElMessageBox.confirm(
-          `Are you sure you want to approve the purchase request for "${request.title}"?`,
-          'Confirm Approval',
-          {
-            confirmButtonText: 'Approve',
-            cancelButtonText: 'Cancel',
-            type: 'warning'
-          }
-        )
-        // Call an API to update the request status
-        request.status = 'Approved'
-        ElMessage.success('Purchase request approved successfully')
-      } catch (error) {
-        if (error !== 'cancel') {
-          ElMessage.error('Failed to approve purchase request')
-        }
-      }
-    },
-
-    async handleReject(request) {
-      try {
-        await ElMessageBox.confirm(
-          `Are you sure you want to reject the purchase request for "${request.title}"?`,
-          'Confirm Rejection',
-          {
-            confirmButtonText: 'Reject',
-            cancelButtonText: 'Cancel',
-            type: 'warning'
-          }
-        )
-        // Call an API to update the request status
-        request.status = 'Rejected'
-        ElMessage.success('Purchase request rejected successfully')
-      } catch (error) {
-        if (error !== 'cancel') {
-          ElMessage.error('Failed to reject purchase request')
-        }
-      }
-    },
-
-    fetchPurchaseRequests() {
-      // Implement logic to fetch purchase requests
-      console.log('Fetching purchase requests')
-    }
   },
-  created() {
-    // Existing created hook...
-    this.fetchPurchaseRequests()
+  computed: {
+    statsList() {
+      return Object.values(this.stats)
+    }
   }
 }
 </script>
@@ -353,7 +187,7 @@ export default {
 }
 
 .chart-container {
-  height: 300px;
+  height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -361,16 +195,9 @@ export default {
 }
 
 .recent-activity {
-  height: 300px;
+  height: 200px;
   display: flex;
   align-items: center;
   background: #f5f7fa;
 }
-
-.purchase-requests {
-  margin-top: 10px;
-  margin-bottom: 20px;
-}
-
-
 </style>

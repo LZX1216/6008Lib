@@ -32,14 +32,15 @@ export const auth = reactive({
     },
 
     login(username, password) {
-        // 查找测试用户
-        const user = testUsers.find(u => u.username === username && u.password === password)
-        if (user) {
-            this.isLoggedIn = true
-            this.userInfo = { ...user }
-            sessionStorage.setItem('userInfo', JSON.stringify(user))
-            return true
-        }
-        return false
-    }
+      const user = testUsers.find(u => u.username === username && u.password === password);
+      if (user) {
+          this.isLoggedIn = true;
+          this.userInfo = { ...user };
+          sessionStorage.setItem('isLoggedIn', 'true');
+          sessionStorage.setItem('userInfo', JSON.stringify(user)); // 确保这里存储了用户信息
+          return true;
+      }
+      return false;
+  }
 })
+

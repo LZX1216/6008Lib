@@ -248,4 +248,4 @@ export default {
   padding-bottom: 10px;
   border-bottom: 1px solid #eee;
 }
-</style> 
+</style>

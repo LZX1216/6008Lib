@@ -2,82 +2,90 @@
   <div class="user-center">
     <el-row :gutter="20">
       <!-- Left side user info card -->
-      <el-col :span="6">
-        <el-card class="user-info-card">
-          <div class="user-avatar">
-            <el-avatar :size="100">{{ userInfo.username.charAt(0).toUpperCase() }}</el-avatar>
-          </div>
-          <h2>{{ userInfo.username }}</h2>
-          <p class="user-role">{{ userInfo.role === 'admin' ? 'Administrator' : 'Regular User' }}</p>
-          <el-divider />
-          <div class="user-stats">
-            <div class="stat-item">
-              <h3>{{ borrowStats.current }}</h3>
-              <p>Current Borrowings</p>
+      <el-col :xs="24" :sm="24" :md="8" :lg="6" :xl="6">
+        <transition name="fade-slide-down">
+
+          <el-card class="user-info-card" v-if="userInfo.username">
+            <div class="user-avatar">
+              <el-avatar :size="100">{{ userInfo.username.charAt(0).toUpperCase() }}</el-avatar>
             </div>
-            <div class="stat-item">
-              <h3>{{ borrowStats.history }}</h3>
-              <p>Borrowing History</p>
+            <h2>{{ userInfo.username }}</h2>
+            <p class="user-role">{{ userInfo.role === 'admin' ? 'Administrator' : 'Regular User' }}</p>
+            <el-divider />
+            <div class="user-stats">
+              <div class="stat-item">
+                <h3>{{ borrowStats.current }}</h3>
+                <p>Current Borrowings</p>
+              </div>
+              <div class="stat-item">
+                <h3>{{ borrowStats.history }}</h3>
+                <p>Borrowing History</p>
+              </div>
+              <div class="stat-item">
+                <h3>{{ borrowStats.overdue }}</h3>
+                <p>Overdue Count</p>
+              </div>
             </div>
-            <div class="stat-item">
-              <h3>{{ borrowStats.overdue }}</h3>
-              <p>Overdue Count</p>
-            </div>
-          </div>
-        </el-card>
+          </el-card>
+
+        </transition>
       </el-col>
 
       <!-- Right side content area -->
-      <el-col :span="18">
+      <el-col :xs="24" :sm="24" :md="16" :lg="18" :xl="18">
         <!-- Borrowing records -->
-        <el-card class="content-card">
-          <template #header>
-            <div class="card-header">
-              <h3>Borrowing Records</h3>
-            </div>
-          </template>
+        <transition name="fade-slide-up">
+          <el-card class="content-card">
+            <template #header>
+              <div class="card-header">
+                <h3>Borrowing Records</h3>
+              </div>
+            </template>
 
-          <el-table :data="borrows" style="width: 100%">
-            <el-table-column prop="bookTitle" label="Book Title"/>
-            <el-table-column prop="borrowDate" label="Borrow Date" width="120" />
-            <el-table-column prop="dueDate" label="Due Date" width="120" />
-            <el-table-column prop="returnDate" label="Actual Return Date" width="180" />
-            <el-table-column prop="status" label="Status" width="120">
-              <template #default="scope">
-                <el-tag :type="getBorrowStatusType(scope.row.status)">
-                  {{ getBorrowStatusText(scope.row.status) }}
-                </el-tag>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-card>
+            <el-table :data="borrows" style="width: 100%">
+              <el-table-column prop="bookTitle" label="Book Title"/>
+              <el-table-column prop="borrowDate" label="Borrow Date" width="120" />
+              <el-table-column prop="dueDate" label="Due Date" width="120" />
+              <el-table-column prop="returnDate" label="Actual Return Date" width="180" />
+              <el-table-column prop="status" label="Status" width="120">
+                <template #default="scope">
+                  <el-tag :type="getBorrowStatusType(scope.row.status)">
+                    {{ getBorrowStatusText(scope.row.status) }}
+                  </el-tag>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-card>
+        </transition>
 
         <!-- My Wishlist -->
-        <el-card class="content-card">
-          <template #header>
-            <div class="card-header">
-              <h3>My Wishlist</h3>
-              <el-button type="primary" size="small">Add Book</el-button>
-            </div>
-          </template>
+        <transition name="fade-slide-up">
+          <el-card class="content-card">
+            <template #header>
+              <div class="card-header">
+                <h3>My Wishlist</h3>
+                <el-button type="primary" size="small">Add Book</el-button>
+              </div>
+            </template>
 
-          <el-table :data="wishlist" style="width: 100%">
-            <el-table-column prop="bookTitle" label="Book Title" />
-            <el-table-column prop="author" label="Author" />
-            <el-table-column prop="addDate" label="Date Added" width="120" />
-            <el-table-column label="Actions" width="150">
-              <template #default="scope">
-                <el-button
-                  type="danger"
-                  size="small"
-                  @click="removeFromWishlist(scope.row)"
-                >
-                  Remove
-                </el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-card>
+            <el-table :data="wishlist" style="width: 100%">
+              <el-table-column prop="bookTitle" label="Book Title" />
+              <el-table-column prop="author" label="Author" />
+              <el-table-column prop="addDate" label="Date Added" width="120" />
+              <el-table-column label="Actions" width="150">
+                <template #default="scope">
+                  <el-button
+                    type="danger"
+                    size="small"
+                    @click="removeFromWishlist(scope.row)"
+                  >
+                    Remove
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-card>
+        </transition>
       </el-col>
     </el-row>
   </div>
@@ -130,8 +138,17 @@ export default {
           addDate: '2024-03-10',
           available: false
         }
-      ]
+      ],
+      isLoading: true
     }
+  },
+  mounted() {
+    const storedUserInfo = sessionStorage.getItem('userInfo');
+        if (storedUserInfo) {
+          this.userInfo = JSON.parse(storedUserInfo);
+        } else {
+          this.$router.push('/login');
+        }
   },
   methods: {
     getBorrowStatusType(status) {
@@ -210,10 +227,22 @@ export default {
 
 .user-info-card {
   text-align: center;
+  transition: all 0.3s ease;
+}
+
+
+.user-info-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .user-avatar {
   margin: 20px 0;
+  transition: transform 0.3s ease;
+}
+
+.user-avatar:hover {
+  transform: scale(1.05);
 }
 
 .user-role {
@@ -229,6 +258,11 @@ export default {
 
 .stat-item {
   text-align: center;
+  transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+  transform: translateY(-3px);
 }
 
 .stat-item h3 {
@@ -243,6 +277,11 @@ export default {
 
 .content-card {
   margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.content-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .card-header {
@@ -253,5 +292,46 @@ export default {
 
 .card-header h3 {
   margin: 0;
+}
+
+/* Animations */
+.fade-slide-down-enter-active,
+.fade-slide-down-leave-active,
+.fade-slide-right-enter-active,
+.fade-slide-right-leave-active {
+  transition: all 0.5s ease;
+}
+
+.fade-slide-down-enter-from,
+.fade-slide-down-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.fade-slide-right-enter-from,
+.fade-slide-right-leave-to {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+@media (max-width: 768px) {
+  .user-stats {
+    flex-direction: column;
+  }
+
+  .stat-item {
+    margin-bottom: 15px;
+  }
+}
+
+.fade-slide-up-enter-active,
+.fade-slide-up-leave-active {
+  transition: all 0.5s ease;
+}
+
+.fade-slide-up-enter-from,
+.fade-slide-up-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
 }
 </style>

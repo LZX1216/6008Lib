@@ -298,9 +298,9 @@ export default {
 
 <style scoped>
 .help-support {
-  padding: 20px;
-
+  max-width: 1200px;
   margin: 0 auto;
+  padding: 20px;
 }
 
 .section-header {
@@ -343,5 +343,183 @@ export default {
 
 .purchase-request-section {
   margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .help-support {
+    padding: 15px;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .section-header h2 {
+    margin-bottom: 10px;
+  }
+
+  .el-form-item {
+    margin-bottom: 15px;
+  }
+
+  .el-form-item__label {
+    float: none;
+    display: block;
+    text-align: left;
+    margin-bottom: 5px;
+  }
+
+  .el-form-item__content {
+    margin-left: 0 !important;
+  }
+
+  .el-button {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .el-button + .el-button {
+    margin-left: 0;
+  }
+
+  .el-table {
+    font-size: 12px;
+  }
+
+  .el-table .cell {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .help-support {
+    padding: 10px;
+  }
+
+  .section-header h2 {
+    font-size: 18px;
+  }
+
+  .faq-answer,
+  .el-form-item__label,
+  .el-form-item__content,
+  .el-input__inner,
+  .el-textarea__inner {
+    font-size: 14px;
+  }
+
+  .el-table {
+    font-size: 11px;
+  }
+}
+
+:deep(.el-dialog) {
+  width: 90% !important;
+  max-width: none !important;
+}
+
+@media (max-width: 768px) {
+  :deep(.el-dialog) {
+    width: 95% !important;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.help-support {
+  animation: fadeIn 0.8s ease-out;
+}
+
+.faq-section {
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.el-collapse-item {
+  opacity: 0;
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.el-collapse-item:nth-child(1) { animation-delay: 0.4s; }
+.el-collapse-item:nth-child(2) { animation-delay: 0.6s; }
+.el-collapse-item:nth-child(3) { animation-delay: 0.8s; }
+
+.purchase-request-section {
+  animation: fadeInUp 0.8s ease-out 1s both;
+}
+
+.el-table {
+  opacity: 0;
+  animation: fadeIn 0.8s ease-out 1.2s forwards;
+}
+
+.contact-form {
+  animation: fadeInUp 0.8s ease-out 1.4s both;
+}
+
+.el-form-item {
+  opacity: 0;
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.el-form-item:nth-child(1) { animation-delay: 1.6s; }
+.el-form-item:nth-child(2) { animation-delay: 1.8s; }
+.el-form-item:nth-child(3) { animation-delay: 2s; }
+.el-form-item:nth-child(4) { animation-delay: 2.2s; }
+.el-form-item:nth-child(5) { animation-delay: 2.4s; }
+
+.el-button {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.el-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.el-collapse-item__header,
+.el-table__row,
+.el-form-item {
+  transition: background-color 0.3s ease;
+}
+
+.el-collapse-item__header:hover,
+.el-table__row:hover,
+.el-form-item:hover {
+  background-color: #f5f7fa;
+}
+
+@media (max-width: 768px) {
+  .help-support,
+  .faq-section,
+  .el-collapse-item,
+  .purchase-request-section,
+  .el-table,
+  .contact-form,
+  .el-form-item {
+    animation-name: fadeIn;
+    animation-duration: 0.5s;
+    animation-delay: 0s;
+  }
 }
 </style> 

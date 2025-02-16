@@ -2,9 +2,14 @@
   <div class="book-management">
     <div class="page-header">
       <h2>Book Management</h2>
-      <el-button type="primary" @click="showAddBookDialog">
-        Add New Book
-      </el-button>
+      <div>
+        <el-button type="primary" @click="showAddBookDialog">
+          Add New Book
+        </el-button>
+        <el-button type="info" @click="showPurchaseRequestsDialog">
+          View Purchase Requests
+        </el-button>
+      </div>
     </div>
 
     <!-- Search and Filter -->
@@ -129,6 +134,46 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- Purchase Requests Dialog -->
+    <el-dialog
+      title="Purchase Requests"
+      v-model="purchaseRequestsDialogVisible"
+      width="70%"
+    >
+      <el-table :data="purchaseRequests" style="width: 100%">
+        <el-table-column prop="title" label="Title" />
+        <el-table-column prop="author" label="Author" />
+        <el-table-column prop="isbn" label="ISBN" width="160" />
+        <el-table-column prop="requestDate" label="Request Date" width="160" />
+        <el-table-column prop="status" label="Status" width="120">
+          <template #default="scope">
+            <el-tag :type="getStatusType(scope.row.status)">
+              {{ scope.row.status }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="Actions" width="200">
+          <template #default="scope">
+            <el-button
+              size="small"
+              @click="handleApprove(scope.row)"
+              :disabled="scope.row.status !== 'Pending'"
+            >
+              Approve
+            </el-button>
+            <el-button
+              size="small"
+              type="danger"
+              @click="handleReject(scope.row)"
+              :disabled="scope.row.status !== 'Pending'"
+            >
+              Reject
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
@@ -179,7 +224,18 @@ export default {
         isbn: [
           { required: true, message: 'Please enter the ISBN', trigger: 'blur' }
         ]
-      }
+      },
+      purchaseRequestsDialogVisible: false,
+      purchaseRequests: [
+        {
+          id: 1,
+          title: 'Database System Concepts',
+          author: 'Abraham Silberschatz, Henry F. Korth, S. Sudarshan',
+          isbn: '9780073523323',
+          requestDate: '2024-03-15',
+          status: 'Pending'
+        }
+      ]
     }
   },
   methods: {
@@ -268,11 +324,65 @@ export default {
     fetchBooks() {
       // Implement logic to fetch book list
       console.log('Fetching book list')
+    },
+    showPurchaseRequestsDialog() {
+      this.purchaseRequestsDialogVisible = true
+      this.fetchPurchaseRequests()
+    },
+    getStatusType(status) {
+      const types = {
+        Pending: 'warning',
+        Approved: 'success',
+        Rejected: 'danger'
+      }
+      return types[status] || 'info'
+    },
+    async handleApprove(request) {
+      try {
+        await ElMessageBox.confirm(
+          `Are you sure you want to approve the purchase request for "${request.title}"?`,
+          'Confirm Approval',
+          {
+            confirmButtonText: 'Approve',
+            cancelButtonText: 'Cancel',
+            type: 'warning'
+          }
+        )
+        request.status = 'Approved'
+        ElMessage.success('Purchase request approved successfully')
+      } catch (error) {
+        if (error !== 'cancel') {
+          ElMessage.error('Failed to approve purchase request')
+        }
+      }
+    },
+    async handleReject(request) {
+      try {
+        await ElMessageBox.confirm(
+          `Are you sure you want to reject the purchase request for "${request.title}"?`,
+          'Confirm Rejection',
+          {
+            confirmButtonText: 'Reject',
+            cancelButtonText: 'Cancel',
+            type: 'warning'
+          }
+        )
+        request.status = 'Rejected'
+        ElMessage.success('Purchase request rejected successfully')
+      } catch (error) {
+        if (error !== 'cancel') {
+          ElMessage.error('Failed to reject purchase request')
+        }
+      }
+    },
+    fetchPurchaseRequests() {
+      console.log('Fetching purchase requests')
     }
   },
   created() {
     this.fetchBooks()
-  }
+  },
+
 }
 </script>
 

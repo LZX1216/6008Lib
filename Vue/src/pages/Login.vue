@@ -121,6 +121,10 @@ export default {
   align-items: center;
   min-height: 100vh;
   padding: 20px;
+  background-image: url('https://images.pexels.com/photos/1290141/pexels-photo-1290141.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .login-card {
@@ -129,6 +133,7 @@ export default {
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
+  background-color: rgba(255, 255, 255, 0.9);
 }
 
 .login-card:hover {

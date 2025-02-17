@@ -36,7 +36,8 @@
         <el-menu-item index="/user">
           <router-link to="/user">{{ $t('user.profile') }}</router-link>
         </el-menu-item>
-        <el-menu-item index="/logout" @click="logout">{{ $t('common.logout') }}</el-menu-item>
+        <!-- 修改此处，移除 @click 默认行为 -->
+        <el-menu-item @click="logout">{{ $t('common.logout') }}</el-menu-item>
       </template>
 
       <!-- Language switch -->
@@ -68,20 +69,21 @@ export default {
   methods: {
     async logout() {
       try {
+        // 美化确认弹窗
         await ElMessageBox.confirm(
           'Are you sure you want to log out?',
           'Warning',
           {
             confirmButtonText: 'Confirm',
             cancelButtonText: 'Cancel',
-            type: 'warning',
+            dangerouslyUseHTMLString: true,
+            customClass: 'custom-confirm-box',
           }
         )
         ElMessage.success('Logged out successfully')
         sessionStorage.removeItem('userInfo')
         auth.logoutstate()
         this.$router.push('/')
-        window.location.reload()
       } catch {
         ElMessage.info('Logout cancelled')
       }
@@ -211,5 +213,19 @@ a {
     width: 100%;
     text-align: center;
   }
+}
+
+.custom-confirm-box .el-message-box__header {
+  background-color: #f8f8f8;
+  border-bottom: 1px solid #e6e6e6;
+}
+
+.custom-confirm-box .el-message-box__content {
+  padding: 20px;
+}
+
+.custom-confirm-box .el-message-box__btns {
+  padding: 20px;
+  text-align: center;
 }
 </style>

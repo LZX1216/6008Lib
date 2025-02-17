@@ -62,7 +62,7 @@
       <!-- Sidebar -->
       <div class="filter-sidebar">
         <h3 class="filter-title">🔍 Advanced Filters</h3>
-        
+
         <!-- Sort Options -->
         <div class="filter-group">
           <h4>Sort By</h4>
@@ -158,8 +158,8 @@
               <img :src="book.cover" class="book-cover" alt=""/>
             </div>
             <div class="book-info">
-              <h3 class="book-title">{{ book.title }}</h3>
-              <p class="book-author">{{ book.author }}</p>
+              <h3 class="book-title" :title=book.title>{{ book.title }}</h3>
+              <p class="book-author" :title="book.author">{{ book.author }}</p>
               <div class="book-rating">
                 <el-rate v-model="book.rating" disabled show-score text-color="#ff9900"/>
               </div>
@@ -199,14 +199,16 @@
             </template>
           </el-table-column>
           <el-table-column label="Actions" width="200">
-            <el-button-group class="book-actions">
-                <el-button type="primary" size="small" @click="addToList(book.id)">
+            <template #default="scope">
+              <el-button-group class="book-actions">
+                <el-button type="primary" size="small" @click="addToList(scope.row.id)">
                   Add to list
                 </el-button>
-                <el-button type="primary" size="small" @click="viewBookDetails(book.id)">
+                <el-button type="primary" size="small" @click="viewBookDetails(scope.row.id)">
                   View Details
                 </el-button>
               </el-button-group>
+            </template>
           </el-table-column>
         </el-table>
 
@@ -806,15 +808,6 @@ export default {
   transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.book-title, .book-author {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: block;
-  width: 100%;
-}
-
-
 .book-title {
   font-size: 16px;
   font-weight: bold;
@@ -831,6 +824,19 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
+}
+
+.book-title, .book-author {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-clamp: 2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  width: 100%;
+  text-align: center;
 }
 
 .book-actions {

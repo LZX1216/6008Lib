@@ -1,30 +1,43 @@
 <template>
   <div class="Homepage">
-    <div class="hero-section">
-      <h1 class="hero-title">Welcome to the Library</h1>
-      <p class="hero-subtitle">Discover an Ocean of Knowledge</p>
-      <div class="search-section">
-        <el-input
-          v-model="searchQuery"
-          placeholder="Search for books, authors, or keywords..."
-          class="search-input"
-        >
-          <template #append>
-            <el-button @click="searchBooks" class="search-button">
-              <el-icon><Search /></el-icon>
-            </el-button>
-          </template>
-        </el-input>
+    <!-- Hero section -->
+    <section
+        data-index="0"
+        class="animate-section"
+        :class="{ 'is-visible': visibleSections.includes(0) }"
+    >
+      <div class="hero-section">
+        <h1 class="hero-title">Welcome to the Library</h1>
+        <p class="hero-subtitle">Discover an Ocean of Knowledge</p>
+        <div class="search-section">
+          <el-input
+              v-model="searchQuery"
+              placeholder="Search for books, authors, or keywords..."
+              class="search-input"
+          >
+            <template #append>
+              <el-button @click="searchBooks" class="search-button">
+                <el-icon class="search-icon">
+                  <Search/>
+                </el-icon>
+              </el-button>
+            </template>
+          </el-input>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <el-main>
-      <!-- Recent events -->
-      <section class="recent-events">
+    <!-- Recent events -->
+    <section
+        data-index="1"
+        class="animate-section"
+        :class="{ 'is-visible': visibleSections.includes(1) }"
+    >
+      <div class="recent-events">
         <h2 class="section-title">Recent Events</h2>
         <el-carousel :interval="4000" type="card" height="300px" :autoplay="true" arrow="always">
           <el-carousel-item v-for="event in recentEvents" :key="event.id">
-            <div class="event-card">
+            <div class="event-card" @click="openEventDialog(event)">
               <img :src="event.image" :alt="event.title" class="event-image">
               <div class="event-content">
                 <h3 class="event-title">{{ event.title }}</h3>
@@ -34,17 +47,23 @@
             </div>
           </el-carousel-item>
         </el-carousel>
-      </section>
+      </div>
+    </section>
 
-      <!-- Popular books -->
-      <section class="book-section">
+    <!-- Popular books -->
+    <section
+        data-index="2"
+        class="animate-section"
+        :class="{ 'is-visible': visibleSections.includes(2) }"
+    >
+      <div class="book-section">
         <h2 class="section-title">Popular books</h2>
         <el-scrollbar>
           <div class="books-container">
             <el-card v-for="book in popularBooks" :key="book.id"
-              :body-style="{ padding: '0px' }"
-              class="book-card"
-              @click="viewBookDetails(book.id)"
+                     :body-style="{ padding: '0px' }"
+                     class="book-card"
+                     @click="viewBookDetails(book.id)"
             >
               <div class="book-cover-container">
                 <img :src="book.cover" class="book-cover" loading="lazy"/>
@@ -53,23 +72,29 @@
                 <h3 class="book-title">{{ book.title }}</h3>
                 <p class="book-author">{{ book.author }}</p>
                 <div class="book-rating">
-                  <el-rate v-model="book.rating" disabled show-score />
+                  <el-rate v-model="book.rating" disabled show-score/>
                 </div>
               </div>
             </el-card>
           </div>
         </el-scrollbar>
-      </section>
+      </div>
+    </section>
 
-      <!-- New arrivals -->
-      <section class="book-section">
+    <!-- New arrivals -->
+    <section
+        data-index="3"
+        class="animate-section"
+        :class="{ 'is-visible': visibleSections.includes(3) }"
+    >
+      <div class="book-section">
         <h2 class="section-title">New arrivals</h2>
         <el-scrollbar>
           <div class="books-container">
             <el-card v-for="book in newBooks" :key="book.id"
-              :body-style="{ padding: '0px' }"
-              class="book-card"
-              @click="viewBookDetails(book.id)"
+                     :body-style="{ padding: '0px' }"
+                     class="book-card"
+                     @click="viewBookDetails(book.id)"
             >
               <div class="book-cover-container">
                 <img :src="book.cover" class="book-cover" loading="lazy"/>
@@ -78,23 +103,29 @@
                 <h3 class="book-title">{{ book.title }}</h3>
                 <p class="book-author">{{ book.author }}</p>
                 <div class="book-rating">
-                  <el-rate v-model="book.rating" disabled show-score />
+                  <el-rate v-model="book.rating" disabled show-score/>
                 </div>
               </div>
             </el-card>
           </div>
         </el-scrollbar>
-      </section>
+      </div>
+    </section>
 
-      <!-- Recommended for you -->
-      <section class="book-section">
+    <!-- Recommended for you -->
+    <section
+        data-index="4"
+        class="animate-section"
+        :class="{ 'is-visible': visibleSections.includes(4) }"
+    >
+      <div class="book-section">
         <h2 class="section-title">Recommended for you</h2>
         <el-scrollbar>
           <div class="books-container">
             <el-card v-for="book in recommendedBooks" :key="book.id"
-              :body-style="{ padding: '0px' }"
-              class="book-card"
-              @click="viewBookDetails(book.id)"
+                     :body-style="{ padding: '0px' }"
+                     class="book-card"
+                     @click="viewBookDetails(book.id)"
             >
               <div class="book-cover-container">
                 <img :src="book.cover" class="book-cover" loading="lazy"/>
@@ -103,16 +134,30 @@
                 <h3 class="book-title">{{ book.title }}</h3>
                 <p class="book-author">{{ book.author }}</p>
                 <div class="book-rating">
-                  <el-rate v-model="book.rating" disabled show-score />
+                  <el-rate v-model="book.rating" disabled show-score/>
                 </div>
               </div>
             </el-card>
           </div>
         </el-scrollbar>
-      </section>
+      </div>
+    </section>
 
-
-    </el-main>
+    <!-- Event Details Dialog -->
+    <el-dialog
+        :visible.sync="eventDialogVisible"
+        :title="selectedEvent.title"
+        width="50%"
+    >
+      <img :src="selectedEvent.image" class="event-dialog-image" alt="Event Image"/>
+      <div class="event-dialog-content">
+        <p><strong>Date:</strong> {{ selectedEvent.date }}</p>
+        <p><strong>Description:</strong> {{ selectedEvent.description }}</p>
+      </div>
+      <template #footer>
+        <el-button @click="eventDialogVisible = false">Close</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -129,6 +174,9 @@ export default {
   },
   data() {
     return {
+      visibleSections: [],
+      observer: null,
+      sections: 5,
       searchQuery: '',
       recentEvents: [
         {
@@ -136,31 +184,102 @@ export default {
           title: "Book Sharing: 'One Hundred Years of Solitude'",
           description: "This Saturday at 2 PM, we will host a book sharing event for Gabriel García Márquez's 'One Hundred Years of Solitude'...",
           date: "2024-03-23",
-          image: "https://images.pexels.com/photos/2908984/pexels-photo-2908984.jpeg"
+          image: "https://th.bing.com/th/id/OIP.L4zAEMAUAMRYfzS1RxDw_wAAAA?rs=1&pid=ImgDetMain"
         },
         {
           id: 2,
           title: "Children's Story Time",
           description: "Every Sunday at 10 AM, join us to explore the world of stories with your children...",
           date: "2024-03-24",
-          image: "https://images.pexels.com/photos/2177482/pexels-photo-2177482.jpeg"
+          image: "https://th.bing.com/th/id/OIP.MROTK3JQC-vSgQO2l5EZXAAAAA?rs=1&pid=ImgDetMain"
         },
         {
           id: 3,
           title: "Author Meet and Greet",
           description: "A discussion on famous author Wang Xiaobo's works, exploring 'The Golden Age'...",
           date: "2024-03-30",
-          image: "https://images.pexels.com/photos/2041540/pexels-photo-2041540.jpeg"
+          image: "https://th.bing.com/th/id/OIP.pbmYQaK93LlRoo1xKMPl4AAAAA?rs=1&pid=ImgDetMain"
         },
         {
           id: 4,
           title: "Technology Lecture",
           description: "Special lecture on Artificial Intelligence and the Future Development of Libraries...",
           date: "2024-04-05",
-          image: "https://images.pexels.com/photos/256431/pexels-photo-256431.jpeg"
+          image: "https://th.bing.com/th/id/OIP.TbC8N4t5N_yZRm8RJ-ck_wAAAA?rs=1&pid=ImgDetMain"
         }
       ],
-      popularBooks: [],
+      popularBooks: [
+        {
+          id: 1,
+          title: "Introduction to Algorithms",
+          author: "Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein",
+          cover: "https://m.media-amazon.com/images/I/61Mw06x2XcL._AC_UL320_.jpg",
+          rating: 4.5
+        },
+        {
+          id: 2,
+          title: "Artificial Intelligence: A Modern Approach",
+          author: "Stuart Russell, Peter Norvig",
+          cover: "https://m.media-amazon.com/images/I/81CDIGTNNFL._AC_UL320_.jpg",
+          rating: 4.6
+        },
+        {
+          id: 3,
+          title: "Computer Networks",
+          author: "Andrew S. Tanenbaum, David J. Wetherall",
+          cover: "https://m.media-amazon.com/images/I/71pIJGRBg7L._AC_UL320_.jpg",
+          rating: 4.4
+        },
+        {
+          id: 4,
+          title: "Database System Concepts",
+          author: "Abraham Silberschatz, Henry F. Korth, S. Sudarshan",
+          cover: "https://m.media-amazon.com/images/I/81B3Cv13cYL._AC_UL320_.jpg",
+          rating: 4.3
+        },
+        {
+          id: 5,
+          title: "Operating System Concepts",
+          author: "Abraham Silberschatz, Peter B. Galvin, Greg Gagne",
+          cover: "https://m.media-amazon.com/images/I/81SwKCia7VL._AC_UL320_.jpg",
+          rating: 4.5
+        },
+        {
+          id: 6,
+          title: "Compilers: Principles, Techniques, and Tools",
+          author: "Alfred V. Aho, Monica S. Lam, Ravi Sethi, Jeffrey D. Ullman",
+          cover: "https://m.media-amazon.com/images/I/71MvtEJneKL._AC_UL320_.jpg",
+          rating: 4.4
+        },
+        {
+          id: 7,
+          title: "Computer Architecture: A Quantitative Approach",
+          author: "John L. Hennessy, David A. Patterson",
+          cover: "https://m.media-amazon.com/images/I/71zrCDfb73S._AC_UL320_.jpg",
+          rating: 4.7
+        },
+        {
+          id: 8,
+          title: "The Elements of Computing Systems: Building a Modern Computer from First Principles",
+          author: "Noam Nisan, Shimon Schocken",
+          cover: "https://m.media-amazon.com/images/I/71tRTKR3NOL._AC_UL320_.jpg",
+          rating: 4.6
+        },
+        {
+          id: 9,
+          title: "Clean Code: A Handbook of Agile Software Craftsmanship",
+          author: "Robert C. Martin",
+          cover: "https://m.media-amazon.com/images/I/51E2055ZGUL._AC_UL320_.jpg",
+          rating: 4.7
+        },
+        {
+          id: 10,
+          title: "Design Patterns: Elements of Reusable Object-Oriented Software",
+          author: "Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides",
+          cover: "https://m.media-amazon.com/images/I/81IGFC6oFmL._AC_UL320_.jpg",
+          rating: 4.6
+        }
+      ],
       recommendedBooks: [
         {
           id: 1,
@@ -233,11 +352,87 @@ export default {
           rating: 4.6
         }
       ],
-      newBooks: [],
+      newBooks: [
+        {
+          id: 1,
+          title: "Introduction to Algorithms",
+          author: "Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein",
+          cover: "https://m.media-amazon.com/images/I/61Mw06x2XcL._AC_UL320_.jpg",
+          rating: 4.5
+        },
+        {
+          id: 2,
+          title: "Artificial Intelligence: A Modern Approach",
+          author: "Stuart Russell, Peter Norvig",
+          cover: "https://m.media-amazon.com/images/I/81CDIGTNNFL._AC_UL320_.jpg",
+          rating: 4.6
+        },
+        {
+          id: 3,
+          title: "Computer Networks",
+          author: "Andrew S. Tanenbaum, David J. Wetherall",
+          cover: "https://m.media-amazon.com/images/I/71pIJGRBg7L._AC_UL320_.jpg",
+          rating: 4.4
+        },
+        {
+          id: 4,
+          title: "Database System Concepts",
+          author: "Abraham Silberschatz, Henry F. Korth, S. Sudarshan",
+          cover: "https://m.media-amazon.com/images/I/81B3Cv13cYL._AC_UL320_.jpg",
+          rating: 4.3
+        },
+        {
+          id: 5,
+          title: "Operating System Concepts",
+          author: "Abraham Silberschatz, Peter B. Galvin, Greg Gagne",
+          cover: "https://m.media-amazon.com/images/I/81SwKCia7VL._AC_UL320_.jpg",
+          rating: 4.5
+        },
+        {
+          id: 6,
+          title: "Compilers: Principles, Techniques, and Tools",
+          author: "Alfred V. Aho, Monica S. Lam, Ravi Sethi, Jeffrey D. Ullman",
+          cover: "https://m.media-amazon.com/images/I/71MvtEJneKL._AC_UL320_.jpg",
+          rating: 4.4
+        },
+        {
+          id: 7,
+          title: "Computer Architecture: A Quantitative Approach",
+          author: "John L. Hennessy, David A. Patterson",
+          cover: "https://m.media-amazon.com/images/I/71zrCDfb73S._AC_UL320_.jpg",
+          rating: 4.7
+        },
+        {
+          id: 8,
+          title: "The Elements of Computing Systems: Building a Modern Computer from First Principles",
+          author: "Noam Nisan, Shimon Schocken",
+          cover: "https://m.media-amazon.com/images/I/71tRTKR3NOL._AC_UL320_.jpg",
+          rating: 4.6
+        },
+        {
+          id: 9,
+          title: "Clean Code: A Handbook of Agile Software Craftsmanship",
+          author: "Robert C. Martin",
+          cover: "https://m.media-amazon.com/images/I/51E2055ZGUL._AC_UL320_.jpg",
+          rating: 4.7
+        },
+        {
+          id: 10,
+          title: "Design Patterns: Elements of Reusable Object-Oriented Software",
+          author: "Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides",
+          cover: "https://m.media-amazon.com/images/I/81IGFC6oFmL._AC_UL320_.jpg",
+          rating: 4.6
+        }
+      ],
+      eventDialogVisible: false,
+      selectedEvent: {}
     };
   },
   created() {
     this.fetchBooks();
+  },
+  mounted() {
+    this.setupIntersectionObserver();
   },
   methods: {
     fetchBooks() {
@@ -269,6 +464,29 @@ export default {
     viewBookDetails(bookId) {
       // Navigate to book details page
       this.$router.push(`/book/${bookId}`);
+    },
+    openEventDialog(event) {
+      this.selectedEvent = event;
+      this.eventDialogVisible = true;
+    },
+    setupIntersectionObserver() {
+      this.observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = parseInt(entry.target.dataset.index);
+            if (!this.visibleSections.includes(index)) {
+              this.visibleSections.push(index);
+            }
+          }
+        });
+      }, {
+        rootMargin: '0px',
+        threshold: 0.1,
+      });
+
+      document.querySelectorAll('.animate-section').forEach((section) => {
+        this.observer.observe(section);
+      });
     }
   }
 };
@@ -343,7 +561,7 @@ footer {
 }
 
 .hero-section {
-  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.pexels.com/photos/1290141/pexels-photo-1290141.jpeg');
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://cdn.thespaces.com/wp-content/uploads/2023/03/Bibliothe-que-nationale-de-france_HERO.jpg');
   background-size: cover;
   background-position: center;
   color: white;
@@ -367,14 +585,19 @@ footer {
 }
 
 .search-section {
+  position: relative;
   max-width: 600px;
   margin: 0 auto;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
 }
 
 .search-input {
   border-radius: 30px;
   overflow: hidden;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .search-input:hover {
@@ -391,14 +614,24 @@ footer {
   border-color: #3b82f6;
   color: white;
   font-size: 18px;
-  padding: 12px 20px;
-  transition: all 0.3s ease;
+  position: absolute;
+  right: 14px;
+  top: 15px;
+  transform: translateY(-50%);
+  padding: 8px 16px;
+  transition: all 0.2s ease-in-out;
+  border-top-right-radius: 30px; /* 圆角 */
+  border-bottom-right-radius: 30px; /* 圆角 */
 }
 
 .search-button:hover {
   background-color: #2563eb;
   border-color: #2563eb;
-  transform: translateY(-2px);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.search-icon {
+  margin-left: 0px; /* 调整图标的位置 */
 }
 
 .section-title {
@@ -432,12 +665,25 @@ footer {
   position: relative;
   display: flex;
   flex-direction: column;
+  cursor: pointer;
+  transform-origin: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.event-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
 .event-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.event-card:hover .event-image {
+  transform: scale(1.05);
 }
 
 .event-content {
@@ -514,25 +760,39 @@ footer {
 }
 
 .book-info {
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   padding: 15px;
+  min-height: 120px;
 }
 
 .book-title {
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 5px;
-  color: #2c3e50;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 44px;
 }
 
 .book-author {
   font-size: 14px;
   color: #7f8c8d;
-  margin-bottom: 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 40px;
 }
 
 .book-rating {
   display: flex;
   justify-content: center;
+  margin-top: 10px;
 }
 
 @media (max-width: 768px) {
@@ -647,4 +907,32 @@ footer {
     animation-duration: 0.5s;
   }
 }
+
+.event-dialog-image {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.event-dialog-content {
+  margin-top: 20px;
+}
+
+.animate-section {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.animate-section.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Animation delay for different sections */
+.animate-section[data-index="0"].is-visible { transition-delay: 0.2s; }
+.animate-section[data-index="1"].is-visible { transition-delay: 0.4s; }
+.animate-section[data-index="2"].is-visible { transition-delay: 0.6s; }
+.animate-section[data-index="3"].is-visible { transition-delay: 0.8s; }
+.animate-section[data-index="4"].is-visible { transition-delay: 1s; }
 </style>

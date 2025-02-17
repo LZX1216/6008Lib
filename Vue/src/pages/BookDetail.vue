@@ -9,9 +9,37 @@
             <el-button type="primary" :disabled="!book.available" @click="borrowBook">
               {{ book.available ? 'Borrow' : 'Borrowed' }}
             </el-button>
-            <el-button type="info" @click="addToWishlist">
+            <el-button type="primary" @click="addToWishlist">
               Add to Wishlist
             </el-button>
+          </div>
+          <div class="rating">
+            <span>Rating: </span>
+            <el-rate v-model="book.rating" disabled show-score/>
+          </div>
+        </el-card>
+
+        <!-- Similar Books Section -->
+        <el-card class="similar-books-card">
+          <template #header>
+            <div class="similar-books-header">
+              <h3>Similar Books</h3>
+            </div>
+          </template>
+          <div class="similar-books-list">
+            <div
+              v-for="similarBook in similarBooks"
+              :key="similarBook.id"
+              class="similar-book-item"
+              @click="goToBookDetail(similarBook.id)"
+              style="cursor: pointer;"
+            >
+              <img :src="similarBook.cover" class="similar-book-cover" alt="Similar Book Cover" />
+              <div class="similar-book-info">
+                <p class="similar-book-title">{{ similarBook.title }}</p>
+                <p class="similar-book-author">{{ similarBook.author }}</p>
+              </div>
+            </div>
           </div>
         </el-card>
       </el-col>
@@ -26,10 +54,6 @@
             <p class="isbn"><i class="el-icon-document"></i> ISBN: {{ book.isbn }}</p>
             <p class="publish-date"><i class="el-icon-date"></i> Publication Date: {{ book.publishDate }}</p>
             <p class="category"><i class="el-icon-collection-tag"></i> Category: {{ book.category }}</p>
-            <div class="rating">
-              <span>Rating: </span>
-              <el-rate v-model="book.rating" disabled show-score />
-            </div>
           </div>
 
           <el-divider></el-divider>
@@ -56,8 +80,8 @@
         <el-card class="comments-card">
           <template #header>
             <div class="comments-header">
-              <h3>Reader Comments</h3>
-              <el-button type="primary" size="small" @click="showCommentDialog">
+              <h3>Comments</h3>
+              <el-button type="primary"  @click="showCommentDialog">
                 Write a Comment
               </el-button>
             </div>
@@ -110,8 +134,8 @@
 </template>
 
 <script>
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { auth } from '@/utils/auth.js'
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { auth } from '@/utils/auth.js';
 
 export default {
   name: 'BookDetail',
@@ -134,6 +158,20 @@ export default {
         totalCopies: 5,
         available: true
       },
+      similarBooks: [
+        {
+          id: 1,
+          title: "Algorithm Design",
+          author: "Jon Kleinberg, Éva Tardos",
+          cover: 'https://m.media-amazon.com/images/I/81onzAm2kgL._SY342_.jpg'
+        },
+        {
+          id: 2,
+          title: "Data Structures and Algorithm Analysis in C++",
+          author: "Mark Allen Weiss",
+          cover: 'https://m.media-amazon.com/images/I/51+Z+1yBhJL._SX342_SY445_.jpg'
+        }
+      ],
       comments: [
         {
           id: 1,
@@ -164,14 +202,14 @@ export default {
           { min: 10, message: 'Comment must be at least 10 characters', trigger: 'blur' }
         ]
       }
-    }
+    };
   },
   methods: {
     async borrowBook() {
       if (!auth.isLoggedIn) {
-        ElMessage.warning('Please log in first')
-        this.$router.push('/login')
-        return
+        ElMessage.warning('Please log in first');
+        this.$router.push('/login');
+        return;
       }
 
       try {
@@ -183,49 +221,52 @@ export default {
             cancelButtonText: 'Cancel',
             type: 'info'
           }
-        )
+        );
         // 这里添加借阅的API调用
-        ElMessage.success('Borrowed successfully')
+        ElMessage.success('Borrowed successfully');
       } catch {
-        ElMessage.info('Borrowing cancelled')
+        ElMessage.info('Borrowing cancelled');
       }
     },
     addToWishlist() {
       if (!auth.isLoggedIn) {
-        ElMessage.warning('Please log in first')
-        this.$router.push('/login')
-        return
+        ElMessage.warning('Please log in first');
+        this.$router.push('/login');
+        return;
       }
-      ElMessage.success('Added to your wishlist')
+      ElMessage.success('Added to your wishlist');
+    },
+    goToBookDetail(bookId) {
+      this.$router.push(`/book/${bookId}`);
     },
     showCommentDialog() {
       if (!auth.isLoggedIn) {
-        ElMessage.warning('Please log in first')
-        this.$router.push('/login')
-        return
+        ElMessage.warning('Please log in first');
+        this.$router.push('/login');
+        return;
       }
-      this.commentDialogVisible = true
+      this.commentDialogVisible = true;
     },
     submitComment() {
       this.$refs.commentForm.validate((valid) => {
         if (valid) {
           // Add API call to submit the comment here
-          ElMessage.success('Comment submitted successfully')
-          this.commentDialogVisible = false
+          ElMessage.success('Comment submitted successfully');
+          this.commentDialogVisible = false;
           this.newComment = {
             rating: 0,
             content: ''
-          }
+          };
         }
-      })
+      });
     }
   },
   created() {
     // Add API call to fetch book details here
-    const bookId = this.$route.params.id
-    // fetchBookDetails(bookId)
+    const bookId = this.$route.params.id;
+    // fetchBookDetails(bookId);
   }
-}
+};
 </script>
 
 <style scoped>
@@ -258,28 +299,146 @@ export default {
   justify-content: center;
 }
 
+.book-actions .el-button {
+  border: none;
+  color: white;
+  font-size: 16px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.book-actions .el-button:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  margin: 15px 0;
+  justify-content: center;
+}
+
+.rating span {
+  font-size: 1.2rem;
+  margin-right: 10px;
+  color: #4a5568;
+}
+
+.el-rate {
+  font-size: 24px;
+  color: #ff9900;
+}
+
+.el-rate .el-rate__icon {
+  margin-right: 5px;
+}
+
+.el-rate .el-rate__icon.is-active {
+  color: #ff9900;
+}
+
+.el-rate .el-rate__icon.is-active {
+  color: #ff9900;
+}
+
+.similar-books-card {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  animation: slideInUp 0.8s ease-out 0.2s both;
+}
+
+.similar-books-header h3 {
+  font-size: 1.5rem;
+  color: #303133;
+  margin-bottom: 10px;
+}
+
+.similar-books-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.similar-book-item {
+  display: flex;
+  align-items: center;
+}
+
+.similar-book-cover {
+  width: 60px;
+  height: 80px;
+  object-fit: cover;
+  margin-right: 10px;
+  border-radius: 4px;
+}
+
+.similar-book-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.similar-book-title {
+  font-size: 1rem;
+  color: #303133;
+  margin: 0;
+}
+
+.similar-book-author {
+  font-size: 0.9rem;
+  color: #606266;
+  margin: 0;
+}
+
 .book-info-card {
   margin-bottom: 20px;
   animation: slideInUp 0.8s ease-out 0.4s both;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .book-title {
-  font-size: 2rem;
-  color: #303133;
-  margin-bottom: 20px;
+  font-size: 2.2rem;
+  color: #1a365d;
+  margin-bottom: 25px;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.book-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: #409eff;
+  border-radius: 2px;
 }
 
 .book-meta {
-  color: #606266;
+  color: #4a5568;
   line-height: 1.8;
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 8px;
 }
 
 .book-meta p {
-  margin: 10px 0;
+  margin: 12px 0;
+  display: flex;
+  align-items: center;
+  font-size: 1.05rem;
 }
 
 .book-meta i {
-  margin-right: 8px;
+  margin-right: 12px;
+  font-size: 1.2rem;
+  color: #409eff;
+  min-width: 24px;
+  text-align: center;
 }
 
 .book-description {
@@ -290,12 +449,14 @@ export default {
   font-size: 1.5rem;
   color: #303133;
   margin-bottom: 10px;
+  font-weight: bold;
 }
 
 .book-status h3 {
   font-size: 1.5rem;
   color: #303133;
   margin-bottom: 10px;
+  font-weight: bold;
 }
 
 .book-status .el-descriptions {
@@ -338,6 +499,13 @@ export default {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
+}
+
+.comments-header h3 {
+  font-size: 1.5rem;
+  color: #303133;
+  margin-bottom: 10px;
+  font-weight: bold;
 }
 
 .comments-list {
@@ -405,40 +573,58 @@ export default {
   }
 }
 
-/* 响应式设计 */
 @media (max-width: 768px) {
-  .book-status .el-descriptions__label,
-  .book-status .el-descriptions__content {
-    padding: 8px 10px;
-  }
-
-  .comments-header {
+  .similar-book-item {
     flex-direction: column;
-    align-items: flex-start;
+    text-align: center;
   }
 
-  .comments-header h3 {
-    margin-bottom: 10px;
-  }
-
-  .comment-item {
-    padding: 10px;
-  }
-
-  .comment-header {
-    flex-wrap: wrap;
-  }
-
-  .username, .comment-date {
+  .similar-book-cover {
     width: 100%;
-    margin-bottom: 5px;
+    max-width: 150px;
+    height: auto;
+    margin: 0 auto 10px;
+  }
+
+  .similar-book-info {
+    text-align: center;
   }
 }
 
+@media (max-width: 480px) {
+  .similar-books-header h3 {
+    font-size: 1.2rem;
+  }
 
-.comment-item:nth-child(1) { animation-delay: 0.1s; }
-.comment-item:nth-child(2) { animation-delay: 0.2s; }
-.comment-item:nth-child(3) { animation-delay: 0.3s; }
-.comment-item:nth-child(4) { animation-delay: 0.4s; }
-.comment-item:nth-child(5) { animation-delay: 0.5s; }
-</style> 
+  .similar-book-title {
+    font-size: 0.95rem;
+  }
+
+  .similar-book-author {
+    font-size: 0.85rem;
+  }
+}
+
+:deep(.el-descriptions__body) {
+  background-color: #f8fafc !important;
+}
+
+:deep(.el-descriptions__label) {
+  font-weight: 600;
+  color: #2d3748 !important;
+  background-color: #e2e8f0 !important;
+}
+
+:deep(.el-descriptions__content) {
+  color: #4a5568 !important;
+}
+
+:deep(.el-dialog__header) {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+:deep(.el-dialog__title) {
+  color: #1a365d;
+  font-weight: 600;
+}
+</style>

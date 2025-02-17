@@ -44,15 +44,43 @@
         <el-card class="contact-section">
           <h3>Contact Information</h3>
           <div class="contact-info">
-            <p><el-icon><Location /></el-icon> Address: Nanyang Technological University, Singapore</p>
-            <p><el-icon><Phone /></el-icon> Phone: +65 1234 5678</p>
-            <p><el-icon><Message /></el-icon> Email: library@example.com</p>
-            <div class="opening-hours">
-              <h4>Opening Hours</h4>
-              <p>Monday to Friday: 8:00 - 22:00</p>
-              <p>Saturday and Sunday: 9:00 - 21:00</p>
-              <p>Public Holidays: 9:00 - 17:00</p>
-            </div>
+            <p>
+              <el-icon>
+                <Location/>
+              </el-icon>
+              Address: Somewhere, Singapore
+            </p>
+            <p>
+              <el-icon>
+                <Phone/>
+              </el-icon>
+              Phone: +65 1234 5678
+            </p>
+            <p>
+              <el-icon>
+                <Message/>
+              </el-icon>
+              Email: library@example.com
+            </p>
+            <h4>Opening Hours</h4>
+            <p>
+              <el-icon>
+                <Calendar/>
+              </el-icon>
+              Monday to Friday: 8:00 - 22:00
+            </p>
+            <p>
+              <el-icon>
+                <Clock/>
+              </el-icon>
+              Saturday and Sunday: 9:00 - 21:00
+            </p>
+            <p>
+              <el-icon>
+                <Flag/>
+              </el-icon>
+              Public Holidays: 9:00 - 17:00
+            </p>
           </div>
         </el-card>
       </el-col>
@@ -63,8 +91,11 @@
 <script>
 // ... existing code ...
 
+import {Calendar, Clock, Flag, Location, Message, Phone, Collection, Reading, Service} from "@element-plus/icons-vue";
+
 export default {
   name: 'AboutUs',
+  components: {Flag, Calendar, Clock, Message, Location, Phone, Collection, Reading, Service},
   // ... existing code ...
   data() {
     return {

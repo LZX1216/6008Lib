@@ -4,13 +4,12 @@
       <!-- Left side user info card -->
       <el-col :xs="24" :sm="24" :md="8" :lg="6" :xl="6">
         <transition name="fade-slide-down">
-
           <el-card class="user-info-card" v-if="userInfo.username">
             <div class="user-avatar">
-              <el-avatar :size="100">{{ userInfo.username.charAt(0).toUpperCase() }}</el-avatar>
+              <el-avatar :size="100" class="custom-avatar">{{ userInfo.username.charAt(0).toUpperCase() }}</el-avatar>
             </div>
             <h2>{{ userInfo.username }}</h2>
-            <p class="user-role">{{ userInfo.role === 'admin' ? 'Administrator' : 'Regular User' }}</p>
+            <p class="user-role">{{ userInfo.role === 'admin' ? 'Administrator' : 'User' }}</p>
             <el-divider />
             <div class="user-stats">
               <div class="stat-item">
@@ -27,7 +26,6 @@
               </div>
             </div>
           </el-card>
-
         </transition>
       </el-col>
 
@@ -41,13 +39,16 @@
                 <h3>Borrowing Records</h3>
               </div>
             </template>
-
             <el-table :data="borrows" style="width: 100%">
-              <el-table-column prop="bookTitle" label="Book Title"/>
-              <el-table-column prop="borrowDate" label="Borrow Date" width="120" />
-              <el-table-column prop="dueDate" label="Due Date" width="120" />
-              <el-table-column prop="returnDate" label="Actual Return Date" width="180" />
-              <el-table-column prop="status" label="Status" width="120">
+              <el-table-column prop="bookTitle" label="Book Title" sortable>
+                <template #default="scope">
+                  <span class="clickable-text" @click="goToBookDetail(scope.row.id)">{{ scope.row.bookTitle }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="borrowDate" label="Borrow Date" width="150" sortable />
+              <el-table-column prop="dueDate" label="Due Date" width="150" sortable />
+              <el-table-column prop="returnDate" label="Actual Return Date" width="200" sortable />
+              <el-table-column prop="status" label="Status" width="120" sortable>
                 <template #default="scope">
                   <el-tag :type="getBorrowStatusType(scope.row.status)">
                     {{ getBorrowStatusText(scope.row.status) }}
@@ -64,16 +65,26 @@
             <template #header>
               <div class="card-header">
                 <h3>My Wishlist</h3>
-                <el-button type="primary" size="small">Add Book</el-button>
               </div>
             </template>
-
-            <el-table :data="wishlist" style="width: 100%">
-              <el-table-column prop="bookTitle" label="Book Title" />
-              <el-table-column prop="author" label="Author" />
-              <el-table-column prop="addDate" label="Date Added" width="120" />
-              <el-table-column label="Actions" width="150">
+            <el-table :data="wishlist" style="width: 100%" :sort-by="sortByField" :default-sort="{ prop: 'addDate', order: 'descending' }" @sort-change="handleSortChange">
+              <el-table-column prop="bookTitle" label="Book Title" sortable>
                 <template #default="scope">
+                  <span class="clickable-text" @click="goToBookDetail(scope.row.id)">{{ scope.row.bookTitle }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="author" label="Author" width="250" sortable />
+              <el-table-column prop="addDate" label="Date Added" width="150" sortable />
+              <el-table-column label="Actions" width="180">
+                <template #default="scope">
+                  <el-button
+                    type="primary"
+                    size="small"
+                    @click="borrowBookFromWishlist(scope.row)"
+                    :disabled="!scope.row.available"
+                  >
+                    Borrow
+                  </el-button>
                   <el-button
                     type="danger"
                     size="small"
@@ -126,35 +137,50 @@ export default {
       wishlist: [
         {
           id: 1,
-          bookTitle: 'Sapiens: A Brief History of Humankind',
-          author: 'Yuval Noah Harari',
-          addDate: '2024-03-15',
+          bookTitle: 'Clean Code: A Handbook of Agile Software Craftsmanship',
+          author: 'Robert C. Martin',
+          addDate: '2024-01-05',
           available: true
         },
         {
           id: 2,
-          bookTitle: 'Thinking, Fast and Slow',
-          author: 'Daniel Kahneman',
-          addDate: '2024-03-10',
+          bookTitle: 'Design Patterns: Elements of Reusable Object-Oriented Software',
+          author: 'Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides',
+          addDate: '2024-02-10',
+          available: true
+        },
+        {
+          id: 3,
+          bookTitle: 'The Mythical Man - Month: Essays on Software Engineering',
+          author: 'Frederick P. Brooks Jr.',
+          addDate: '2024-03-15',
           available: false
+        },
+        {
+          id: 4,
+          bookTitle: 'Code Complete: A Practical Handbook of Software Construction',
+          author: 'Steve McConnell',
+          addDate: '2024-04-20',
+          available: true
         }
       ],
-      isLoading: true
+      isLoading: true,
+      sortByField: null
     }
   },
   mounted() {
     const storedUserInfo = sessionStorage.getItem('userInfo');
-        if (storedUserInfo) {
-          this.userInfo = JSON.parse(storedUserInfo);
-        } else {
-          this.$router.push('/login');
-        }
+    if (storedUserInfo) {
+      this.userInfo = JSON.parse(storedUserInfo);
+    } else {
+      this.$router.push('/login');
+    }
   },
   methods: {
     getBorrowStatusType(status) {
       const types = {
         borrowing: 'primary',
-        returned: 'success'
+        returned:'success'
       }
       return types[status] || 'info'
     },
@@ -199,6 +225,29 @@ export default {
         ElMessage.info('Borrowing cancelled')
       }
     },
+    async borrowBookFromWishlist(book) {
+      if (!book.available) {
+        ElMessage.warning('This book is not available for borrowing.');
+        return;
+      }
+      try {
+        await ElMessageBox.confirm(
+          'Are you sure you want to borrow this book from your wishlist?',
+          'Borrow Confirmation',
+          {
+            confirmButtonText: 'Confirm',
+            cancelButtonText: 'Cancel',
+            type: 'info'
+          }
+        );
+        // Add API call for borrowing book here
+        ElMessage.success('Book borrowed successfully');
+        // Remove the book from wishlist after borrowing
+        this.wishlist = this.wishlist.filter(item => item.id!== book.id);
+      } catch {
+        ElMessage.info('Borrowing cancelled');
+      }
+    },
     async removeFromWishlist(book) {
       try {
         await ElMessageBox.confirm(
@@ -211,10 +260,32 @@ export default {
           }
         )
         // Add API call for removing from wishlist here
+        this.wishlist = this.wishlist.filter(item => item.id!== book.id);
         ElMessage.success('Removed from wishlist')
       } catch {
         ElMessage.info('Removal cancelled')
       }
+    },
+    handleSortChange({ prop, order }) {
+      if (order === 'ascending') {
+        this.wishlist.sort((a, b) => {
+          if (prop === 'addDate') {
+            return new Date(a[prop]) - new Date(b[prop]);
+          }
+          return a[prop] > b[prop]? 1 : -1;
+        });
+      } else if (order === 'descending') {
+        this.wishlist.sort((a, b) => {
+          if (prop === 'addDate') {
+            return new Date(b[prop]) - new Date(a[prop]);
+          }
+          return a[prop] < b[prop]? 1 : -1;
+        });
+      }
+      this.sortByField = prop;
+    },
+    goToBookDetail(bookId) {
+      this.$router.push(`/book/${bookId}`);
     }
   }
 }
@@ -228,8 +299,8 @@ export default {
 .user-info-card {
   text-align: center;
   transition: all 0.3s ease;
+  margin-bottom: 20px;
 }
-
 
 .user-info-card:hover {
   transform: translateY(-5px);
@@ -245,9 +316,17 @@ export default {
   transform: scale(1.05);
 }
 
+.custom-avatar {
+  font-size: 32px;
+  background: linear-gradient(135deg, #409EFF, #FF4D4D);
+  color: #fff;
+  font-weight: bold;
+}
+
 .user-role {
   color: #666;
-  margin: 10px 0;
+  font-size: 14px;
+  margin: 0;
 }
 
 .user-stats {
@@ -294,24 +373,14 @@ export default {
   margin: 0;
 }
 
-/* Animations */
-.fade-slide-down-enter-active,
-.fade-slide-down-leave-active,
-.fade-slide-right-enter-active,
-.fade-slide-right-leave-active {
-  transition: all 0.5s ease;
+.clickable-text {
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
 }
 
-.fade-slide-down-enter-from,
-.fade-slide-down-leave-to {
-  opacity: 0;
-  transform: translateY(-20px);
-}
-
-.fade-slide-right-enter-from,
-.fade-slide-right-leave-to {
-  opacity: 0;
-  transform: translateX(-20px);
+.clickable-text:hover {
+  text-decoration: underline;
 }
 
 @media (max-width: 768px) {
@@ -322,16 +391,5 @@ export default {
   .stat-item {
     margin-bottom: 15px;
   }
-}
-
-.fade-slide-up-enter-active,
-.fade-slide-up-leave-active {
-  transition: all 0.5s ease;
-}
-
-.fade-slide-up-enter-from,
-.fade-slide-up-leave-to {
-  opacity: 0;
-  transform: translateY(20px);
 }
 </style>

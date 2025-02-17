@@ -36,7 +36,6 @@
         <el-menu-item index="/user">
           <router-link to="/user">{{ $t('user.profile') }}</router-link>
         </el-menu-item>
-        <!-- 修改此处，移除 @click 默认行为 -->
         <el-menu-item @click="logout">{{ $t('common.logout') }}</el-menu-item>
       </template>
 
@@ -192,27 +191,6 @@ a {
   display: none;
   font-size: 24px;
   cursor: pointer;
-}
-
-@media (max-width: 768px) {
-  .menu-toggle {
-    display: block;
-  }
-
-  .el-menu {
-    display: none;
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .el-menu.show {
-    display: flex;
-  }
-
-  :deep(.el-menu-item) {
-    width: 100%;
-    text-align: center;
-  }
 }
 
 .custom-confirm-box .el-message-box__header {

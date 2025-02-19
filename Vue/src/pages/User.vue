@@ -9,20 +9,20 @@
               <el-avatar :size="100" class="custom-avatar">{{ userInfo.username.charAt(0).toUpperCase() }}</el-avatar>
             </div>
             <h2>{{ userInfo.username }}</h2>
-            <p class="user-role">{{ userInfo.role === 'admin' ? 'Administrator' : 'User' }}</p>
+            <p class="user-role">{{ $t(userInfo.role === 'admin' ? 'userCenter.roleAdmin' : userInfo.role === 'superadmin' ? 'userCenter.roleSuperAdmin' : 'userCenter.roleUser') }}</p>
             <el-divider />
             <div class="user-stats">
               <div class="stat-item">
                 <h3>{{ borrowStats.current }}</h3>
-                <p>Current Borrowings</p>
+                <p>{{ $t('userCenter.currentBorrowings') }}</p>
               </div>
               <div class="stat-item">
                 <h3>{{ borrowStats.history }}</h3>
-                <p>Borrowing History</p>
+                <p>{{ $t('userCenter.borrowingHistory') }}</p>
               </div>
               <div class="stat-item">
                 <h3>{{ borrowStats.overdue }}</h3>
-                <p>Overdue Count</p>
+                <p>{{ $t('userCenter.overdueCount') }}</p>
               </div>
             </div>
           </el-card>
@@ -36,19 +36,19 @@
           <el-card class="content-card">
             <template #header>
               <div class="card-header">
-                <h3>Borrowing Records</h3>
+                <h3>{{ $t('userCenter.borrowingRecordsTitle') }}</h3>
               </div>
             </template>
-            <el-table :data="borrows" style="width: 100%">
-              <el-table-column prop="bookTitle" label="Book Title" sortable>
+            <el-table :data="borrows" style="width: 100%" :default-sort="{ prop: 'borrowDate', order: 'descending' }" @sort-change="handleSortChange">
+              <el-table-column prop="bookTitle" :label="$t('book.title')" sortable>
                 <template #default="scope">
                   <span class="clickable-text" @click="goToBookDetail(scope.row.id)">{{ scope.row.bookTitle }}</span>
                 </template>
               </el-table-column>
-              <el-table-column prop="borrowDate" label="Borrow Date" width="150" sortable />
-              <el-table-column prop="dueDate" label="Due Date" width="150" sortable />
-              <el-table-column prop="returnDate" label="Actual Return Date" width="200" sortable />
-              <el-table-column prop="status" label="Status" width="120" sortable>
+              <el-table-column prop="borrowDate" :label="$t('userCenter.borrowDate')" width="150" sortable />
+              <el-table-column prop="dueDate" :label="$t('userCenter.dueDate')" width="150" sortable />
+              <el-table-column prop="returnDate" :label="$t('userCenter.actualReturnDate')" width="200" sortable />
+              <el-table-column prop="status" :label="$t('userCenter.status')" width="120" sortable>
                 <template #default="scope">
                   <el-tag :type="getBorrowStatusType(scope.row.status)">
                     {{ getBorrowStatusText(scope.row.status) }}
@@ -64,18 +64,18 @@
           <el-card class="content-card">
             <template #header>
               <div class="card-header">
-                <h3>My Wishlist</h3>
+                <h3>{{ $t('userCenter.myWishlistTitle') }}</h3>
               </div>
             </template>
             <el-table :data="wishlist" style="width: 100%" :sort-by="sortByField" :default-sort="{ prop: 'addDate', order: 'descending' }" @sort-change="handleSortChange">
-              <el-table-column prop="bookTitle" label="Book Title" sortable>
+              <el-table-column prop="bookTitle" :label="$t('book.title')" sortable>
                 <template #default="scope">
                   <span class="clickable-text" @click="goToBookDetail(scope.row.id)">{{ scope.row.bookTitle }}</span>
                 </template>
               </el-table-column>
-              <el-table-column prop="author" label="Author" width="250" sortable />
-              <el-table-column prop="addDate" label="Date Added" width="150" sortable />
-              <el-table-column label="Actions" width="180">
+              <el-table-column prop="author" :label="$t('book.author')" width="250" sortable />
+              <el-table-column prop="addDate" :label="$t('userCenter.dateAdded')" width="150" sortable />
+              <el-table-column :label="$t('userCenter.actions')" width="180">
                 <template #default="scope">
                   <el-button
                     type="primary"
@@ -83,14 +83,14 @@
                     @click="borrowBookFromWishlist(scope.row)"
                     :disabled="!scope.row.available"
                   >
-                    Borrow
+                    {{ $t('userCenter.borrow') }}
                   </el-button>
                   <el-button
                     type="danger"
                     size="small"
                     @click="removeFromWishlist(scope.row)"
                   >
-                    Remove
+                    {{ $t('userCenter.remove') }}
                   </el-button>
                 </template>
               </el-table-column>
@@ -186,84 +186,84 @@ export default {
     },
     getBorrowStatusText(status) {
       const texts = {
-        borrowing: 'Borrowing',
-        returned: 'Returned'
+        borrowing: this.$t('userCenter.borrowingStatus'),
+        returned: this.$t('userCenter.returnedStatus')
       }
       return texts[status] || status
     },
     async renewBook(book) {
       try {
         await ElMessageBox.confirm(
-          'Are you sure you want to renew this book?',
-          'Renew Confirmation',
+          this.$t('userCenter.renewConfirmMessage'),
+          this.$t('userCenter.renewConfirmationTitle'),
           {
-            confirmButtonText: 'Confirm',
-            cancelButtonText: 'Cancel',
+            confirmButtonText: this.$t('common.confirm'),
+            cancelButtonText: this.$t('common.cancel'),
             type: 'warning'
           }
         )
         // Add API call for book renewal here
-        ElMessage.success('Renewal successful')
+        ElMessage.success(this.$t('userCenter.renewalSuccess'))
       } catch {
-        ElMessage.info('Renewal cancelled')
+        ElMessage.info(this.$t('userCenter.renewalCancelled'))
       }
     },
     async borrowBook(book) {
       try {
         await ElMessageBox.confirm(
-          'Are you sure you want to borrow this book?',
-          'Borrow Confirmation',
+          this.$t('userCenter.borrowConfirmMessage'),
+          this.$t('userCenter.borrowConfirmationTitle'),
           {
-            confirmButtonText: 'Confirm',
-            cancelButtonText: 'Cancel',
+            confirmButtonText: this.$t('common.confirm'),
+            cancelButtonText: this.$t('common.cancel'),
             type: 'info'
           }
         )
         // Add API call for borrowing book here
-        ElMessage.success('Book borrowed successfully')
+        ElMessage.success(this.$t('userCenter.bookBorrowedSuccessfully'))
       } catch {
-        ElMessage.info('Borrowing cancelled')
+        ElMessage.info(this.$t('userCenter.borrowingCancelled'))
       }
     },
     async borrowBookFromWishlist(book) {
       if (!book.available) {
-        ElMessage.warning('This book is not available for borrowing.');
+        ElMessage.warning(this.$t('userCenter.bookNotAvailable'));
         return;
       }
       try {
         await ElMessageBox.confirm(
-          'Are you sure you want to borrow this book from your wishlist?',
-          'Borrow Confirmation',
+          this.$t('userCenter.borrowFromWishlistConfirmMessage'),
+          this.$t('userCenter.borrowConfirmationTitle'),
           {
-            confirmButtonText: 'Confirm',
-            cancelButtonText: 'Cancel',
+            confirmButtonText: this.$t('common.confirm'),
+            cancelButtonText: this.$t('common.cancel'),
             type: 'info'
           }
         );
         // Add API call for borrowing book here
-        ElMessage.success('Book borrowed successfully');
+        ElMessage.success(this.$t('userCenter.bookBorrowedSuccessfully'));
         // Remove the book from wishlist after borrowing
         this.wishlist = this.wishlist.filter(item => item.id!== book.id);
       } catch {
-        ElMessage.info('Borrowing cancelled');
+        ElMessage.info(this.$t('userCenter.borrowingCancelled'));
       }
     },
     async removeFromWishlist(book) {
       try {
         await ElMessageBox.confirm(
-          'Are you sure you want to remove this book from your wishlist?',
-          'Remove Confirmation',
+          this.$t('userCenter.removeFromWishlistConfirmMessage'),
+          this.$t('userCenter.removeConfirmationTitle'),
           {
-            confirmButtonText: 'Confirm',
-            cancelButtonText: 'Cancel',
+            confirmButtonText: this.$t('common.confirm'),
+            cancelButtonText: this.$t('common.cancel'),
             type: 'warning'
           }
         )
         // Add API call for removing from wishlist here
         this.wishlist = this.wishlist.filter(item => item.id!== book.id);
-        ElMessage.success('Removed from wishlist')
+        ElMessage.success(this.$t('userCenter.removedFromWishlist'))
       } catch {
-        ElMessage.info('Removal cancelled')
+        ElMessage.info(this.$t('userCenter.removalCancelled'))
       }
     },
     handleSortChange({ prop, order }) {

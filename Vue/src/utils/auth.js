@@ -11,6 +11,11 @@ const testUsers = [
     username: 'user',
     password: 'user123',
     role: 'user'
+  },
+  {
+    username: 'superadmin',
+    password: 'superadmin123',
+    role: 'superadmin'
   }
 ]
 
@@ -28,7 +33,7 @@ export const auth = reactive({
     logoutstate() {
         sessionStorage.removeItem('isLoggedIn')
         this.isLoggedIn = false
-        this.userInfo = null; // 清空用户信息
+        this.userInfo = null;
     },
 
     login(username, password) {
@@ -37,7 +42,7 @@ export const auth = reactive({
           this.isLoggedIn = true;
           this.userInfo = { ...user };
           sessionStorage.setItem('isLoggedIn', 'true');
-          sessionStorage.setItem('userInfo', JSON.stringify(user)); // 确保这里存储了用户信息
+          sessionStorage.setItem('userInfo', JSON.stringify(user));
           return true;
       }
       return false;

@@ -2,25 +2,39 @@
   <div class="Homepage">
     <!-- Hero section -->
     <section
-        data-index="0"
-        class="animate-section"
-        :class="{ 'is-visible': visibleSections.includes(0) }"
+      data-index="0"
+      class="animate-section"
+      :class="{ 'is-visible': visibleSections.includes(0) }"
     >
       <div class="hero-section">
-        <h1 class="hero-title">Welcome to the Library</h1>
-        <p class="hero-subtitle">Discover an Ocean of Knowledge</p>
+        <h1 class="hero-title">{{ $t('homepage.welcomeToTheLibrary') }}</h1>
+        <p class="hero-subtitle">{{ $t('homepage.discoverKnowledge') }}</p>
         <div class="search-section">
           <el-input
-              v-model="searchQuery"
-              placeholder="Search for books, authors, or keywords..."
-              class="search-input"
+            v-model="searchQuery"
+            :placeholder="inputPlaceholder"
+            class="search-input"
+            clearable
+            @clear="clearSearch"
           >
             <template #append>
-              <el-button @click="searchBooks" class="search-button">
-                <el-icon class="search-icon">
-                  <Search/>
-                </el-icon>
-              </el-button>
+              <div class="filter-and-button-wrapper">
+                <el-select
+                  v-model="selectedFilter"
+                  placeholder="Filter by"
+                  class="filter-select"
+                  @change="updatePlaceholder"
+                >
+                  <el-option :label="$t('book.title')" value="title" />
+                  <el-option :label="$t('book.author')" value="author" />
+                  <el-option :label="$t('book.isbn')" value="isbn" />
+                </el-select>
+                <el-button @click="searchBooks" class="search-button">
+                  <el-icon class="search-icon">
+                    <Search />
+                  </el-icon>
+                </el-button>
+              </div>
             </template>
           </el-input>
         </div>
@@ -34,7 +48,7 @@
         :class="{ 'is-visible': visibleSections.includes(1) }"
     >
       <div class="recent-events">
-        <h2 class="section-title">Recent Events</h2>
+        <h2 class="section-title">{{ $t('homepage.recentEvents') }}</h2>
         <el-carousel :interval="4000" type="card" height="300px" :autoplay="true" arrow="always">
           <el-carousel-item v-for="event in recentEvents" :key="event.id">
             <div class="event-card" @click="openEventDialog(event)">
@@ -57,7 +71,7 @@
         :class="{ 'is-visible': visibleSections.includes(2) }"
     >
       <div class="book-section">
-        <h2 class="section-title">Popular books</h2>
+        <h2 class="section-title">{{ $t('homepage.popularBooks') }}</h2>
         <el-scrollbar>
           <div class="books-container">
             <el-card v-for="book in popularBooks" :key="book.id"
@@ -88,7 +102,7 @@
         :class="{ 'is-visible': visibleSections.includes(3) }"
     >
       <div class="book-section">
-        <h2 class="section-title">New arrivals</h2>
+        <h2 class="section-title">{{ $t('homepage.newArrivals') }}</h2>
         <el-scrollbar>
           <div class="books-container">
             <el-card v-for="book in newBooks" :key="book.id"
@@ -119,7 +133,7 @@
         :class="{ 'is-visible': visibleSections.includes(4) }"
     >
       <div class="book-section">
-        <h2 class="section-title">Recommended for you</h2>
+        <h2 class="section-title">{{ $t('homepage.recommendedForYou') }}</h2>
         <el-scrollbar>
           <div class="books-container">
             <el-card v-for="book in recommendedBooks" :key="book.id"
@@ -155,7 +169,7 @@
         <p><strong>Description:</strong> {{ selectedEvent.description }}</p>
       </div>
       <template #footer>
-        <el-button @click="eventDialogVisible = false">Close</el-button>
+        <el-button @click="eventDialogVisible = false">{{ $t('common.close') }}</el-button>
       </template>
     </el-dialog>
   </div>
@@ -178,6 +192,13 @@ export default {
       observer: null,
       sections: 5,
       searchQuery: '',
+      selectedFilter: 'title',
+      inputPlaceholder: this.$t('search.searchBooks'),
+      searchFieldMap: {
+        title: ['title'],
+        author: ['author'],
+        isbn: ['isbn']
+      },
       recentEvents: [
         {
           id: 1,
@@ -435,6 +456,24 @@ export default {
     this.setupIntersectionObserver();
   },
   methods: {
+    clearSearch() {
+    this.searchQuery = '';
+    },
+    updatePlaceholder() {
+      switch (this.selectedFilter) {
+        case 'title':
+          this.inputPlaceholder = this.$t('search.searchByTitle');
+          break;
+        case 'author':
+          this.inputPlaceholder = this.$t('search.searchByAuthor');
+          break;
+        case 'isbn':
+          this.inputPlaceholder = this.$t('search.searchByISBN');
+          break;
+        default:
+          this.inputPlaceholder = this.$t('search.searchBooks');
+      }
+    },
     fetchBooks() {
       // Fetch popular books
       axios.get('http://localhost:8080/api/popular-books') // Make sure this URL is correct
@@ -488,6 +527,35 @@ export default {
         this.observer.observe(section);
       });
     }
+  },
+  computed: {
+    filteredPopularBooks() {
+      return this.popularBooks.filter(book => {
+        const searchFields = this.searchFieldMap[this.selectedFilter] || ['title'];
+        return this.searchQuery === '' ||
+          searchFields.some(field =>
+            String(book[field]).toLowerCase()
+          .includes(this.searchQuery.toLowerCase()));
+      });
+    },
+    filteredNewBooks() {
+      return this.newBooks.filter(book => {
+        const searchFields = this.searchFieldMap[this.selectedFilter] || ['title'];
+        return this.searchQuery === '' ||
+          searchFields.some(field =>
+            String(book[field]).toLowerCase()
+          .includes(this.searchQuery.toLowerCase()));
+      });
+    },
+    filteredRecommendedBooks() {
+      return this.recommendedBooks.filter(book => {
+        const searchFields = this.searchFieldMap[this.selectedFilter] || ['title'];
+        return this.searchQuery === '' ||
+          searchFields.some(field =>
+            String(book[field]).toLowerCase()
+          .includes(this.searchQuery.toLowerCase()));
+      });
+    }
   }
 };
 </script>
@@ -538,18 +606,6 @@ nav ul li a {
   text-decoration: none;
 }
 
-.main-content {
-  display: grid;
-  gap: 40px;
-}
-
-.section {
-  background-color: #ffffff;
-  border-radius: 15px;
-  padding: 30px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
 footer {
   background-color: #f1f1f1;
   font-family: Arial, sans-serif;
@@ -593,11 +649,17 @@ footer {
   transition: all 0.3s ease;
 }
 
+.filter-select {
+  width: 120px;
+  margin-right: 16px;
+}
+
 .search-input {
   border-radius: 30px;
   overflow: hidden;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  flex: 1;
 }
 
 .search-input:hover {
@@ -620,8 +682,8 @@ footer {
   transform: translateY(-50%);
   padding: 8px 16px;
   transition: all 0.2s ease-in-out;
-  border-top-right-radius: 30px; /* 圆角 */
-  border-bottom-right-radius: 30px; /* 圆角 */
+  border-top-right-radius: 30px;
+  border-bottom-right-radius: 30px;
 }
 
 .search-button:hover {
@@ -631,7 +693,7 @@ footer {
 }
 
 .search-icon {
-  margin-left: 0px; /* 调整图标的位置 */
+  margin-left: 0px;
 }
 
 .section-title {

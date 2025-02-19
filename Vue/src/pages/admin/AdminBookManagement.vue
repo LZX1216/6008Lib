@@ -1,13 +1,13 @@
 <template>
   <div class="book-management">
     <div class="page-header">
-      <h2>Book Management</h2>
+      <h2>{{ $t('adminBookManagement.bookManagement') }}</h2>
       <div>
         <el-button type="primary" @click="showAddBookDialog">
-          Add New Book
+          {{ $t('adminBookManagement.addNewBook') }}
         </el-button>
         <el-button type="info" @click="showPurchaseRequestsDialog">
-          View Purchase Requests
+          {{ $t('adminBookManagement.viewPurchaseRequests') }}
         </el-button>
       </div>
     </div>
@@ -16,7 +16,7 @@
     <div class="search-section">
       <el-input
         v-model="searchQuery"
-        placeholder="Search books..."
+        :placeholder="$t('adminBookManagement.searchBooks')"
         class="search-input"
       >
         <template #append>
@@ -26,42 +26,42 @@
         </template>
       </el-input>
 
-      <el-select v-model="filterStatus" placeholder="Borrow Status" clearable style="width: 150px;">
-        <el-option label="All" value="" />
-        <el-option label="Available" value="available" />
-        <el-option label="Borrowed" value="borrowed" />
+      <el-select v-model="filterStatus" :placeholder="$t('adminBookManagement.borrowStatus')" clearable style="width: 150px;">
+        <el-option :label="$t('adminBookManagement.all')" value="" />
+        <el-option :label="$t('adminBookManagement.available')" value="available" />
+        <el-option :label="$t('adminBookManagement.borrowed')" value="borrowed" />
       </el-select>
     </div>
 
     <!-- Book List -->
-    <el-table :data="books" style="width: 100%">
-      <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column prop="title" label="Title" />
-      <el-table-column prop="author" label="Author" />
-      <el-table-column prop="isbn" label="ISBN" />
-      <el-table-column prop="publishDate" label="Publish Date" />
-      <el-table-column label="Status">
+    <el-table :data="books" style="width: 100%" default-sort="{ prop: 'id', order: 'descending' }" @sort-change="handleSortChange">
+      <el-table-column prop="id" :label="$t('book.id')" width="80" sortable/>
+      <el-table-column prop="title" :label="$t('book.title')" sortable/>
+      <el-table-column prop="author" :label="$t('book.author')" sortable/>
+      <el-table-column prop="isbn" :label="$t('book.isbn')" sortable/>
+      <el-table-column prop="publishDate" :label="$t('book.publishDate')" sortable/>
+      <el-table-column :label="$t('adminBookManagement.status')" sortable>
         <template #default="scope">
           <el-tag :type="scope.row.available ? 'success' : 'danger'">
-            {{ scope.row.available ? 'Available' : 'Borrowed' }}
+            {{ scope.row.available ? $t('adminBookManagement.available') : $t('adminBookManagement.borrowed') }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="Actions" width="200">
+      <el-table-column :label="$t('adminBookManagement.actions')" width="200">
         <template #default="scope">
           <el-button
             type="primary"
             size="small"
             @click="editBook(scope.row)"
           >
-            Edit
+            {{ $t('adminBookManagement.edit') }}
           </el-button>
           <el-button
             type="danger"
             size="small"
             @click="deleteBook(scope.row)"
           >
-            Delete
+            {{ $t('adminBookManagement.delete') }}
           </el-button>
         </template>
       </el-table-column>
@@ -75,7 +75,7 @@
         @update:current-page="currentPage = $event"
         @update:page-size="pageSize = $event"
         :total="total"
-        :page-sizes="[10, 20, 50, 100]"
+        :page-sizes="[10, 20, 50]"
         layout="total, sizes, prev, pager, next, jumper"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
@@ -84,52 +84,71 @@
 
     <!-- Add/Edit Book Dialog -->
     <el-dialog
-      :title="dialogType === 'add' ? 'Add New Book' : 'Edit Book'"
+      :title="dialogType === 'add' ? $t('adminBookManagement.addNewBook') : $t('adminBookManagement.editBook')"
       v-model="dialogVisible"
       width="50%"
     >
-      <el-form :model="bookForm" :rules="rules" ref="bookForm" label-width="100px">
-        <el-form-item label="Title" prop="title">
-          <el-input v-model="bookForm.title" />
-        </el-form-item>
-        <el-form-item label="Author" prop="author">
-          <el-input v-model="bookForm.author" />
-        </el-form-item>
-        <el-form-item label="ISBN" prop="isbn">
-          <el-input v-model="bookForm.isbn" />
-        </el-form-item>
-        <el-form-item label="Publish Date" prop="publishDate">
-          <el-date-picker
-            v-model="bookForm.publishDate"
-            type="date"
-            placeholder="Select date"
-          />
-        </el-form-item>
-        <el-form-item label="Description" prop="description">
-          <el-input
-            v-model="bookForm.description"
-            type="textarea"
-            :rows="4"
-          />
-        </el-form-item>
-        <el-form-item label="Cover Image" prop="cover">
-          <el-upload
-            class="cover-uploader"
-            action="/api/upload"
-            :show-file-list="false"
-            :on-success="handleCoverSuccess"
-            :before-upload="beforeCoverUpload"
-          >
-            <img v-if="bookForm.cover" :src="bookForm.cover" class="cover" />
-            <el-icon v-else class="cover-uploader-icon"><Plus /></el-icon>
-          </el-upload>
-        </el-form-item>
-      </el-form>
+      <div class="dialog-content">
+        <div class="form-content">
+          <el-form :model="bookForm" :rules="rules" ref="bookForm" label-width="150px">
+            <el-form-item :label="$t('book.title')" prop="title">
+              <el-input v-model="bookForm.title" />
+            </el-form-item>
+            <el-form-item :label="$t('book.author')" prop="author">
+              <el-input v-model="bookForm.author" />
+            </el-form-item>
+            <el-form-item :label="$t('book.publisher')" prop="publisher">
+              <el-input v-model="bookForm.publisher" />
+            </el-form-item>
+            <el-form-item :label="$t('book.isbn')" prop="isbn">
+              <el-input v-model="bookForm.isbn" />
+            </el-form-item>
+            <el-form-item :label="$t('book.publishDate')" prop="publishDate">
+              <el-date-picker
+                v-model="bookForm.publishDate"
+                type="date"
+                :placeholder="$t('adminBookManagement.selectDate')"
+              />
+            </el-form-item>
+            <el-form-item :label="$t('book.category')" prop="category">
+              <el-input v-model="bookForm.category" />
+            </el-form-item>
+            <el-form-item :label="$t('book.description')" prop="description">
+              <el-input
+                v-model="bookForm.description"
+                type="textarea"
+                :rows="4"
+              />
+            </el-form-item>
+            <el-form-item :label="$t('book.location')" prop="location">
+              <el-input v-model="bookForm.location" />
+            </el-form-item>
+            <el-form-item :label="$t('book.callNumber')" prop="callNumber">
+              <el-input v-model="bookForm.callNumber" />
+            </el-form-item>
+            <el-form-item :label="$t('book.availableCopies')" prop="availableCopies">
+              <el-input v-model.number="bookForm.availableCopies" type="number" />
+            </el-form-item>
+            <el-form-item :label="$t('book.totalCopies')" prop="totalCopies">
+              <el-input v-model.number="bookForm.totalCopies" type="number" />
+            </el-form-item>
+            <el-form-item :label="$t('adminBookManagement.available')" prop="available">
+              <el-switch v-model="bookForm.available" />
+            </el-form-item>
+            <el-form-item :label="$t('book.cover')" prop="cover">
+              <el-input v-model="bookForm.cover" :placeholder="$t('adminBookManagement.enterCoverImageUrl')" />
+            </el-form-item>
+          </el-form>
+        </div>
+        <div class="cover-preview" v-if="bookForm.cover">
+          <img :src="bookForm.cover" alt="$t('book.cover')">
+        </div>
+      </div>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">Cancel</el-button>
+          <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
           <el-button type="primary" @click="submitBookForm">
-            Confirm
+            {{ $t('common.confirm') }}
           </el-button>
         </span>
       </template>
@@ -137,30 +156,30 @@
 
     <!-- Purchase Requests Dialog -->
     <el-dialog
-      title="Purchase Requests"
+      :title="$t('adminBookManagement.purchaseRequests')"
       v-model="purchaseRequestsDialogVisible"
       width="70%"
     >
-      <el-table :data="purchaseRequests" style="width: 100%">
-        <el-table-column prop="title" label="Title" />
-        <el-table-column prop="author" label="Author" />
-        <el-table-column prop="isbn" label="ISBN" width="160" />
-        <el-table-column prop="requestDate" label="Request Date" width="160" />
-        <el-table-column prop="status" label="Status" width="120">
+      <el-table :data="purchaseRequests" style="width: 100%" default-sort="{ prop: 'id', order: 'descending' }" @sort-change="handleSortChange">
+        <el-table-column prop="title" :label="$t('book.title')" sortable/>
+        <el-table-column prop="author" :label="$t('book.author')" sortable/>
+        <el-table-column prop="isbn" :label="$t('book.isbn')" width="160" sortable/>
+        <el-table-column prop="requestDate" :label="$t('adminBookManagement.requestDate')" width="160" sortable/>
+        <el-table-column prop="status" :label="$t('adminBookManagement.status')" width="120" sortable>
           <template #default="scope">
             <el-tag :type="getStatusType(scope.row.status)">
-              {{ scope.row.status }}
+              {{ $t(`adminBookManagement.${scope.row.status.toLowerCase()}`) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="Actions" width="200">
+        <el-table-column :label="$t('adminBookManagement.actions')" width="200">
           <template #default="scope">
             <el-button
               size="small"
               @click="handleApprove(scope.row)"
               :disabled="scope.row.status !== 'Pending'"
             >
-              Approve
+              {{ $t('adminBookManagement.approve') }}
             </el-button>
             <el-button
               size="small"
@@ -168,7 +187,7 @@
               @click="handleReject(scope.row)"
               :disabled="scope.row.status !== 'Pending'"
             >
-              Reject
+              {{ $t('adminBookManagement.reject') }}
             </el-button>
           </template>
         </el-table-column>
@@ -194,12 +213,52 @@ export default {
       books: [
         {
           id: 1,
-          title: 'The Three-Body Problem',
-          author: 'Cixin Liu',
-          isbn: '9787536692930',
-          publishDate: '2008-01-01',
+          title: 'Introduction to Algorithms',
+          author: 'Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein',
+          publisher: 'The MIT Press',
+          isbn: '9780262033848',
+          publishDate: '2000-01-01',
+          category: 'Algorithms',
+          cover: 'https://m.media-amazon.com/images/I/61Mw06x2XcL._AC_UL320_.jpg',
+          description: 'A comprehensive introduction to the modern study of computer algorithms. It presents many algorithms and covers them in considerable depth, yet makes their design and analysis accessible to all levels of readers.',
+          location: 'Computer Science Section',
+          callNumber: 'QA76.6.I5858',
+          availableCopies: 3,
+          totalCopies: 5,
           available: true
-        }
+        },
+        {
+          id: 2,
+          title: "Artificial Intelligence: A Modern Approach",
+          author: "Stuart Russell, Peter Norvig",
+          publisher: "Pearson",
+          isbn: "9780136042594",
+          publishDate: "2009-12-11",
+          category: "Artificial Intelligence",
+          cover: "https://m.media-amazon.com/images/I/81CDIGTNNFL._AC_UL320_.jpg",
+          description: "Artificial Intelligence: A Modern Approach, 3e offers the most comprehensive, up-to-date introduction to the theory and practice of artificial intelligence. Number one in its field, this textbook is ideal for one or two-semester, undergraduate or graduate-level courses in Artificial Intelligence.",
+          location: "Computer Science Section",
+          callNumber: "Q335.R87",
+          availableCopies: 2,
+          totalCopies: 3,
+          available: true
+        },
+        {
+          id: 3,
+          title: "Computer Networks",
+          author: "Andrew S. Tanenbaum, David J. Wetherall",
+          publisher: "Pearson",
+          isbn: "9780132126953",
+          publishDate: "2010-07-31",
+          category: "Networking",
+          cover: "https://m.media-amazon.com/images/I/71pIJGRBg7L._AC_UL320_.jpg",
+          description: "Computer Networks, 5/e is appropriate for Computer Networking or Introduction to Networking courses at both the undergraduate and graduate level in Computer Science, Electrical Engineering, CIS, MIS, and Business Departments.",
+          location: "Computer Science Section",
+          callNumber: "TK5105.5.T36",
+          availableCopies: 1,
+          totalCopies: 2,
+          available: false
+        },
       ],
       currentPage: 1,
       pageSize: 10,
@@ -209,20 +268,27 @@ export default {
       bookForm: {
         title: '',
         author: '',
+        publisher: '',
         isbn: '',
         publishDate: '',
+        category: '',
+        cover: '',
         description: '',
-        cover: ''
+        location: '',
+        callNumber: '',
+        availableCopies: 0,
+        totalCopies: 0,
+        available: true
       },
       rules: {
         title: [
-          { required: true, message: 'Please enter the title', trigger: 'blur' }
+          { required: true, message: this.$t('adminBookManagement.pleaseEnterTitle'), trigger: 'blur' }
         ],
         author: [
-          { required: true, message: 'Please enter the author', trigger: 'blur' }
+          { required: true, message: this.$t('adminBookManagement.pleaseEnterAuthor'), trigger: 'blur' }
         ],
         isbn: [
-          { required: true, message: 'Please enter the ISBN', trigger: 'blur' }
+          { required: true, message: this.$t('adminBookManagement.pleaseEnterIsbn'), trigger: 'blur' }
         ]
       },
       purchaseRequestsDialogVisible: false,
@@ -248,10 +314,17 @@ export default {
       this.bookForm = {
         title: '',
         author: '',
+        publisher: '',
         isbn: '',
         publishDate: '',
+        category: '',
+        cover: '',
         description: '',
-        cover: ''
+        location: '',
+        callNumber: '',
+        availableCopies: 0,
+        totalCopies: 0,
+        available: true
       }
       this.dialogVisible = true
     },
@@ -263,22 +336,22 @@ export default {
     async deleteBook(book) {
       try {
         await ElMessageBox.confirm(
-          'Are you sure you want to delete this book?',
-          'Warning',
+          this.$t('adminBookManagement.confirmDeleteBook'),
+          this.$t('adminBookManagement.warning'),
           {
-            confirmButtonText: 'Confirm',
-            cancelButtonText: 'Cancel',
+            confirmButtonText: this.$t('common.confirm'),
+            cancelButtonText: this.$t('common.cancel'),
             type: 'warning'
           }
         )
         // Call delete API
         // await deleteBookApi(book.id)
-        ElMessage.success('Deleted successfully')
+        ElMessage.success(this.$t('adminBookManagement.deletedSuccessfully'))
         // Refresh list
         this.fetchBooks()
       } catch (error) {
         if (error !== 'cancel') {
-          ElMessage.error('Failed to delete')
+          ElMessage.error(this.$t('adminBookManagement.failedToDelete'))
         }
       }
     },
@@ -287,10 +360,10 @@ export default {
         await this.$refs.bookForm.validate()
         if (this.dialogType === 'add') {
           // await addBookApi(this.bookForm)
-          ElMessage.success('Added successfully')
+          ElMessage.success(this.$t('adminBookManagement.addedSuccessfully'))
         } else {
           // await updateBookApi(this.bookForm)
-          ElMessage.success('Updated successfully')
+          ElMessage.success(this.$t('adminBookManagement.updatedSuccessfully'))
         }
         this.dialogVisible = false
         this.fetchBooks()
@@ -306,20 +379,24 @@ export default {
       this.currentPage = val
       this.fetchBooks()
     },
-    handleCoverSuccess(res, file) {
-      this.bookForm.cover = URL.createObjectURL(file.raw)
-    },
-    beforeCoverUpload(file) {
-      const isJPG = file.type === 'image/jpeg'
-      const isLt2M = file.size / 1024 / 1024 < 2
-
-      if (!isJPG) {
-        ElMessage.error('Cover image can only be in JPG format!')
+    handleSortChange(tableName, { prop, order }) {
+      const data = this[tableName];
+      if (order === 'ascending') {
+        data.sort((a, b) => {
+          if (prop === 'publishDate' || prop === 'requestDate') {
+            return new Date(a[prop]) - new Date(b[prop]);
+          }
+          return a[prop] > b[prop]? 1 : -1;
+        });
+      } else if (order === 'descending') {
+        data.sort((a, b) => {
+          if (prop === 'publishDate' || prop === 'requestDate') {
+            return new Date(b[prop]) - new Date(a[prop]);
+          }
+          return a[prop] < b[prop]? 1 : -1;
+        });
       }
-      if (!isLt2M) {
-        ElMessage.error('Cover image size cannot exceed 2MB!')
-      }
-      return isJPG && isLt2M
+      this[tableName] = [...data];
     },
     fetchBooks() {
       // Implement logic to fetch book list
@@ -340,38 +417,38 @@ export default {
     async handleApprove(request) {
       try {
         await ElMessageBox.confirm(
-          `Are you sure you want to approve the purchase request for "${request.title}"?`,
-          'Confirm Approval',
+          this.$t('adminBookManagement.confirmApproveRequest', { title: request.title }),
+          this.$t('adminBookManagement.confirmApproval'),
           {
-            confirmButtonText: 'Approve',
-            cancelButtonText: 'Cancel',
+            confirmButtonText: this.$t('common.approve'),
+            cancelButtonText: this.$t('common.cancel'),
             type: 'warning'
           }
         )
         request.status = 'Approved'
-        ElMessage.success('Purchase request approved successfully')
+        ElMessage.success(this.$t('adminBookManagement.purchaseRequestApproved'))
       } catch (error) {
         if (error !== 'cancel') {
-          ElMessage.error('Failed to approve purchase request')
+          ElMessage.error(this.$t('adminBookManagement.failedToApproveRequest'))
         }
       }
     },
     async handleReject(request) {
       try {
         await ElMessageBox.confirm(
-          `Are you sure you want to reject the purchase request for "${request.title}"?`,
-          'Confirm Rejection',
+          this.$t('adminBookManagement.confirmRejectRequest', { title: request.title }),
+          this.$t('adminBookManagement.confirmRejection'),
           {
-            confirmButtonText: 'Reject',
-            cancelButtonText: 'Cancel',
+            confirmButtonText: this.$t('adminBookManagement.reject'),
+            cancelButtonText: this.$t('common.cancel'),
             type: 'warning'
           }
         )
         request.status = 'Rejected'
-        ElMessage.success('Purchase request rejected successfully')
+        ElMessage.success(this.$t('adminBookManagement.purchaseRequestRejected'))
       } catch (error) {
         if (error !== 'cancel') {
-          ElMessage.error('Failed to reject purchase request')
+          ElMessage.error(this.$t('adminBookManagement.failedToRejectRequest'))
         }
       }
     },
@@ -381,14 +458,14 @@ export default {
   },
   created() {
     this.fetchBooks()
-  },
-
+  }
 }
 </script>
 
 <style scoped>
 .book-management {
   padding: 20px;
+  min-height: 0;
 }
 
 .page-header {
@@ -414,32 +491,23 @@ export default {
   text-align: right;
 }
 
-.cover-uploader {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  width: 178px;
-  height: 178px;
+.dialog-content {
+  display: flex;
+  gap: 20px;
 }
 
-.cover-uploader:hover {
-  border-color: #409EFF;
+.form-content {
+  flex: 1;
 }
 
-.cover-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  line-height: 178px;
-  text-align: center;
+.cover-preview {
+  width: 200px;
+  height: auto;
 }
 
-.cover {
-  width: 178px;
-  height: 178px;
-  display: block;
+.cover-preview img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
 }
 </style> 

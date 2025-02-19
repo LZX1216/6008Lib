@@ -3,18 +3,18 @@
     <el-card class="faq-section">
       <template #header>
         <div class="section-header">
-          <h2>Frequently Asked Questions</h2>
+          <h2>{{ $t('helpSupport.faqTitle') }}</h2>
         </div>
       </template>
-      
+
       <el-collapse v-model="activeNames">
-        <el-collapse-item 
-          v-for="faq in faqs" 
-          :key="faq.id" 
-          :title="faq.question"
+        <el-collapse-item
+          v-for="faq in faqs"
+          :key="faq.id"
+          :title="$t(faq.i18nQuestion)"
           :name="faq.id"
         >
-          <div class="faq-answer">{{ faq.answer }}</div>
+          <div class="faq-answer">{{ $t(faq.i18nAnswer) }}</div>
         </el-collapse-item>
       </el-collapse>
     </el-card>
@@ -23,20 +23,20 @@
     <el-card class="purchase-request-section">
       <template #header>
         <div class="section-header">
-          <h2>Book Purchase Request</h2>
+          <h2>{{ $t('helpSupport.purchaseRequestTitle') }}</h2>
           <el-button type="primary" @click="showPurchaseRequestDialog">
-            Submit Purchase Request
+            {{ $t('helpSupport.submitPurchaseRequest') }}
           </el-button>
         </div>
       </template>
 
       <!-- Purchase Request List -->
       <el-table :data="purchaseRequests" style="width: 100%">
-        <el-table-column prop="title" label="Title" />
-        <el-table-column prop="author" label="Author" />
-        <el-table-column prop="isbn" label="ISBN" width="120" />
-        <el-table-column prop="requestDate" label="Request Date" width="120" />
-        <el-table-column prop="status" label="Status" width="100">
+        <el-table-column prop="title" :label="$t('helpSupport.title')" />
+        <el-table-column prop="author" :label="$t('helpSupport.author')" />
+        <el-table-column prop="isbn" :label="$t('helpSupport.isbn')" width="120" />
+        <el-table-column prop="requestDate" :label="$t('helpSupport.requestDate')" width="120" />
+        <el-table-column prop="status" :label="$t('helpSupport.status')" width="100">
           <template #default="scope">
             <el-tag :type="getStatusType(scope.row.status)">
               {{ getStatusText(scope.row.status) }}
@@ -50,7 +50,7 @@
     <el-card class="contact-form">
       <template #header>
         <div class="section-header">
-          <h2>Contact Us</h2>
+          <h2>{{ $t('helpSupport.contactUsTitle') }}</h2>
         </div>
       </template>
 
@@ -60,35 +60,35 @@
         :rules="rules"
         label-width="80px"
       >
-        <el-form-item label="Name" prop="name">
+        <el-form-item :label="$t('helpSupport.name')" prop="name">
           <el-input v-model="contactForm.name" />
         </el-form-item>
 
-        <el-form-item label="Email" prop="email">
+        <el-form-item :label="$t('helpSupport.email')" prop="email">
           <el-input v-model="contactForm.email" />
         </el-form-item>
 
-        <el-form-item label="Subject" prop="subject">
-          <el-select v-model="contactForm.subject" placeholder="Please select a subject">
-            <el-option label="Borrowing Issues" value="borrow" />
-            <el-option label="Account Issues" value="account" />
-            <el-option label="Technical Support" value="technical" />
-            <el-option label="Other" value="other" />
+        <el-form-item :label="$t('helpSupport.subject')" prop="subject">
+          <el-select v-model="contactForm.subject" :placeholder="$t('helpSupport.selectSubject')">
+            <el-option :label="$t('helpSupport.borrowingIssues')" value="borrow" />
+            <el-option :label="$t('helpSupport.accountIssues')" value="account" />
+            <el-option :label="$t('helpSupport.technicalSupport')" value="technical" />
+            <el-option :label="$t('helpSupport.other')" value="other" />
           </el-select>
         </el-form-item>
 
-        <el-form-item label="Message" prop="message">
+        <el-form-item :label="$t('helpSupport.message')" prop="message">
           <el-input
             v-model="contactForm.message"
             type="textarea"
             :rows="4"
-            placeholder="Please describe your issue in detail..."
+            :placeholder="$t('helpSupport.describeIssue')"
           />
         </el-form-item>
-        
+
         <el-form-item>
-          <el-button type="primary" @click="submitForm">Submit</el-button>
-          <el-button @click="resetForm">Reset</el-button>
+          <el-button type="primary" @click="submitForm">{{ $t('helpSupport.submit') }}</el-button>
+          <el-button @click="resetForm">{{ $t('helpSupport.reset') }}</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -96,7 +96,7 @@
     <!-- Purchase Request Form Dialog -->
     <el-dialog
       v-model="purchaseRequestDialogVisible"
-      title="Submit Purchase Request"
+      :title="$t('helpSupport.submitPurchaseRequestTitle')"
       width="50%"
     >
       <el-form
@@ -105,34 +105,34 @@
         :rules="requestRules"
         label-width="100px"
       >
-        <el-form-item label="Title" prop="title">
+        <el-form-item :label="$t('helpSupport.title')" prop="title">
           <el-input v-model="purchaseRequest.title" />
         </el-form-item>
-        <el-form-item label="Author" prop="author">
+        <el-form-item :label="$t('helpSupport.author')" prop="author">
           <el-input v-model="purchaseRequest.author" />
         </el-form-item>
-        <el-form-item label="Publisher" prop="publisher">
+        <el-form-item :label="$t('helpSupport.publisher')" prop="publisher">
           <el-input v-model="purchaseRequest.publisher" />
         </el-form-item>
-        <el-form-item label="ISBN" prop="isbn">
+        <el-form-item :label="$t('helpSupport.isbn')" prop="isbn">
           <el-input v-model="purchaseRequest.isbn" />
         </el-form-item>
-        <el-form-item label="Publish Date" prop="publishDate">
+        <el-form-item :label="$t('helpSupport.publishDate')" prop="publishDate">
           <el-input v-model="purchaseRequest.publishDate" />
         </el-form-item>
-        <el-form-item label="Reason" prop="reason">
+        <el-form-item :label="$t('helpSupport.reason')" prop="reason">
           <el-input
             v-model="purchaseRequest.reason"
             type="textarea"
             :rows="4"
-            placeholder="Please explain why you recommend this book..."
+            :placeholder="$t('helpSupport.explainReason')"
           />
         </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="purchaseRequestDialogVisible = false">Cancel</el-button>
-          <el-button type="primary" @click="submitRequest">Submit Request</el-button>
+          <el-button @click="purchaseRequestDialogVisible = false">{{ $t('helpSupport.cancel') }}</el-button>
+          <el-button type="primary" @click="submitRequest">{{ $t('helpSupport.submitRequest') }}</el-button>
         </span>
       </template>
     </el-dialog>
@@ -156,36 +156,36 @@ export default {
       },
       rules: {
         name: [
-          { required: true, message: 'Please enter your name', trigger: 'blur' },
-          { min: 2, max: 20, message: 'Length should be 2 to 20 characters', trigger: 'blur' }
+          { required: true, message: this.$t('helpSupport.nameRequired'), trigger: 'blur' },
+          { min: 2, max: 20, message: this.$t('helpSupport.nameLength'), trigger: 'blur' }
         ],
         email: [
-          { required: true, message: 'Please enter your email address', trigger: 'blur' },
-          { type: 'email', message: 'Please enter a valid email address', trigger: 'blur' }
+          { required: true, message: this.$t('helpSupport.emailRequired'), trigger: 'blur' },
+          { type: 'email', message: this.$t('helpSupport.validEmail'), trigger: 'blur' }
         ],
         subject: [
-          { required: true, message: 'Please select a subject', trigger: 'change' }
+          { required: true, message: this.$t('helpSupport.selectSubjectRequired'), trigger: 'change' }
         ],
         message: [
-          { required: true, message: 'Please enter your message', trigger: 'blur' },
-          { min: 10, message: 'Message must be at least 10 characters', trigger: 'blur' }
+          { required: true, message: this.$t('helpSupport.messageRequired'), trigger: 'blur' },
+          { min: 10, message: this.$t('helpSupport.messageMinLength'), trigger: 'blur' }
         ]
       },
       faqs: [
         {
           id: '1',
-          question: 'How to borrow books?',
-          answer: 'After logging in, you can click the "Borrow" button on the book details page to borrow. Each person can borrow up to 5 books at a time, with a loan period of 30 days.'
+          i18nQuestion: 'helpSupport.faq1Question',
+          i18nAnswer: 'helpSupport.faq1Answer'
         },
         {
           id: '2',
-          question: 'How to renew books?',
-          answer: 'On the "My Borrowings" page, you can renew books that are not overdue. Each book can be renewed up to 2 times, with each renewal extending the loan period by 30 days.'
+          i18nQuestion: 'helpSupport.faq2Question',
+          i18nAnswer: 'helpSupport.faq2Answer'
         },
         {
           id: '3',
-          question: 'What happens if I forget to return a book?',
-          answer: 'Overdue books will incur a fine of 0.5 yuan per book per day. It will also affect your credit score and may restrict your future borrowing privileges.'
+          i18nQuestion: 'helpSupport.faq3Question',
+          i18nAnswer: 'helpSupport.faq3Answer'
         }
       ],
       teamMembers: [
@@ -213,17 +213,17 @@ export default {
       },
       requestRules: {
         title: [
-          { required: true, message: 'Please enter the book title', trigger: 'blur' }
+          { required: true, message: this.$t('helpSupport.titleRequired'), trigger: 'blur' }
         ],
         author: [
-          { required: true, message: 'Please enter the author', trigger: 'blur' }
+          { required: true, message: this.$t('helpSupport.authorRequired'), trigger: 'blur' }
         ],
         isbn: [
-          { required: true, message: 'Please enter the ISBN', trigger: 'blur' }
+          { required: true, message: this.$t('helpSupport.isbnRequired'), trigger: 'blur' }
         ],
         reason: [
-          { required: true, message: 'Please enter the reason for recommendation', trigger: 'blur' },
-          { min: 20, message: 'The reason should be at least 20 characters', trigger: 'blur' }
+          { required: true, message: this.$t('helpSupport.reasonRequired'), trigger: 'blur' },
+          { min: 20, message: this.$t('helpSupport.reasonMinLength'), trigger: 'blur' }
         ]
       }
     }
@@ -234,7 +234,7 @@ export default {
         await this.$refs.contactForm.validate()
         // Call API to send message
         // await sendContactMessage(this.contactForm)
-        ElMessage.success('Message sent, we will get back to you as soon as possible!')
+        ElMessage.success(this.$t('helpSupport.messageSent'))
         this.resetForm()
       } catch (error) {
         console.error(error)
@@ -254,16 +254,16 @@ export default {
     },
     getStatusText(status) {
       const texts = {
-        pending: 'Pending',
-        approved: 'Approved',
-        rejected: 'Rejected',
-        purchased: 'Purchased'
+        pending: this.$t('helpSupport.pending'),
+        approved: this.$t('helpSupport.approved'),
+        rejected: this.$t('helpSupport.rejected'),
+        purchased: this.$t('helpSupport.purchased')
       }
       return texts[status] || status
     },
     showPurchaseRequestDialog() {
       if (!auth.isLoggedIn) {
-        ElMessage.warning('Please log in first')
+        ElMessage.warning(this.$t('helpSupport.pleaseLogin'))
         this.$router.push('/login')
         return
       }
@@ -273,7 +273,7 @@ export default {
       this.$refs.form.validate((valid) => {
         if (valid) {
           // 这里添加提交采购申请的API调用
-          ElMessage.success('Purchase request submitted successfully')
+          ElMessage.success(this.$t('helpSupport.purchaseRequestSubmitted'))
           this.purchaseRequestDialogVisible = false
           this.purchaseRequest = {
             title: '',

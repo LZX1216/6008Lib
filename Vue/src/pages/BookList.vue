@@ -2,34 +2,34 @@
   <div class="book-list">
     <!-- Title -->
     <div class="header-section">
-      <h2 class="page-title">📚 Books</h2>
+      <h2 class="page-title">{{ $t('bookList.pageTitle') }}</h2>
     </div>
 
     <!-- Search bar & View control -->
     <div class="search-section">
       <el-select
-          v-model="selectedFilter"
-          placeholder="Filter by"
-          class="filter-select"
-          @change="updatePlaceholder"
+        v-model="selectedFilter"
+        :placeholder="$t('bookList.filterBy')"
+        class="filter-select"
+        @change="updatePlaceholder"
       >
-        <el-option label="Title" value="title"/>
-        <el-option label="Author" value="author"/>
-        <el-option label="ISBN" value="isbn"/>
+        <el-option :label="$t('book.title')" value="title"/>
+        <el-option :label="$t('book.author')" value="author"/>
+        <el-option :label="$t('book.isbn')" value="isbn"/>
       </el-select>
 
       <el-input
-          v-model="searchQuery"
-          :placeholder="inputPlaceholder"
-          class="search-input"
-          clearable
-          @clear="clearSearch"
+        v-model="searchQuery"
+        :placeholder="inputPlaceholder"
+        class="search-input"
+        clearable
+        @clear="clearSearch"
       >
         <template #append>
           <el-button
-              type="primary"
-              class="search-btn"
-              @click="searchBooks"
+            type="primary"
+            class="search-btn"
+            @click="searchBooks"
           >
             <el-icon><Search /></el-icon>
           </el-button>
@@ -40,108 +40,90 @@
       <div class="view-controls">
         <el-button-group>
           <el-button
-              :type="displayMode === 'card' ? 'primary' : ''"
-              @click="displayMode = 'card'"
-              class="view-btn"
+            :type="displayMode === 'card' ? 'primary' : ''"
+            @click="displayMode = 'card'"
+            class="view-btn"
           >
             <el-icon><Grid /></el-icon>
           </el-button>
           <el-button
-              :type="displayMode === 'list' ? 'primary' : ''"
-              @click="displayMode = 'list'"
-              class="view-btn"
+            :type="displayMode === 'list' ? 'primary' : ''"
+            @click="displayMode = 'list'"
+            class="view-btn"
           >
             <el-icon><Memo /></el-icon>
           </el-button>
         </el-button-group>
       </div>
-
     </div>
 
     <div class="main-container">
       <!-- Sidebar -->
       <div class="filter-sidebar">
-        <h3 class="filter-title">🔍 Advanced Filters</h3>
+        <h3 class="filter-title">{{ $t('bookList.advancedFilters') }}</h3>
 
         <!-- Sort Options -->
         <div class="filter-group">
-          <h4>Sort By</h4>
-          <el-select v-model="sortOption" placeholder="Select Sort Option">
-            <el-option label="Publication Year" value="publishYear" />
-            <el-option label="Rating" value="rating" />
-            <el-option label="Comment Count" value="commentCount" />
+          <h4>{{ $t('bookList.sortBy') }}</h4>
+          <el-select v-model="sortOption" :placeholder="$t('bookList.selectSortOption')">
+            <el-option :label="$t('book.publicationYear')" value="publishYear" />
+            <el-option :label="$t('book.rating')" value="rating" />
+            <el-option :label="$t('book.commentCount')" value="commentCount" />
           </el-select>
-          <el-select v-model="sortOrder" placeholder="Order">
-            <el-option label="Ascending" value="asc" />
-            <el-option label="Descending" value="desc" />
+          <el-select v-model="sortOrder" :placeholder="$t('bookList.order')">
+            <el-option :label="$t('bookList.ascending')" value="asc" />
+            <el-option :label="$t('bookList.descending')" value="desc" />
           </el-select>
         </div>
 
         <!-- Rating Filter -->
         <div class="filter-group">
-          <h4>Rating Range</h4>
+          <h4>{{ $t('bookList.ratingRange') }}</h4>
           <el-slider
-              v-model="ratingRange"
-              range
-              :marks="{0: '0', 5: '5'}"
-              :min="0"
-              :max="5"
-              :step="0.1"
-              :format-tooltip="formatRating"
+            v-model="ratingRange"
+            range
+            :marks="{0: '0', 5: '5'}"
+            :min="0"
+            :max="5"
+            :step="0.1"
+            :format-tooltip="formatRating"
           />
         </div>
 
         <!-- Year Filter -->
         <div class="filter-group">
-          <h4>Publication Year</h4>
+          <h4>{{ $t('bookList.yearRange') }}</h4>
           <el-slider
-              v-model="yearRange"
-              range
-              :marks="{1990: '1990', 2025: '2025'}"
-              :min="1990"
-              :max="2025"
-              :step="1"
-              :format-tooltip="formatYear"
+            v-model="yearRange"
+            range
+            :marks="{1990: '1990', 2025: '2025'}"
+            :min="1990"
+            :max="2025"
+            :step="1"
+            :format-tooltip="formatYear"
           />
         </div>
 
-        <!-- Language Tags -->
+        <!-- Category Tags -->
         <div class="filter-group">
-          <h4>Popular Tags</h4>
+          <h4>{{ $t('bookList.popularTags') }}</h4>
           <div class="tag-container">
             <el-tag
-                v-for="language in languages"
-                :key="language.value"
-                :type="selectedLanguages.includes(language.value) ? 'primary' : 'info'"
-                @click="toggleLanguage(language.value)"
-                class="sidebar-tag"
+              v-for="category in categories"
+              :key="category.value"
+              :type="selectedCategories.includes(category.value) ? 'primary' : 'info'"
+              @click="toggleCategory(category.value)"
+              class="sidebar-tag"
             >
-              {{ language.label }}
-            </el-tag>
-          </div>
-        </div>
-
-
-        <!-- Genre Tags -->
-        <div class="filter-group">
-          <h4>Popular Tags</h4>
-          <div class="tag-container">
-            <el-tag
-                v-for="genre in genres"
-                :key="genre.value"
-                :type="selectedGenres.includes(genre.value) ? 'primary' : 'info'"
-                @click="toggleGenre(genre.value)"
-                class="sidebar-tag"
-            >
-              {{ genre.label }}
+              {{ category.label }}
             </el-tag>
           </div>
         </div>
         <el-button
-            @click="resetFilters"
-            class="reset-btn"
+          @click="resetFilters"
+          class="reset-btn"
         >
-          Reset All
+          {{ $t('bookList.resetAll') }}
         </el-button>
       </div>
 
@@ -150,27 +132,27 @@
         <!-- Card view -->
         <div v-if="displayMode === 'card' && filteredBooks.length" class="book-grid">
           <el-card
-              v-for="book in sortedBooks"
-              :key="book.id"
-              class="book-card"
+            v-for="book in sortedBooks"
+            :key="book.id"
+            class="book-card"
           >
             <div class="book-cover-container">
-              <img :src="book.cover" class="book-cover" alt=""/>
+              <img :src="book.cover" class="book-cover" alt="" />
             </div>
             <div class="book-info">
-              <h3 class="book-title" :title=book.title>{{ book.title }}</h3>
+              <h3 class="book-title" :title="book.title">{{ book.title }}</h3>
               <p class="book-author" :title="book.author">{{ book.author }}</p>
               <div class="book-rating">
-                <el-rate v-model="book.rating" disabled show-score text-color="#ff9900"/>
+                <el-rate v-model="book.rating" disabled show-score text-color="#ff9900" />
               </div>
               <el-button-group class="book-actions">
                 <el-button type="primary" size="big" @click="addToList(book.id)">
                   <el-icon><Plus /></el-icon>
-                  <span class="button-text">List</span>
+                  <span class="button - text">{{ $t('bookList.list') }}</span>
                 </el-button>
                 <el-button type="primary" size="big" @click="viewBookDetails(book.id)">
                   <el-icon><View /></el-icon>
-                  <span class="button-text">Detail</span>
+                  <span class="button - text">{{ $t('bookList.detail') }}</span>
                 </el-button>
               </el-button-group>
             </div>
@@ -179,33 +161,33 @@
 
         <!-- List view -->
         <el-table v-else-if="displayMode === 'list' && filteredBooks.length" :data="sortedBooks">
-          <el-table-column label="Cover" width="100">
+          <el-table-column :label="$t('book.cover')" width="100">
             <template #default="scope">
-              <img :src="scope.row.cover" class="table-book-cover" alt=""/>
+              <img :src="scope.row.cover" class="table-book-cover" alt="" />
             </template>
           </el-table-column>
-          <el-table-column prop="title" label="Title"/>
-          <el-table-column prop="author" label="Author" width="200"/>
-          <el-table-column prop="isbn" label="ISBN" width="150"/>
-          <el-table-column prop="genre" label="Genre" width="150"/>
-          <el-table-column label="Rating" width="200">
+          <el-table-column prop="title" :label="$t('book.title')" />
+          <el-table-column prop="author" :label="$t('book.author')" width="200" />
+          <el-table-column prop="isbn" :label="$t('book.isbn')" width="150" />
+          <el-table-column prop="category" :label="$t('book.category')" width="150" />
+          <el-table-column :label="$t('book.rating')" width="200">
             <template #default="scope">
               <el-rate
-                  v-model="scope.row.rating"
-                  disabled
-                  show-score
-                  text-color="#ff9900"
+                v-model="scope.row.rating"
+                disabled
+                show-score
+                text-color="#ff9900"
               />
             </template>
           </el-table-column>
-          <el-table-column label="Actions" width="200">
+          <el-table-column :label="$t('bookList.actions')" width="200">
             <template #default="scope">
               <el-button-group class="book-actions">
                 <el-button type="primary" size="small" @click="addToList(scope.row.id)">
-                  Add to list
+                  {{ $t('bookList.addToList') }}
                 </el-button>
                 <el-button type="primary" size="small" @click="viewBookDetails(scope.row.id)">
-                  View Details
+                  {{ $t('bookList.viewDetails') }}
                 </el-button>
               </el-button-group>
             </template>
@@ -215,10 +197,13 @@
         <!-- Pagination -->
         <div class="pagination-container">
           <el-pagination
-              :page-sizes="[10, 20, 50]"
+              :current-page="currentPage"
               :page-size="pageSize"
-              layout="total, sizes, prev, pager, next, jumper"
+              @update:current-page="currentPage = $event"
+              @update:page-size="pageSize = $event"
               :total="total"
+              :page-sizes="[10, 20, 50]"
+              layout="total, sizes, prev, pager, next, jumper"
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
           />
@@ -248,17 +233,10 @@ export default {
       yearRange: [1990, 2025],
       searchQuery: '',
       selectedFilter: 'title',
-      selectedGenres: [],
-      selectedLanguages: [],
+      selectedCategories: [],
       sortOption: 'rating',
       sortOrder: 'desc', // Default sort order
-      learningProgress: 0,
-      languages: [
-        {value: 'Chinese', label: 'Chinese'},
-        {value: 'English', label: 'English'},
-        {value: 'Spanish', label: 'Spanish'}
-      ],
-      genres: [
+      categories: [
         {value: 'Algorithms', label: 'Algorithms'},
         {value: 'Artificial Intelligence', label: 'Artificial Intelligence'},
         {value: 'Networking', label: 'Networking'},
@@ -284,8 +262,7 @@ export default {
           rating: 4.5,
           isbn: "9780262033848",
           publishYear: "2000",
-          language: "English",
-          genre: "Algorithms"
+          category: "Algorithms"
         },
         {
           id: 2,
@@ -295,8 +272,7 @@ export default {
           rating: 4.6,
           isbn: "9780136042594",
           publishYear: "2004",
-          language: "English",
-          genre: "Artificial Intelligence"
+          category: "Artificial Intelligence"
         },
         {
           id: 3,
@@ -306,8 +282,7 @@ export default {
           rating: 4.4,
           isbn: "9780132126953",
           publishYear: "2005",
-          language: "English",
-          genre: "Networking"
+          category: "Networking"
         },
         {
           id: 4,
@@ -317,8 +292,7 @@ export default {
           rating: 4.3,
           isbn: "9780073523323",
           publishYear: "2013",
-          language: "English",
-          genre: "Databases"
+          category: "Databases"
         },
         {
           id: 5,
@@ -328,8 +302,7 @@ export default {
           rating: 4.5,
           isbn: "9781118063330",
           publishYear: "2017",
-          language: "English",
-          genre: "Operating Systems"
+          category: "Operating Systems"
         },
         {
           id: 6,
@@ -339,8 +312,7 @@ export default {
           rating: 4.4,
           isbn: "9780321486813",
           publishYear: "2011",
-          language: "English",
-          genre: "Compilers"
+          category: "Compilers"
         },
         {
           id: 7,
@@ -350,8 +322,7 @@ export default {
           rating: 4.7,
           isbn: "9780123838728",
           publishYear: "2020",
-          language: "English",
-          genre: "Computer Architecture"
+          category: "Computer Architecture"
         },
         {
           id: 8,
@@ -361,8 +332,7 @@ export default {
           rating: 4.6,
           isbn: "9780262640688",
           publishYear: "2016",
-          language: "English",
-          genre: "Computer Systems"
+          category: "Computer Systems"
         },
         {
           id: 9,
@@ -372,8 +342,7 @@ export default {
           rating: 4.7,
           isbn: "9780132350885",
           publishYear: "2005",
-          language: "Chinese",
-          genre: "Software Engineering"
+          category: "Software Engineering"
         },
         {
           id: 10,
@@ -383,8 +352,7 @@ export default {
           rating: 4.6,
           isbn: "9780201633610",
           publishYear: "2018",
-          language: "Spanish",
-          genre: "Software Design"
+          category: "Software Design"
         },
       ].map(book => ({
         ...book,
@@ -398,7 +366,7 @@ export default {
       pageSize: 10,
       total: 100,
       displayMode: 'card',
-      inputPlaceholder: 'Search books...'
+      inputPlaceholder: this.$t('search.searchBooks')
     }
   },
   computed: {
@@ -408,17 +376,15 @@ export default {
             book.rating <= this.ratingRange[1];
         const matchesYear = book.publishYear >= this.yearRange[0] &&
             book.publishYear <= this.yearRange[1];
-        const matchesLanguage = this.selectedLanguages.length ?
-            this.selectedLanguages.includes(book.language) : true;
-        const matchesGenre = this.selectedGenres.length ?
-            this.selectedGenres.includes(book.genre) : true;
+        const matchesCategory = this.selectedCategories.length ?
+            this.selectedCategories.includes(book.category) : true;
         const searchFields = this.searchFieldMap[this.selectedFilter] || ['title'];
         const matchesSearch = this.searchQuery === '' ||
             searchFields.some(field =>
                 String(book[field]).toLowerCase()
                     .includes(this.searchQuery.toLowerCase()));
 
-        return matchesRating && matchesYear && matchesLanguage && matchesGenre && matchesSearch;
+        return matchesRating && matchesYear && matchesCategory && matchesSearch;
       });
     },
     sortedBooks() {
@@ -444,8 +410,7 @@ export default {
     },
     resetFilters() {
       this.searchQuery = '';
-      this.selectedGenres = [];
-      this.selectedLanguages = [];
+      this.selectedCategories = [];
       this.ratingRange = [0, 5];
       this.yearRange = [1990, 2025];
     },
@@ -457,18 +422,11 @@ export default {
         this.sortOrder = 'asc';
       }
     },
-    toggleLanguage(language) {
-      if (this.selectedLanguages.includes(language)) {
-        this.selectedLanguages = this.selectedLanguages.filter(l => l !== language)
+    toggleCategory(category) {
+      if (this.selectedCategories.includes(category)) {
+        this.selectedCategories = this.selectedCategories.filter(c => c !== category)
       } else {
-        this.selectedLanguages = [...this.selectedLanguages, language]
-      }
-    },
-    toggleGenre(genre) {
-      if (this.selectedGenres.includes(genre)) {
-        this.selectedGenres = this.selectedGenres.filter(g => g !== genre)
-      } else {
-        this.selectedGenres = [...this.selectedGenres, genre]
+        this.selectedCategories = [...this.selectedCategories, category]
       }
     },
     formatYear(value) {
@@ -499,18 +457,18 @@ export default {
     updatePlaceholder() {
       switch (this.selectedFilter) {
         case 'title':
-          this.inputPlaceholder = 'Search by title...';
+          this.inputPlaceholder = this.$t('search.searchByTitle');
           break;
         case 'author':
-          this.inputPlaceholder = 'Search by author...';
+          this.inputPlaceholder = this.$t('search.searchByAuthor');
           break;
         case 'isbn':
-          this.inputPlaceholder = 'Search by ISBN...';
+          this.inputPlaceholder = this.$t('search.searchByISBN');
           break;
         default:
-          this.inputPlaceholder = 'Search books...';
+          this.inputPlaceholder = this.$t('search.searchBooks');
       }
-    }
+    },
   }
 }
 </script>
@@ -905,9 +863,15 @@ export default {
 }
 
 .pagination-container {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  margin-top: 24px;
+  padding: 16px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .el-table {
@@ -1080,6 +1044,22 @@ export default {
 
   .book-grid {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+
+  :deep(.el-pagination__total) {
+    display: none;
+  }
+
+  :deep(.el-pagination__sizes) {
+    display: none;
+  }
+
+  :deep(.el-pager li:not(.active)) {
+    display: none;
+  }
+
+  :deep(.el-pager li.active) {
+    display: inline-block;
   }
 }
 

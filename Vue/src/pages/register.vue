@@ -2,8 +2,8 @@
   <div class="register-container">
     <el-card class="register-card">
       <div class="register-header">
-        <h2>Create an Account</h2>
-        <p>Join our community today</p>
+        <h2>{{ $t('register.createAccount') }}</h2>
+        <p>{{ $t('register.joinCommunity') }}</p>
       </div>
 
       <el-form
@@ -17,7 +17,7 @@
         <el-form-item prop="username">
           <el-input
             v-model="registerForm.username"
-            placeholder="Username"
+            :placeholder="$t('register.usernamePlaceholder')"
             prefix-icon="el-icon-user"
           />
         </el-form-item>
@@ -26,7 +26,7 @@
           <el-input
             v-model="registerForm.password"
             type="password"
-            placeholder="Password"
+            :placeholder="$t('register.passwordPlaceholder')"
             prefix-icon="el-icon-lock"
             show-password
           />
@@ -36,7 +36,7 @@
           <el-input
             v-model="registerForm.confirmPassword"
             type="password"
-            placeholder="Confirm Password"
+            :placeholder="$t('register.confirmPasswordPlaceholder')"
             prefix-icon="el-icon-lock"
             show-password
           />
@@ -44,14 +44,14 @@
 
         <el-form-item>
           <el-button type="primary" @click="handleRegister" class="register-button">
-            Register
+            {{ $t('register.register') }}
           </el-button>
         </el-form-item>
       </el-form>
 
       <div class="register-footer">
-        <span>Already have an account?</span>
-        <router-link to="/login">Sign in</router-link>
+        <span>{{ $t('register.alreadyHaveAccount') }}</span>
+        <router-link to="/login">{{ $t('register.signIn') }}</router-link>
       </div>
     </el-card>
   </div>
@@ -66,9 +66,9 @@ export default {
   data() {
     const validatePass2 = (rule, value, callback) => {
       if (value === "") {
-        callback(new Error("Please confirm your password"));
+        callback(new Error(this.$t('register.confirmPasswordRequired')));
       } else if (value !== this.registerForm.password) {
-        callback(new Error("The two passwords do not match!"));
+        callback(new Error(this.$t('register.passwordMismatch')));
       } else {
         callback();
       }
@@ -81,10 +81,10 @@ export default {
       },
       rules: {
         username: [
-          { required: true, message: 'Please enter username', trigger: 'blur' }
+          { required: true, message: this.$t('register.usernameRequired'), trigger: 'blur' }
         ],
         password: [
-          { required: true, message: 'Please enter password', trigger: 'blur' }
+          { required: true, message: this.$t('register.passwordRequired'), trigger: 'blur' }
         ],
         confirmPassword: [
           { required: true, validator: validatePass2, trigger: 'blur' }
@@ -116,8 +116,8 @@ export default {
               ElMessage.warning(response.data.msg);
             }
           } catch (error) {
-            console.error('Registration failed:', error);
-            ElMessage.error('Registration failed. Please try again.');
+            console.error(this.$t('register.registrationFailedLog'), error);
+            ElMessage.error(this.$t('register.registrationFailed'));
           }
         }
       });

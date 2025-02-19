@@ -38,12 +38,12 @@ const routes = [
             }
         ],
         beforeEnter: (to, from, next) => {
-            const userInfo = JSON.parse(sessionStorage.getItem('userInfo'))
-            if (userInfo && userInfo.role === 'admin') {
-                next()
+            const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+            if (userInfo && (userInfo.role === 'admin' || userInfo.role === 'superadmin')) {
+                next();
             } else {
-                next('/login')
-                ElMessage.error('Administrator privileges required')
+                next('/login');
+                ElMessage.error('Administrator privileges required');
             }
         }
     }

@@ -7,14 +7,13 @@
           <img :src="book.cover" class="book-cover" alt="Book cover" />
           <div class="book-actions">
             <el-button type="primary" :disabled="!book.available" @click="borrowBook">
-              {{ book.available ? 'Borrow' : 'Borrowed' }}
+              {{ book.available ? $t('bookDetail.borrow') : $t('bookDetail.unavailable') }}
             </el-button>
             <el-button type="primary" @click="addToWishlist">
-              Add to Wishlist
+              {{$t('bookDetail.addToList')}}
             </el-button>
           </div>
           <div class="rating">
-            <span>Rating: </span>
             <el-rate v-model="book.rating" disabled show-score/>
           </div>
         </el-card>
@@ -23,7 +22,7 @@
         <el-card class="similar-books-card">
           <template #header>
             <div class="similar-books-header">
-              <h3>Similar Books</h3>
+              <h3>{{ $t('bookDetail.similarBooksTitle') }}</h3>
             </div>
           </template>
           <div class="similar-books-list">
@@ -49,29 +48,37 @@
         <el-card class="book-info-card">
           <h1 class="book-title">{{ book.title }}</h1>
           <div class="book-meta">
-            <p class="author"><i class="el-icon-user"></i> Author: {{ book.author }}</p>
-            <p class="publisher"><i class="el-icon-office-building"></i> Publisher: {{ book.publisher }}</p>
-            <p class="isbn"><i class="el-icon-document"></i> ISBN: {{ book.isbn }}</p>
-            <p class="publish-date"><i class="el-icon-date"></i> Publication Date: {{ book.publishDate }}</p>
-            <p class="category"><i class="el-icon-collection-tag"></i> Category: {{ book.category }}</p>
+            <p class="author"><i class="el-icon-user"></i> {{ $t('book.author') }}: {{ book.author }}</p>
+            <p class="publisher"><i class="el-icon-office-building"></i> {{ $t('book.publisher') }}: {{ book.publisher }}</p>
+            <p class="isbn"><i class="el-icon-document"></i> {{ $t('book.isbn') }}: {{ book.isbn }}</p>
+            <p class="publish-date"><i class="el-icon-date"></i> {{ $t('book.publishDate') }}: {{ book.publishDate }}</p>
+            <p class="category"><i class="el-icon-collection-tag"></i> {{ $t('book.category') }}: {{ book.category }}</p>
           </div>
 
           <el-divider></el-divider>
 
           <div class="book-description">
-            <h3>Book Description</h3>
+            <h3>{{ $t('bookDetail.descriptionTitle') }}</h3>
             <p>{{ book.description }}</p>
           </div>
 
           <el-divider></el-divider>
 
           <div class="book-status">
-            <h3>Library Information</h3>
+            <h3>{{ $t('bookDetail.libraryInfoTitle') }}</h3>
             <el-descriptions :column="2" border>
-              <el-descriptions-item label="Location">{{ book.location }}</el-descriptions-item>
-              <el-descriptions-item label="Call Number">{{ book.callNumber }}</el-descriptions-item>
-              <el-descriptions-item label="Available Copies">{{ book.availableCopies }}</el-descriptions-item>
-              <el-descriptions-item label="Total Copies">{{ book.totalCopies }}</el-descriptions-item>
+              <el-descriptions-item
+                :label="$t('book.location')"
+              >{{ book.location }}</el-descriptions-item>
+              <el-descriptions-item
+                :label="$t('book.callNumber')"
+              >{{ book.callNumber }}</el-descriptions-item>
+              <el-descriptions-item
+                :label="$t('book.availableCopies')"
+              >{{ book.availableCopies }}</el-descriptions-item>
+              <el-descriptions-item
+                :label="$t('book.totalCopies')"
+              >{{ book.totalCopies }}</el-descriptions-item>
             </el-descriptions>
           </div>
         </el-card>
@@ -80,9 +87,9 @@
         <el-card class="comments-card">
           <template #header>
             <div class="comments-header">
-              <h3>Comments</h3>
+              <h3>{{ $t('bookDetail.commentsTitle') }}</h3>
               <el-button type="primary"  @click="showCommentDialog">
-                Write a Comment
+                {{ $t('bookDetail.writeCommentTitle') }}
               </el-button>
             </div>
           </template>
@@ -107,26 +114,32 @@
     <!-- Comment dialog -->
     <el-dialog
       v-model="commentDialogVisible"
-      title="Write a Comment"
+      :title="$t('bookDetail.writeCommentTitle')"
       width="50%"
     >
       <el-form :model="newComment" ref="commentForm" :rules="commentRules">
-        <el-form-item label="Rating" prop="rating">
+        <el-form-item
+          :label="$t('book.rating')"
+          prop="rating"
+        >
           <el-rate v-model="newComment.rating" />
         </el-form-item>
-        <el-form-item label="Comment" prop="content">
+        <el-form-item
+          :label="$t('book.comment')"
+          prop="content"
+        >
           <el-input
             v-model="newComment.content"
             type="textarea"
             :rows="4"
-            placeholder="Please share your thoughts about the book..."
+            :placeholder="$t('bookDetail.commentPlaceholder')"
           />
         </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="commentDialogVisible = false">Cancel</el-button>
-          <el-button type="primary" @click="submitComment">Submit</el-button>
+          <el-button @click="commentDialogVisible = false">{{ $t('common.cancel') }}</el-button>
+          <el-button type="primary" @click="submitComment">{{ $t('common.submit') }}</el-button>
         </span>
       </template>
     </el-dialog>
@@ -195,11 +208,11 @@ export default {
       },
       commentRules: {
         rating: [
-          { required: true, message: 'Please provide a rating', trigger: 'change' }
+          { required: true, message: this.$t('bookDetail.ratingRequired'), trigger: 'change' }
         ],
         content: [
-          { required: true, message: 'Please enter your comment', trigger: 'blur' },
-          { min: 10, message: 'Comment must be at least 10 characters', trigger: 'blur' }
+          { required: true, message: this.$t('bookDetail.commentRequired'), trigger: 'blur' },
+          { min: 10, message: this.$t('bookDetail.commentMinLength'), trigger: 'blur' }
         ]
       }
     };
@@ -207,41 +220,41 @@ export default {
   methods: {
     async borrowBook() {
       if (!auth.isLoggedIn) {
-        ElMessage.warning('Please log in first');
+        ElMessage.warning(this.$t('common.loginRequired'));
         this.$router.push('/login');
         return;
       }
 
       try {
         await ElMessageBox.confirm(
-          'Are you sure you want to borrow this book?',
-          'Borrow Confirmation',
+          this.$t('bookDetail.borrowConfirm'),
+          this.$t('bookDetail.borrowConfirmationTitle'),
           {
-            confirmButtonText: 'Confirm',
-            cancelButtonText: 'Cancel',
+            confirmButtonText: this.$t('common.confirm'),
+            cancelButtonText: this.$t('common.cancel'),
             type: 'info'
           }
         );
         // 这里添加借阅的API调用
-        ElMessage.success('Borrowed successfully');
+        ElMessage.success(this.$t('bookDetail.borrowSuccess'));
       } catch {
-        ElMessage.info('Borrowing cancelled');
+        ElMessage.info(this.$t('bookDetail.borrowCancel'));
       }
     },
     addToWishlist() {
       if (!auth.isLoggedIn) {
-        ElMessage.warning('Please log in first');
+        ElMessage.warning(this.$t('common.loginRequired'));
         this.$router.push('/login');
         return;
       }
-      ElMessage.success('Added to your wishlist');
+      ElMessage.success(this.$t('bookDetail.addToWishlistSuccess'));
     },
     goToBookDetail(bookId) {
       this.$router.push(`/book/${bookId}`);
     },
     showCommentDialog() {
       if (!auth.isLoggedIn) {
-        ElMessage.warning('Please log in first');
+        ElMessage.warning(this.$t('common.loginRequired'));
         this.$router.push('/login');
         return;
       }
@@ -251,7 +264,7 @@ export default {
       this.$refs.commentForm.validate((valid) => {
         if (valid) {
           // Add API call to submit the comment here
-          ElMessage.success('Comment submitted successfully');
+          ElMessage.success(this.$t('bookDetail.commentSubmitSuccess'));
           this.commentDialogVisible = false;
           this.newComment = {
             rating: 0,

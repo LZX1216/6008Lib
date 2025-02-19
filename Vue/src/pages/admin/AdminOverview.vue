@@ -6,8 +6,8 @@
         <el-card class="stat-card animate__animated animate__fadeInUp" :style="{ animationDelay: `${index * 0.1}s` }">
           <template #header>
             <div class="card-header">
-              <span>{{ stat.title }}</span>
-              <el-tag :type="stat.tagType" size="small">{{ stat.tagText }}</el-tag>
+              <span>{{ $t(`adminOverview.${stat.titleKey}`) }}</span>
+              <el-tag :type="stat.tagType" size="small">{{ $t(`adminOverview.${stat.tagTextKey}`) }}</el-tag>
             </div>
           </template>
           <div class="stat-value">
@@ -28,16 +28,16 @@
         <el-card class="chart-card animate__animated animate__fadeInLeft">
           <template #header>
             <div class="card-header">
-              <span>Borrowing Trend</span>
+              <span>{{ $t('adminOverview.borrowingTrend') }}</span>
               <el-radio-group v-model="borrowChartPeriod" size="small">
-                <el-radio-button label="week">Week</el-radio-button>
-                <el-radio-button label="month">Month</el-radio-button>
-                <el-radio-button label="year">Year</el-radio-button>
+                <el-radio-button label="week">{{ $t('adminOverview.week') }}</el-radio-button>
+                <el-radio-button label="month">{{ $t('adminOverview.month') }}</el-radio-button>
+                <el-radio-button label="year">{{ $t('adminOverview.year') }}</el-radio-button>
               </el-radio-group>
             </div>
           </template>
           <div class="chart-container">
-            Borrowing Trend Chart
+            <canvas id="borrowingTrendChart"></canvas>
           </div>
         </el-card>
       </el-col>
@@ -47,11 +47,11 @@
         <el-card class="chart-card animate__animated animate__fadeInUp">
           <template #header>
             <div class="card-header">
-              <span>Book Category Statistics</span>
+              <span>{{ $t('adminOverview.bookCategoryStatistics') }}</span>
             </div>
           </template>
           <div class="chart-container">
-            Category Pie Chart
+            <canvas id="bookCategoryChart"></canvas>
           </div>
         </el-card>
       </el-col>
@@ -63,7 +63,7 @@
         <el-card class="chart-card animate__animated animate__fadeInRight">
           <template #header>
             <div class="card-header">
-              <span>Recent Activities</span>
+              <span>{{ $t('adminOverview.recentActivities') }}</span>
             </div>
           </template>
           <div class="recent-activity">
@@ -74,7 +74,7 @@
                 :timestamp="activity.time"
                 :type="activity.type"
               >
-                {{ activity.content }}
+                {{ $t(`adminOverview.${activity.contentKey}`, { ...activity.params }) }}
               </el-timeline-item>
             </el-timeline>
           </div>
@@ -86,7 +86,8 @@
 
 <script>
 import { CaretTop, CaretBottom } from '@element-plus/icons-vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ref, onMounted, watch, getCurrentInstance } from 'vue'
+import Chart from 'chart.js/auto'
 
 export default {
   name: 'AdminOverview',
@@ -98,32 +99,141 @@ export default {
     return {
       borrowChartPeriod: 'month',
       stats: {
-        totalBorrows: { value: 1234, trend: 15, title: 'Total Borrows', tagType: 'success', tagText: 'Active' },
-        activeUsers: { value: 456, trend: 8, title: 'Active Users', tagType: 'warning', tagText: 'Growing' },
-        newBooks: { value: 89, trend: -3, title: 'New Books', tagType: 'info', tagText: 'This Month' },
-        overdueCount: { value: 12, trend: -5, title: 'Overdue Books', tagType: 'danger', tagText: 'Attention' }
+        totalBorrows: { value: 1234, trend: 15, titleKey: 'totalBorrows', tagType: 'success', tagTextKey: 'active' },
+        activeUsers: { value: 456, trend: 8, titleKey: 'activeUsers', tagType: 'warning', tagTextKey: 'growing' },
+        newBooks: { value: 89, trend: -3, titleKey: 'newBooks', tagType: 'info', tagTextKey: 'thisMonth' },
+        overdueCount: { value: 12, trend: -5, titleKey: 'overdueBooks', tagType: 'danger', tagTextKey: 'attention' }
       },
       recentActivities: [
         {
           id: 1,
           time: '2024-03-15 14:30',
           type: 'success',
-          content: 'User Zhang San returned "Introduction to Algorithms"'
+          contentKey: 'userReturnedBook',
+          params: { user: 'Zhang San', book: 'Introduction to Algorithms' }
         },
         {
           id: 2,
           time: '2024-03-15 13:20',
           type: 'warning',
-          content: 'New book "Artificial Intelligence: A Modern Approach" added to inventory'
+          contentKey: 'newBookAdded',
+          params: { book: 'Artificial Intelligence: A Modern Approach' }
         },
         {
           id: 3,
           time: '2024-03-15 11:45',
           type: 'danger',
-          content: 'User Li Si\'s loan is overdue'
+          contentKey: 'userLoanOverdue',
+          params: { user: 'Li Si' }
         }
       ]
     }
+  },
+  setup() {
+    const borrowingTrendChart = ref(null)
+    const bookCategoryChart = ref(null)
+    const instance = getCurrentInstance()
+
+    const drawBorrowingTrendChart = (period) => {
+      const ctx = document.getElementById('borrowingTrendChart').getContext('2d')
+      if (borrowingTrendChart.value) {
+        borrowingTrendChart.value.destroy()
+      }
+
+      let labels = []
+      let data = []
+
+      if (period === 'week') {
+        labels = [
+          instance.proxy.$t('adminOverview.mon'),
+          instance.proxy.$t('adminOverview.tue'),
+          instance.proxy.$t('adminOverview.wed'),
+          instance.proxy.$t('adminOverview.thu'),
+          instance.proxy.$t('adminOverview.fri'),
+          instance.proxy.$t('adminOverview.sat'),
+          instance.proxy.$t('adminOverview.sun')
+        ]
+        data = [10, 15, 20, 18, 22, 25, 12]
+      } else if (period === 'month') {
+        labels = [
+          instance.proxy.$t('adminOverview.week1'),
+          instance.proxy.$t('adminOverview.week2'),
+          instance.proxy.$t('adminOverview.week3'),
+          instance.proxy.$t('adminOverview.week4')
+        ]
+        data = [40, 45, 50, 55]
+      } else if (period === 'year') {
+        labels = [
+          instance.proxy.$t('adminOverview.jan'),
+          instance.proxy.$t('adminOverview.feb'),
+          instance.proxy.$t('adminOverview.mar'),
+          instance.proxy.$t('adminOverview.apr'),
+          instance.proxy.$t('adminOverview.may'),
+          instance.proxy.$t('adminOverview.jun'),
+          instance.proxy.$t('adminOverview.jul'),
+          instance.proxy.$t('adminOverview.aug'),
+          instance.proxy.$t('adminOverview.sep'),
+          instance.proxy.$t('adminOverview.oct'),
+          instance.proxy.$t('adminOverview.nov'),
+          instance.proxy.$t('adminOverview.dec')
+        ]
+        data = [100, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220]
+      }
+
+      borrowingTrendChart.value = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: instance.proxy.$t('adminOverview.borrowingTrend'),
+            data: data,
+            borderColor: 'blue',
+            backgroundColor: 'rgba(0, 0, 255, 0.1)',
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      })
+    }
+
+    const drawBookCategoryChart = () => {
+      const ctx = document.getElementById('bookCategoryChart').getContext('2d')
+      if (bookCategoryChart.value) {
+        bookCategoryChart.value.destroy()
+      }
+
+      const labels = ['Artificial Intelligence', 'Software Engineering', 'Algorithms', 'Database']
+      const data = [30, 40, 20, 10]
+
+      bookCategoryChart.value = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      })
+    }
+
+    onMounted(() => {
+      drawBorrowingTrendChart(instance.data.borrowChartPeriod)
+      drawBookCategoryChart()
+    })
+
+    watch(() => instance.data.borrowChartPeriod, (newPeriod) => {
+      drawBorrowingTrendChart(newPeriod)
+    })
+
+    return {}
   },
   methods: {
     fetchOverviewData() {
@@ -199,5 +309,10 @@ export default {
   display: flex;
   align-items: center;
   background: #f5f7fa;
+  padding-left: 20px;
+}
+
+.recent-activity .el-timeline {
+  width: 100%;
 }
 </style>

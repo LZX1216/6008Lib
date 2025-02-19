@@ -1,15 +1,15 @@
 <template>
   <div class="book-recommendations">
     <h3>{{ title }}</h3>
-    
+
     <el-row :gutter="20">
-      <el-col 
-        :span="6" 
-        v-for="book in recommendations" 
+      <el-col
+        :span="6"
+        v-for="book in recommendations"
         :key="book.id"
       >
-        <el-card 
-          :body-style="{ padding: '0px' }" 
+        <el-card
+          :body-style="{ padding: '0px' }"
           class="book-card"
           @click="viewBookDetails(book.id)"
         >
@@ -156,4 +156,4 @@ export default {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-</style> 
+</style>

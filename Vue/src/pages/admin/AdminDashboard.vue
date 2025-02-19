@@ -2,11 +2,11 @@
   <div class="admin-dashboard">
     <el-container>
       <!-- Sidebar -->
-      <el-aside :width="isCollapse ? '64px' : '220px'" class="sidebar">
+      <el-aside :width="isCollapse? '64px' : '220px'" class="sidebar">
         <div class="sidebar-header">
-          <span v-if="!isCollapse">Admin Panel</span>
+          <span v-if="!isCollapse">{{ $t('adminDashboard.title') }}</span>
           <el-icon class="toggle-sidebar" @click="toggleSidebar">
-            <component :is="isCollapse ? 'Expand' : 'Fold'" />
+            <component :is="isCollapse? 'Expand' : 'Fold'" />
           </el-icon>
         </div>
         <el-menu
@@ -15,21 +15,21 @@
           :collapse="isCollapse"
           @select="handleMenuSelect"
         >
-        <el-menu-item index="overview">
+          <el-menu-item index="overview">
             <el-icon><DataLine /></el-icon>
-            <span>Overview</span>
+            <span>{{ $t('adminDashboard.overview') }}</span>
           </el-menu-item>
           <el-menu-item index="books">
             <el-icon><Reading /></el-icon>
-            <span>Book Management</span>
+            <span>{{ $t('adminDashboard.bookManagement') }}</span>
           </el-menu-item>
           <el-menu-item index="users">
             <el-icon><User /></el-icon>
-            <span>User Management</span>
+            <span>{{ $t('adminDashboard.userManagement') }}</span>
           </el-menu-item>
           <el-menu-item index="borrows">
             <el-icon><List /></el-icon>
-            <span>Borrow Management</span>
+            <span>{{ $t('adminDashboard.borrowManagement') }}</span>
           </el-menu-item>
         </el-menu>
       </el-aside>
@@ -45,8 +45,8 @@
 </template>
 
 <script>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { DataLine, Reading, User, List, Expand, Fold } from '@element-plus/icons-vue'
 
 export default {
@@ -61,6 +61,7 @@ export default {
   },
   setup() {
     const router = useRouter()
+    const route = useRoute()
     const activeMenu = ref('overview')
     const isCollapse = ref(false)
 
@@ -74,9 +75,15 @@ export default {
     }
 
     const navigateTo = (route) => {
-      // 使用 Vue Router 进行页面跳转
       router.push({ name: route })
     }
+
+    onMounted(() => {
+      const path = route.path.split('/').pop()
+      if (['overview', 'books', 'users', 'borrows'].includes(path)) {
+        activeMenu.value = path
+      }
+    })
 
     return {
       activeMenu,

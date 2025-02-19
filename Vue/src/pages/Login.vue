@@ -2,8 +2,8 @@
   <div class="login-container">
     <el-card class="login-card">
       <div class="login-header">
-        <h2>Welcome Back</h2>
-        <p>Please sign in to your account</p>
+        <h2>{{ $t('login.welcomeBack') }}</h2>
+        <p>{{ $t('login.pleaseSignIn') }}</p>
       </div>
 
       <el-form
@@ -16,7 +16,7 @@
         <el-form-item prop="username">
           <el-input
             v-model="loginForm.username"
-            placeholder="Username"
+            :placeholder="$t('login.usernamePlaceholder')"
             prefix-icon="el-icon-user"
           />
         </el-form-item>
@@ -25,7 +25,7 @@
           <el-input
             v-model="loginForm.password"
             type="password"
-            placeholder="Password"
+            :placeholder="$t('login.passwordPlaceholder')"
             prefix-icon="el-icon-lock"
             show-password
           />
@@ -33,16 +33,18 @@
 
         <el-form-item>
           <el-button type="primary" @click="handleLogin" class="login-button">
-            Sign In
+            {{ $t('login.signIn') }}
           </el-button>
         </el-form-item>
       </el-form>
 
       <div class="login-footer">
-        <a href="#" @click.prevent="showForgotPasswordMessage">Forgot password?</a>
+        <a href="#" @click.prevent="showForgotPasswordMessage">
+          {{ $t('login.forgotPassword') }}
+        </a>
         <span class="divider">   |   </span>
-        <span>Don't have an account?      </span>
-        <router-link to="/register">Sign up</router-link>
+        <span>{{ $t('login.dontHaveAccount') }}      </span>
+        <router-link to="/register">{{ $t('login.signUp') }}</router-link>
       </div>
     </el-card>
   </div>
@@ -62,10 +64,10 @@ export default {
       },
       rules: {
         username: [
-          { required: true, message: 'Please enter username', trigger: 'blur' }
+          { required: true, message: this.$t('login.usernameRequired'), trigger: 'blur' }
         ],
         password: [
-          { required: true, message: 'Please enter password', trigger: 'blur' }
+          { required: true, message: this.$t('login.passwordRequired'), trigger: 'blur' }
         ]
       }
     }
@@ -77,25 +79,25 @@ export default {
           // Default user and admin accounts
           const testUsers = [
             { username: 'admin', password: 'admin123', role: 'admin' },
-            { username: 'user', password: 'user123', role: 'user' }
+            { username: 'user', password: 'user123', role: 'user' },
+            { username: 'superadmin', password: 'superadmin123', role: 'superadmin'}
           ];
 
           const user = testUsers.find(u => u.username === this.loginForm.username && u.password === this.loginForm.password);
 
           if (user) {
             // Login successfully
-            ElMessage.success('Login successfully');
-            auth.loginstate(); // Update login status
-            auth.userInfo = user; // Set user information
+            ElMessage.success(this.$t('login.loginSuccess'));
+            auth.loginstate(user); // Update login status
             sessionStorage.setItem('userInfo', JSON.stringify(user)); // Store user info in session storage
-            if (user.role === 'admin') {
+            if (user.role === 'admin' || user.role === 'superadmin') {
               this.$router.push('/admin/overview');
             } else {
               this.$router.push('/user');
             }
           } else {
             // Login failed
-            ElMessage.error('Incorrect username or password');
+            ElMessage.error(this.$t('login.loginFailed'));
           }
         }
       })
@@ -105,7 +107,7 @@ export default {
     },
     showForgotPasswordMessage() {
       ElMessage({
-        message: 'Please contact the administrator',
+        message: this.$t('login.contactAdmin'),
         type: 'info',
         duration: 3000
       })

@@ -3,19 +3,19 @@
     <div class="footer-divider"></div>
     <div class="footer-content">
       <div class="footer-section">
-        <h4>Library</h4>
-        <p>Somewhere, Singapore</p>
-        <p>© 2025 Library System. All rights reserved.</p>
+        <h4>{{ $t('footer.libraryTitle') }}</h4>
+        <p>{{ $t('footer.libraryAddress') }}</p>
+        <p>{{ $t('footer.copyright', { year: currentYear }) }}</p>
       </div>
       <div class="footer-section">
-        <h4>Quick Links</h4>
-        <router-link to="/about">About Us</router-link>
-        <router-link to="/help">Help Center</router-link>
+        <h4>{{ $t('footer.quickLinksTitle') }}</h4>
+        <router-link to="/about">{{ $t('nav.about') }}</router-link>
+        <router-link to="/help">{{ $t('nav.help') }}</router-link>
       </div>
       <div class="footer-section">
-        <h4>Contact Us</h4>
-        <p><i class="el-icon-phone"></i> +65 1234 5678</p>
-        <p><i class="el-icon-message"></i> library@library.com</p>
+        <h4>{{ $t('footer.contactUsTitle') }}</h4>
+        <p><i class="el-icon-phone"></i> {{ $t('footer.contactPhone') }}</p>
+        <p><i class="el-icon-message"></i> {{ $t('footer.contactEmail') }}</p>
       </div>
     </div>
   </el-footer>

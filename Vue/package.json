@@ -13,6 +13,7 @@
     "@element-plus/theme-chalk": "^2.2.16",
     "@vueuse/core": "^12.7.0",
     "axios": "^1.7.9",
+    "chart.js": "^4.4.7",
     "dayjs": "^1.11.10",
     "gsap": "^3.0.1",
     "lodash": "^4.17.21",

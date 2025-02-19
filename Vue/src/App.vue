@@ -22,6 +22,17 @@ export default {
 </script>
 
 <style>
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
 #app {
   display: flex;
   flex-direction: column;
@@ -30,5 +41,10 @@ export default {
 
 .main-content {
   flex: 1;
+  overflow-y: auto;
+}
+
+.Footer {
+  flex-shrink: 0;
 }
 </style>

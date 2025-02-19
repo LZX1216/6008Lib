@@ -3,29 +3,26 @@
     <el-row :gutter="20">
       <el-col :xs="24" :sm="24" :md="16" :lg="16" :xl="16">
         <el-card class="intro-section">
-          <h2>About Us</h2>
-          <p class="intro-text">
-            We are a modern library dedicated to providing readers with high-quality reading experiences and knowledge services.
-            Founded in 2020, we continuously innovate our service model, integrating traditional and modern management approaches.
-          </p>
+          <h2>{{ $t('aboutUs.title') }}</h2>
+          <p class="intro-text">{{ $t('aboutUs.introduction') }}</p>
 
-          <h3>Our Mission</h3>
-          <p>Spread knowledge, promote learning, serve society, and advance cultural development.</p>
+          <h3>{{ $t('aboutUs.missionTitle') }}</h3>
+          <p>{{ $t('aboutUs.mission') }}</p>
 
-          <h3>Our Vision</h3>
-          <p>To become the most popular modern smart library, providing readers with excellent reading experiences and knowledge services.</p>
+          <h3>{{ $t('aboutUs.visionTitle') }}</h3>
+          <p>{{ $t('aboutUs.vision') }}</p>
         </el-card>
 
         <el-card class="features-section">
-          <h3>Our Features</h3>
+          <h3>{{ $t('aboutUs.featuresTitle') }}</h3>
           <el-row :gutter="20">
-            <el-col :xs="24" :sm="12" :md="8" v-for="feature in features" :key="feature.title">
+            <el-col :xs="24" :sm="12" :md="8" v-for="feature in features" :key="feature.i18nTitle">
               <div class="feature-item">
                 <el-icon :size="40" class="feature-icon">
                   <component :is="feature.icon" />
                 </el-icon>
-                <h4>{{ feature.title }}</h4>
-                <p>{{ feature.description }}</p>
+                <h4>{{ $t(feature.i18nTitle) }}</h4>
+                <p>{{ $t(feature.i18nDescription) }}</p>
               </div>
             </el-col>
           </el-row>
@@ -34,52 +31,52 @@
 
       <el-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
         <el-card class="stats-section">
-          <h3>Library Overview</h3>
-          <div class="stat-item" v-for="stat in stats" :key="stat.label">
+          <h3>{{ $t('aboutUs.statsTitle') }}</h3>
+          <div class="stat-item" v-for="stat in stats" :key="stat.i18nLabel">
             <div class="stat-value">{{ stat.value }}</div>
-            <div class="stat-label">{{ stat.label }}</div>
+            <div class="stat-label">{{ $t(stat.i18nLabel) }}</div>
           </div>
         </el-card>
 
         <el-card class="contact-section">
-          <h3>Contact Information</h3>
+          <h3>{{ $t('aboutUs.contactTitle') }}</h3>
           <div class="contact-info">
             <p>
               <el-icon>
-                <Location/>
+                <Location />
               </el-icon>
-              Address: Somewhere, Singapore
+              {{ $t('aboutUs.address') }}
             </p>
             <p>
               <el-icon>
-                <Phone/>
+                <Phone />
               </el-icon>
-              Phone: +65 1234 5678
+              {{ $t('aboutUs.phone') }}
             </p>
             <p>
               <el-icon>
-                <Message/>
+                <Message />
               </el-icon>
-              Email: library@example.com
+              {{ $t('aboutUs.email') }}
             </p>
-            <h4>Opening Hours</h4>
+            <h4>{{ $t('aboutUs.openingHoursTitle') }}</h4>
             <p>
               <el-icon>
-                <Calendar/>
+                <Calendar />
               </el-icon>
-              Monday to Friday: 8:00 - 22:00
-            </p>
-            <p>
-              <el-icon>
-                <Clock/>
-              </el-icon>
-              Saturday and Sunday: 9:00 - 21:00
+              {{ $t('aboutUs.openingHoursMonFri') }}
             </p>
             <p>
               <el-icon>
-                <Flag/>
+                <Clock />
               </el-icon>
-              Public Holidays: 9:00 - 17:00
+              {{ $t('aboutUs.openingHoursSatSun') }}
+            </p>
+            <p>
+              <el-icon>
+                <Flag />
+              </el-icon>
+              {{ $t('aboutUs.openingHoursPublicHolidays') }}
             </p>
           </div>
         </el-card>
@@ -89,42 +86,39 @@
 </template>
 
 <script>
-// ... existing code ...
-
-import {Calendar, Clock, Flag, Location, Message, Phone, Collection, Reading, Service} from "@element-plus/icons-vue";
+import { Calendar, Clock, Flag, Location, Message, Phone, Collection, Reading, Service } from "@element-plus/icons-vue";
 
 export default {
   name: 'AboutUs',
-  components: {Flag, Calendar, Clock, Message, Location, Phone, Collection, Reading, Service},
-  // ... existing code ...
+  components: { Flag, Calendar, Clock, Message, Location, Phone, Collection, Reading, Service },
   data() {
     return {
       features: [
         {
           icon: 'Collection',
-          title: 'Rich Collection',
-          description: 'Over 100,000 books and abundant electronic resources'
+          i18nTitle: 'aboutUs.featureRichCollection.title',
+          i18nDescription: 'aboutUs.featureRichCollection.description'
         },
         {
           icon: 'Reading',
-          title: 'Smart Borrowing',
-          description: '24-hour self-service borrowing and online reservation'
+          i18nTitle: 'aboutUs.featureSmartBorrowing.title',
+          i18nDescription: 'aboutUs.featureSmartBorrowing.description'
         },
         {
           icon: 'Service',
-          title: 'Professional Service',
-          description: 'Professional librarians provide reference consultation services'
+          i18nTitle: 'aboutUs.featureProfessionalService.title',
+          i18nDescription: 'aboutUs.featureProfessionalService.description'
         }
       ],
       stats: [
-        { label: 'Books in Collection', value: '100,000+' },
-        { label: 'Registered Readers', value: '50,000+' },
-        { label: 'Annual Loans', value: '200,000+' },
-        { label: 'Electronic Resources', value: '30,000+' }
+        { i18nLabel: 'aboutUs.stats.booksInCollection', value: '100,000+' },
+        { i18nLabel: 'aboutUs.stats.registeredReaders', value: '50,000+' },
+        { i18nLabel: 'aboutUs.stats.annualLoans', value: '200,000+' },
+        { i18nLabel: 'aboutUs.stats.electronicResources', value: '30,000+' }
       ]
-    }
+    };
   }
-}
+};
 </script>
 
 <style scoped>

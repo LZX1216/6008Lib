@@ -39,6 +39,15 @@
         <el-menu-item @click="logout">{{ $t('common.logout') }}</el-menu-item>
       </template>
 
+      <!-- Admin button -->
+      <el-button
+          v-if="auth.isLoggedIn && isAdminOrSuperadmin"
+          @click="goToAdminOverview"
+          type="primary"
+      >
+        {{ $t('nav.goToAdminOverview') }}
+      </el-button>
+
       <!-- Language switch -->
       <div class="language-switch">
         <LanguageSwitch />
@@ -51,11 +60,37 @@
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { auth } from "@/utils/auth.js"
 import LanguageSwitch from '@/components/LanguageSwitch.vue'
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 
 export default {
   name: 'Header',
   components: {
     LanguageSwitch
+  },
+  setup() {
+    const router = useRouter()
+    const currentUser = JSON.parse(sessionStorage.getItem('userInfo'))
+
+    const isAdminOrSuperadmin = computed(() => {
+      const userInfo = sessionStorage.getItem('userInfo')
+      if (!userInfo) return false
+      try {
+        const user = JSON.parse(userInfo)
+        return user.role === 'admin' || user.role === 'superadmin'
+      } catch {
+        return false
+      }
+    })
+
+    const goToAdminOverview = () => {
+      router.push('/admin/overview')
+    }
+
+    return {
+      isAdminOrSuperadmin,
+      goToAdminOverview
+    }
   },
   computed: {
     activeIndex() {
@@ -65,26 +100,25 @@ export default {
       return auth
     }
   },
-  methods: {
+methods: {
     async logout() {
       try {
-        // 美化确认弹窗
         await ElMessageBox.confirm(
-          'Are you sure you want to log out?',
-          'Warning',
+          this.$t('logout.confirmMessage'),
+          this.$t('logout.warningTitle'),
           {
-            confirmButtonText: 'Confirm',
-            cancelButtonText: 'Cancel',
+            confirmButtonText: this.$t('common.confirm'),
+            cancelButtonText: this.$t('common.cancel'),
             dangerouslyUseHTMLString: true,
             customClass: 'custom-confirm-box',
           }
-        )
-        ElMessage.success('Logged out successfully')
-        sessionStorage.removeItem('userInfo')
-        auth.logoutstate()
-        this.$router.push('/')
+        );
+        ElMessage.success(this.$t('logout.successMessage'));
+        sessionStorage.removeItem('userInfo');
+        auth.logoutstate();
+        this.$router.push('/');
       } catch {
-        ElMessage.info('Logout cancelled')
+        ElMessage.info(this.$t('logout.cancelMessage'));
       }
     }
   }
@@ -147,7 +181,6 @@ a {
   color: inherit;
 }
 
-/* 动画效果 */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -157,7 +190,6 @@ a {
   animation: fadeIn 0.5s ease-out;
 }
 
-/* 响应式设计 */
 @media (max-width: 768px) {
   .header-menu {
     flex-wrap: wrap;

@@ -11,6 +11,7 @@
         :placeholder="$t('adminUserManagement.searchUsers')"
         class="search-input"
         style="width: 400px;"
+        @keyup.enter="searchUsers"
       >
         <template #append>
           <el-button @click="searchUsers">

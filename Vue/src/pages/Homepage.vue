@@ -14,6 +14,7 @@
             v-model="searchQuery"
             :placeholder="inputPlaceholder"
             class="search-input"
+            @keyup.enter="searchBooks"
             clearable
             @clear="clearSearch"
           >
@@ -159,12 +160,13 @@
 
     <!-- Event Details Dialog -->
     <el-dialog
-        :visible.sync="eventDialogVisible"
-        :title="selectedEvent.title"
-        width="50%"
+      v-model="eventDialogVisible"
+      :title="selectedEvent.title"
+      width="50%"
+      class="event-dialog"
     >
-      <img :src="selectedEvent.image" class="event-dialog-image" alt="Event Image"/>
       <div class="event-dialog-content">
+        <img :src="selectedEvent.image" class="event-dialog-image" alt="Event Image"/>
         <p><strong>Date:</strong> {{ selectedEvent.date }}</p>
         <p><strong>Description:</strong> {{ selectedEvent.description }}</p>
       </div>
@@ -202,30 +204,30 @@ export default {
       recentEvents: [
         {
           id: 1,
-          title: "Book Sharing: 'One Hundred Years of Solitude'",
-          description: "This Saturday at 2 PM, we will host a book sharing event for Gabriel García Márquez's 'One Hundred Years of Solitude'...",
-          date: "2024-03-23",
+          title: "Book Sharing: 'Introduction to Algorithms'",
+          description: "This Saturday at 2 PM, we will host a book sharing event for Thomas H. Cormen's 'Introduction to Algorithms'. Join us to explore the fundamentals of algorithms and data structures.",
+          date: "2025-03-23",
           image: "https://th.bing.com/th/id/OIP.L4zAEMAUAMRYfzS1RxDw_wAAAA?rs=1&pid=ImgDetMain"
         },
         {
           id: 2,
-          title: "Children's Story Time",
-          description: "Every Sunday at 10 AM, join us to explore the world of stories with your children...",
-          date: "2024-03-24",
+          title: "Children's Coding Workshop",
+          description: "Every Sunday at 10 AM, join us for a coding workshop designed for children. Learn the basics of programming in a fun and interactive environment.",
+          date: "2025-03-24",
           image: "https://th.bing.com/th/id/OIP.MROTK3JQC-vSgQO2l5EZXAAAAA?rs=1&pid=ImgDetMain"
         },
         {
           id: 3,
-          title: "Author Meet and Greet",
-          description: "A discussion on famous author Wang Xiaobo's works, exploring 'The Golden Age'...",
-          date: "2024-03-30",
+          title: "Author Meet and Greet: 'Clean Code'",
+          description: "A discussion on Robert C. Martin's 'Clean Code'. Explore principles of writing maintainable and readable code.",
+          date: "2025-03-30",
           image: "https://th.bing.com/th/id/OIP.pbmYQaK93LlRoo1xKMPl4AAAAA?rs=1&pid=ImgDetMain"
         },
         {
           id: 4,
-          title: "Technology Lecture",
-          description: "Special lecture on Artificial Intelligence and the Future Development of Libraries...",
-          date: "2024-04-05",
+          title: "Technology Lecture: 'Artificial Intelligence'",
+          description: "Special lecture on Stuart Russell and Peter Norvig's 'Artificial Intelligence: A Modern Approach'. Dive into the future of AI and its applications.",
+          date: "2025-04-05",
           image: "https://th.bing.com/th/id/OIP.TbC8N4t5N_yZRm8RJ-ck_wAAAA?rs=1&pid=ImgDetMain"
         }
       ],
@@ -708,33 +710,33 @@ footer {
   margin-bottom: 40px;
 }
 
-.section-title {
-  font-size: 32px;
-  font-weight: 600;
-  margin-bottom: 24px;
-  color: #2c3e50;
-  text-align: center;
+:deep(.el-carousel__container) {
+  height: 340px !important;
 }
 
-.recent-events {
-  margin-bottom: 40px;
+:deep(.el-carousel-item) {
+  overflow: visible !important;
+  transform-origin: center center;
+  transition: transform 0.3s ease;
 }
 
 .event-card {
   height: 100%;
-  border-radius: 15px;
-  overflow: hidden;
   position: relative;
   display: flex;
   flex-direction: column;
   cursor: pointer;
   transform-origin: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  clip-path: inset(0 round 15px);
+  border-radius: 15px;
 }
 
 .event-card:hover {
   transform: scale(1.03);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  clip-path: inset(0 round 15px);
+  border-radius: 15px;
 }
 
 .event-image {
@@ -748,6 +750,10 @@ footer {
   transform: scale(1.05);
 }
 
+:deep(.el-carousel__arrow--left, .el-carousel__arrow--right) {
+  color: white;
+}
+
 .event-content {
   background-color: rgba(0, 0, 0, 0.7);
   color: white;
@@ -756,7 +762,7 @@ footer {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 40%;
+  height: 50%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -766,6 +772,7 @@ footer {
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 5px;
+  color: white;
 }
 
 .event-description {
@@ -776,11 +783,7 @@ footer {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-}
-
-.event-date {
-  font-size: 12px;
-  font-style: italic;
+  color: white;
 }
 
 .book-section {
@@ -848,7 +851,8 @@ footer {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  min-height: 40px;
+  text-overflow: ellipsis;
+  min-height: auto;
 }
 
 .book-rating {
@@ -968,16 +972,65 @@ footer {
     animation-name: fadeIn;
     animation-duration: 0.5s;
   }
+  .el-dialog {
+    width: 90%;
+  }
+
+  .event-dialog-content {
+    padding: 15px;
+  }
+
+  .event-dialog-image {
+    margin-bottom: 15px;
+  }
+
+  .el-button {
+    padding: 8px 15px;
+    font-size: 14px;
+  }
 }
 
 .event-dialog-image {
   width: 100%;
   height: auto;
   border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .event-dialog-content {
-  margin-top: 20px;
+  text-align: left;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.el-dialog__title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+.event-date {
+  font-size: 14px;
+  color: #999;
+  margin-bottom: 10px;
+}
+
+
+.el-button {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.el-button:hover {
+  background-color: #2563eb;
 }
 
 .animate-section {

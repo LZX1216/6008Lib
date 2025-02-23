@@ -16,13 +16,13 @@
         <el-card class="features-section">
           <h3>{{ $t('aboutUs.featuresTitle') }}</h3>
           <el-row :gutter="20">
-            <el-col :xs="24" :sm="12" :md="8" v-for="feature in features" :key="feature.i18nTitle">
+            <el-col :xs="24" :sm="12" :md="8" v-for="feature in features" :key="feature.Title">
               <div class="feature-item">
                 <el-icon :size="40" class="feature-icon">
                   <component :is="feature.icon" />
                 </el-icon>
-                <h4>{{ $t(feature.i18nTitle) }}</h4>
-                <p>{{ $t(feature.i18nDescription) }}</p>
+                <h4>{{ $t(feature.Title) }}</h4>
+                <p>{{ $t(feature.Description) }}</p>
               </div>
             </el-col>
           </el-row>
@@ -32,9 +32,9 @@
       <el-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
         <el-card class="stats-section">
           <h3>{{ $t('aboutUs.statsTitle') }}</h3>
-          <div class="stat-item" v-for="stat in stats" :key="stat.i18nLabel">
+          <div class="stat-item" v-for="stat in stats" :key="stat.Label">
             <div class="stat-value">{{ stat.value }}</div>
-            <div class="stat-label">{{ $t(stat.i18nLabel) }}</div>
+            <div class="stat-label">{{ $t(stat.Label) }}</div>
           </div>
         </el-card>
 
@@ -96,25 +96,25 @@ export default {
       features: [
         {
           icon: 'Collection',
-          i18nTitle: 'aboutUs.featureRichCollection.title',
-          i18nDescription: 'aboutUs.featureRichCollection.description'
+          Title: 'aboutUs.featureRichCollection.title',
+          Description: 'aboutUs.featureRichCollection.description'
         },
         {
           icon: 'Reading',
-          i18nTitle: 'aboutUs.featureSmartBorrowing.title',
-          i18nDescription: 'aboutUs.featureSmartBorrowing.description'
+          Title: 'aboutUs.featureSmartBorrowing.title',
+          Description: 'aboutUs.featureSmartBorrowing.description'
         },
         {
           icon: 'Service',
-          i18nTitle: 'aboutUs.featureProfessionalService.title',
-          i18nDescription: 'aboutUs.featureProfessionalService.description'
+          Title: 'aboutUs.featureProfessionalService.title',
+          Description: 'aboutUs.featureProfessionalService.description'
         }
       ],
       stats: [
-        { i18nLabel: 'aboutUs.stats.booksInCollection', value: '100,000+' },
-        { i18nLabel: 'aboutUs.stats.registeredReaders', value: '50,000+' },
-        { i18nLabel: 'aboutUs.stats.annualLoans', value: '200,000+' },
-        { i18nLabel: 'aboutUs.stats.electronicResources', value: '30,000+' }
+        { Label: 'aboutUs.stats.booksInCollection', value: '100,000+' },
+        { Label: 'aboutUs.stats.registeredReaders', value: '50,000+' },
+        { Label: 'aboutUs.stats.annualLoans', value: '200,000+' },
+        { Label: 'aboutUs.stats.electronicResources', value: '30,000+' }
       ]
     };
   }

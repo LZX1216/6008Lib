@@ -21,6 +21,7 @@
       <el-input
         v-model="searchQuery"
         :placeholder="inputPlaceholder"
+        @keyup.enter="searchBooks"
         class="search-input"
         clearable
         @clear="clearSearch"

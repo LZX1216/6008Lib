@@ -11,10 +11,10 @@
         <el-collapse-item
           v-for="faq in faqs"
           :key="faq.id"
-          :title="$t(faq.i18nQuestion)"
+          :title="$t(faq.Question)"
           :name="faq.id"
         >
-          <div class="faq-answer">{{ $t(faq.i18nAnswer) }}</div>
+          <div class="faq-answer">{{ $t(faq.Answer) }}</div>
         </el-collapse-item>
       </el-collapse>
     </el-card>
@@ -32,9 +32,9 @@
 
       <!-- Purchase Request List -->
       <el-table :data="purchaseRequests" style="width: 100%">
-        <el-table-column prop="title" :label="$t('helpSupport.title')" />
-        <el-table-column prop="author" :label="$t('helpSupport.author')" />
-        <el-table-column prop="isbn" :label="$t('helpSupport.isbn')" width="120" />
+        <el-table-column prop="title" :label="$t('book.title')" />
+        <el-table-column prop="author" :label="$t('book.author')" />
+        <el-table-column prop="isbn" :label="$t('book.isbn')" width="120" />
         <el-table-column prop="requestDate" :label="$t('helpSupport.requestDate')" width="120" />
         <el-table-column prop="status" :label="$t('helpSupport.status')" width="100">
           <template #default="scope">
@@ -174,18 +174,18 @@ export default {
       faqs: [
         {
           id: '1',
-          i18nQuestion: 'helpSupport.faq1Question',
-          i18nAnswer: 'helpSupport.faq1Answer'
+          Question: 'helpSupport.faq1Question',
+          Answer: 'helpSupport.faq1Answer'
         },
         {
           id: '2',
-          i18nQuestion: 'helpSupport.faq2Question',
-          i18nAnswer: 'helpSupport.faq2Answer'
+          Question: 'helpSupport.faq2Question',
+          Answer: 'helpSupport.faq2Answer'
         },
         {
           id: '3',
-          i18nQuestion: 'helpSupport.faq3Question',
-          i18nAnswer: 'helpSupport.faq3Answer'
+          Question: 'helpSupport.faq3Question',
+          Answer: 'helpSupport.faq3Answer'
         }
       ],
       teamMembers: [

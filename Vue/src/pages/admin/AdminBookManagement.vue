@@ -18,6 +18,7 @@
         v-model="searchQuery"
         :placeholder="$t('adminBookManagement.searchBooks')"
         class="search-input"
+        @keyup.enter="searchBooks"
       >
         <template #append>
           <el-button @click="searchBooks">
@@ -163,7 +164,10 @@
       <el-table :data="purchaseRequests" style="width: 100%" default-sort="{ prop: 'id', order: 'descending' }" @sort-change="handleSortChange">
         <el-table-column prop="title" :label="$t('book.title')" sortable/>
         <el-table-column prop="author" :label="$t('book.author')" sortable/>
-        <el-table-column prop="isbn" :label="$t('book.isbn')" width="160" sortable/>
+        <el-table-column prop="publisher" :label="$t('book.publisher')" sortable/>
+        <el-table-column prop="isbn" :label="$t('book.isbn')" sortable/>
+        <el-table-column prop="publishDate" :label="$t('book.publishDate')" sortable/>
+        <el-table-column prop="reason" :label="$t('helpSupport.reason')" sortable/>
         <el-table-column prop="requestDate" :label="$t('adminBookManagement.requestDate')" width="160" sortable/>
         <el-table-column prop="status" :label="$t('adminBookManagement.status')" width="120" sortable>
           <template #default="scope">
@@ -297,7 +301,10 @@ export default {
           id: 1,
           title: 'Database System Concepts',
           author: 'Abraham Silberschatz, Henry F. Korth, S. Sudarshan',
+          publisher: 'McGraw-Hill Education',
           isbn: '9780073523323',
+          publishDate: '2013-01-01',
+          reason: 'It\'s a good book!',
           requestDate: '2024-03-15',
           status: 'Pending'
         }

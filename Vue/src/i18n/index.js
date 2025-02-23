@@ -12,6 +12,7 @@ const messages = {
             submit: '提交',
             reset: '重置',
             remove: '删除',
+            close: '关闭',
         },
         nav: {
             home: '首页',
@@ -141,9 +142,6 @@ const messages = {
             faqTitle: '常见问题解答',
             purchaseRequestTitle: '图书采购申请',
             submitPurchaseRequest: '提交采购申请',
-            title: '书名',
-            author: '作者',
-            isbn: 'ISBN',
             requestDate: '申请日期',
             status: '状态',
             contactUsTitle: '联系我们',
@@ -444,6 +442,7 @@ const messages = {
             cancel: 'Cancel',
             submit: 'Submit',
             reset: 'Reset',
+            close: 'Close'
         },
         nav: {
             home: 'Home',
@@ -573,9 +572,6 @@ const messages = {
             faqTitle: 'Frequently Asked Questions',
             purchaseRequestTitle: 'Book Purchase Request',
             submitPurchaseRequest: 'Submit Purchase Request',
-            title: 'Title',
-            author: 'Author',
-            isbn: 'ISBN',
             requestDate: 'Request Date',
             status: 'Status',
             contactUsTitle: 'Contact Us',

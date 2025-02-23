@@ -10,6 +10,7 @@
         v-model="searchQuery"
         :placeholder="$t('adminBorrowManagement.searchBooksOrUsers')"
         class="search-input"
+        @keyup.enter="searchBorrows"
       >
         <template #append>
           <el-button @click="searchBorrows">

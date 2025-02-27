@@ -310,9 +310,11 @@ export default {
   align-items: center;
   background: #f5f7fa;
   padding-left: 20px;
+  width: 100%;
 }
 
-.recent-activity .el-timeline {
+.el-timeline {
   width: 100%;
+  margin-top: 40px;
 }
 </style>

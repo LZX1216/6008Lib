@@ -1,8 +1,5 @@
 # Library Management System 图书馆管理系统
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-
 A modern library management platform with user-friendly interfaces for both patrons and administrators.  
 现代化的图书馆管理平台，为读者和管理员提供友好的交互界面。
 
@@ -51,7 +48,6 @@ Secure user authentication.
 **Features 功能**  
 - Role-based redirection (User/Admin) 角色区分跳转  
 - Profile customization 个人资料定制  
-- Password recovery 密码找回功能  
 
 ### 6. User Account 用户主页
 **Purpose 目的**  
@@ -60,7 +56,6 @@ Personalized library management.
 
 **Features 功能**  
 - Borrowing history tracking 借阅历史追踪  
-- Account security settings 账户安全设置  
 - Custom book lists 个性化书单管理  
 
 ### 7-12. Management & Support 管理与支持模块

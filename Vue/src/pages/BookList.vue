@@ -67,7 +67,7 @@
         <div class="filter-group">
           <h4>{{ $t('bookList.sortBy') }}</h4>
           <el-select v-model="sortOption" :placeholder="$t('bookList.selectSortOption')">
-            <el-option :label="$t('book.publicationYear')" value="publishYear" />
+            <el-option :label="$t('book.publicationYear')" value="PublishDate" />
             <el-option :label="$t('book.rating')" value="rating" />
             <el-option :label="$t('book.commentCount')" value="commentCount" />
           </el-select>
@@ -79,7 +79,7 @@
 
         <!-- Rating Filter -->
         <div class="filter-group">
-          <h4>{{ $t('bookList.ratingRange') }}</h4>
+          <h4>{{ $t('bookList.ratingRange') }} </h4>
           <el-slider
             v-model="ratingRange"
             range
@@ -262,7 +262,7 @@ export default {
           cover: "https://m.media-amazon.com/images/I/61Mw06x2XcL._AC_UL320_.jpg",
           rating: 4.5,
           isbn: "9780262033848",
-          publishYear: "2000",
+          PublishDate: "2000",
           category: "Algorithms"
         },
         {
@@ -272,7 +272,7 @@ export default {
           cover: "https://m.media-amazon.com/images/I/81CDIGTNNFL._AC_UL320_.jpg",
           rating: 4.6,
           isbn: "9780136042594",
-          publishYear: "2004",
+          PublishDate: "2004",
           category: "Artificial Intelligence"
         },
         {
@@ -282,7 +282,7 @@ export default {
           cover: "https://m.media-amazon.com/images/I/71pIJGRBg7L._AC_UL320_.jpg",
           rating: 4.4,
           isbn: "9780132126953",
-          publishYear: "2005",
+          PublishDate: "2005",
           category: "Networking"
         },
         {
@@ -292,7 +292,7 @@ export default {
           cover: "https://m.media-amazon.com/images/I/81B3Cv13cYL._AC_UL320_.jpg",
           rating: 4.3,
           isbn: "9780073523323",
-          publishYear: "2013",
+          PublishDate: "2013",
           category: "Databases"
         },
         {
@@ -302,7 +302,7 @@ export default {
           cover: "https://m.media-amazon.com/images/I/81SwKCia7VL._AC_UL320_.jpg",
           rating: 4.5,
           isbn: "9781118063330",
-          publishYear: "2017",
+          PublishDate: "2017",
           category: "Operating Systems"
         },
         {
@@ -312,7 +312,7 @@ export default {
           cover: "https://m.media-amazon.com/images/I/71MvtEJneKL._AC_UL320_.jpg",
           rating: 4.4,
           isbn: "9780321486813",
-          publishYear: "2011",
+          PublishDate: "2011",
           category: "Compilers"
         },
         {
@@ -322,7 +322,7 @@ export default {
           cover: "https://m.media-amazon.com/images/I/71zrCDfb73S._AC_UL320_.jpg",
           rating: 4.7,
           isbn: "9780123838728",
-          publishYear: "2020",
+          PublishDate: "2020",
           category: "Computer Architecture"
         },
         {
@@ -332,7 +332,7 @@ export default {
           cover: "https://m.media-amazon.com/images/I/71tRTKR3NOL._AC_UL320_.jpg",
           rating: 4.6,
           isbn: "9780262640688",
-          publishYear: "2016",
+          PublishDate: "2016",
           category: "Computer Systems"
         },
         {
@@ -342,7 +342,7 @@ export default {
           cover: "https://m.media-amazon.com/images/I/51E2055ZGUL._AC_UL320_.jpg",
           rating: 4.7,
           isbn: "9780132350885",
-          publishYear: "2005",
+          PublishDate: "2005",
           category: "Software Engineering"
         },
         {
@@ -352,7 +352,7 @@ export default {
           cover: "https://m.media-amazon.com/images/I/81IGFC6oFmL._AC_UL320_.jpg",
           rating: 4.6,
           isbn: "9780201633610",
-          publishYear: "2018",
+          PublishDate: "2018",
           category: "Software Design"
         },
       ].map(book => ({
@@ -375,8 +375,8 @@ export default {
       return this.books.filter(book => {
         const matchesRating = book.rating >= this.ratingRange[0] &&
             book.rating <= this.ratingRange[1];
-        const matchesYear = book.publishYear >= this.yearRange[0] &&
-            book.publishYear <= this.yearRange[1];
+        const matchesYear = book.PublishDate >= this.yearRange[0] &&
+            book.PublishDate <= this.yearRange[1];
         const matchesCategory = this.selectedCategories.length ?
             this.selectedCategories.includes(book.category) : true;
         const searchFields = this.searchFieldMap[this.selectedFilter] || ['title'];
@@ -391,8 +391,8 @@ export default {
     sortedBooks() {
       return this.filteredBooks.sort((a, b) => {
         let comparison = 0;
-        if (this.sortOption === 'publishYear') {
-          comparison = a.publishYear - b.publishYear;
+        if (this.sortOption === 'PublishDate') {
+          comparison = a.PublishDate - b.PublishDate;
         } else if (this.sortOption === 'rating') {
           comparison = a.rating - b.rating;
         } else if (this.sortOption === 'commentCount') {
@@ -445,6 +445,12 @@ export default {
             : '#C0C4CC',
         marginLeft: '5px'
       }
+    },
+    formatRating(value) {
+      return `${value}`
+    },
+    formatYear(value) {
+      return `${value}`
     },
     viewBookDetails(bookId) {
       this.$router.push(`/book/${bookId}`);

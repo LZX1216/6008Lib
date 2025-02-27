@@ -3,7 +3,7 @@
     <el-card class="faq-section">
       <template #header>
         <div class="section-header">
-          <h2>{{ $t('helpSupport.faqTitle') }}</h2>
+          <h2 class="section-title">{{ $t('helpSupport.faqTitle') }}</h2>
         </div>
       </template>
 
@@ -13,7 +13,11 @@
           :key="faq.id"
           :title="$t(faq.Question)"
           :name="faq.id"
+          class="custom-collapse-item"
         >
+          <template #title>
+            <span class="question-title">{{ $t(faq.Question) }}</span>
+          </template>
           <div class="faq-answer">{{ $t(faq.Answer) }}</div>
         </el-collapse-item>
       </el-collapse>
@@ -105,19 +109,19 @@
         :rules="requestRules"
         label-width="100px"
       >
-        <el-form-item :label="$t('helpSupport.title')" prop="title">
+        <el-form-item :label="$t('book.title')" prop="title">
           <el-input v-model="purchaseRequest.title" />
         </el-form-item>
-        <el-form-item :label="$t('helpSupport.author')" prop="author">
+        <el-form-item :label="$t('book.author')" prop="author">
           <el-input v-model="purchaseRequest.author" />
         </el-form-item>
-        <el-form-item :label="$t('helpSupport.publisher')" prop="publisher">
+        <el-form-item :label="$t('book.publisher')" prop="publisher">
           <el-input v-model="purchaseRequest.publisher" />
         </el-form-item>
-        <el-form-item :label="$t('helpSupport.isbn')" prop="isbn">
+        <el-form-item :label="$t('book.isbn')" prop="isbn">
           <el-input v-model="purchaseRequest.isbn" />
         </el-form-item>
-        <el-form-item :label="$t('helpSupport.publishDate')" prop="publishDate">
+        <el-form-item :label="$t('book.publishDate')" prop="publishDate">
           <el-input v-model="purchaseRequest.publishDate" />
         </el-form-item>
         <el-form-item :label="$t('helpSupport.reason')" prop="reason">
@@ -198,7 +202,7 @@ export default {
           title: 'Deep Learning in Action',
           author: 'Zhang San',
           isbn: '9787111111111',
-          requestDate: '2024-03-15',
+          requestDate: '2025-03-15',
           status: 'pending'
         }
       ],
@@ -308,12 +312,70 @@ export default {
 }
 
 .faq-section {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease;
+}
+
+.faq-section:hover {
+  transform: translateY(-2px);
+}
+
+.section-title {
+  color: #2c3e50;
+  font-size: 1.5rem;
+  font-weight: 600;
+  padding-left: 8px;
+  border-left: 4px solid #409eff;
+}
+
+.question-title {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 1.05rem;
 }
 
 .faq-answer {
-  color: #606266;
-  line-height: 1.6;
+  color: #5a6c7d;
+  line-height: 1.7;
+  padding: 16px 24px;
+  background: #f8fafc;
+  border-radius: 0 0 8px 8px;
+  border-left: 3px solid #409eff;
+  margin: 8px 0;
+  animation: answerReveal 0.3s ease-out;
+}
+
+.faq-collapse {
+  --el-collapse-border-color: transparent;
+}
+
+.custom-collapse-item {
+  margin: 8px 0;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.custom-collapse-item:hover {
+  box-shadow: 0 2px 8px rgba(32, 160, 255, 0.15);
+}
+
+:deep(.el-collapse-item__header) {
+  padding: 16px 24px;
+  background: #fff !important;
+  border-radius: 8px !important;
+  transition: background 0.3s ease;
+}
+
+:deep(.el-collapse-item__header):hover {
+  background: #f8fafc !important;
+}
+
+:deep(.el-collapse-item__arrow) {
+  margin-right: 12px;
+  font-weight: 700;
+  color: #409eff;
 }
 
 .contact-form {
@@ -381,6 +443,23 @@ export default {
   .el-textarea__inner {
     height: 80px;
   }
+
+  .section-title {
+    font-size: 1.3rem;
+  }
+  
+  .question-title {
+    font-size: 1rem;
+  }
+  
+  :deep(.el-collapse-item__header) {
+    padding: 12px 16px;
+  }
+  
+  .faq-answer {
+    padding: 12px 16px;
+    font-size: 0.95rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -409,7 +488,17 @@ export default {
   }
 }
 
-/* Animation adjustments */
+@keyframes answerReveal {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;

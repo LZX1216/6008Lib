@@ -2,6 +2,11 @@
   <div class="borrow-management">
     <div class="page-header">
       <h2>{{ $t('adminBorrowManagement.borrowManagement') }}</h2>
+      <div>
+        <el-button type="primary" @click="showAddBorrowDialog">
+          {{ $t('adminBorrowManagement.addBorrowRecord') }}
+        </el-button>
+      </div>
     </div>
 
     <!-- Search and Filter -->
@@ -46,23 +51,29 @@
       <el-table-column prop="returnDate" :label="$t('adminBorrowManagement.actualReturnDate')" sortable/>
       <el-table-column :label="$t('adminBorrowManagement.status')" sortable>
         <template #default="scope">
-          <el-tag :type="getBorrowStatusType(scope.row.status)">
-            {{ getBorrowStatusText(scope.row.status) }}
+          <el-tag :type="getBorrowStatusType(getCalculatedStatus(scope.row))">
+            {{ getBorrowStatusText(getCalculatedStatus(scope.row)) }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('adminBorrowManagement.actions')" width="200">
+      <el-table-column :label="$t('adminBorrowManagement.actions')" width="400">
         <template #default="scope">
           <el-button
-            v-if="scope.row.status === 'borrowing'"
-            type="success"
+            type="primary"
             size="small"
-            @click="confirmReturn(scope.row)"
+            @click="showEditBorrowDialog(scope.row)"
           >
-            {{ $t('adminBorrowManagement.confirmReturn') }}
+            {{ $t('adminBorrowManagement.editRecord') }}
           </el-button>
           <el-button
-            v-if="scope.row.status === 'overdue'"
+            type="danger"
+            size="small"
+            @click="deleteBorrow(scope.row)"
+          >
+            {{ $t('adminBorrowManagement.deleteRecord') }}
+          </el-button>
+          <el-button
+            v-if="getCalculatedStatus(scope.row) === 'overdue'"
             type="warning"
             size="small"
             @click="handleOverdue(scope.row)"
@@ -88,22 +99,124 @@
       />
     </div>
 
+    <!-- Add Borrow Dialog -->
+    <el-dialog
+      :title="$t('adminBorrowManagement.addBorrowRecord')"
+      v-model="addBorrowDialogVisible"
+      width="50%"
+    >
+      <el-form :model="addBorrowForm" :rules="addBorrowRules" ref="addBorrowFormRef" label-width="150px">
+        <el-form-item :label="$t('adminBorrowManagement.book')" prop="bookTitle">
+          <el-input v-model="addBorrowForm.bookTitle" />
+        </el-form-item>
+        <el-form-item :label="$t('adminBorrowManagement.borrower')" prop="username">
+          <el-input v-model="addBorrowForm.username" />
+        </el-form-item>
+        <el-form-item :label="$t('adminBorrowManagement.borrowDate')" prop="borrowDate">
+          <el-date-picker
+            v-model="addBorrowForm.borrowDate"
+            type="date"
+            :placeholder="$t('adminBorrowManagement.borrowDate')"
+          />
+        </el-form-item>
+        <el-form-item :label="$t('adminBorrowManagement.dueDate')" prop="dueDate">
+          <el-date-picker
+            v-model="addBorrowForm.dueDate"
+            type="date"
+            :placeholder="$t('adminBorrowManagement.dueDate')"
+          />
+        </el-form-item>
+        <el-form-item :label="$t('adminBorrowManagement.returnDate')" prop="returnDate">
+          <el-date-picker
+            v-model="addBorrowForm.returnDate"
+            type="date"
+            :placeholder="$t('adminBorrowManagement.returnDate')"
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="addBorrowDialogVisible = false">{{ $t('common.cancel') }}</el-button>
+          <el-button type="primary" @click="submitAddBorrowForm">
+            {{ $t('common.confirm') }}
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+    <!-- Edit Borrow Dialog -->
+    <el-dialog
+      :title="$t('adminBorrowManagement.editRecord')"
+      v-model="editBorrowDialogVisible"
+      width="50%"
+    >
+      <el-form :model="editBorrowForm" :rules="editBorrowRules" ref="editBorrowFormRef" label-width="150px">
+        <el-form-item :label="$t('adminBorrowManagement.book')" prop="bookTitle">
+          <el-input v-model="editBorrowForm.bookTitle" />
+        </el-form-item>
+        <el-form-item :label="$t('adminBorrowManagement.borrower')" prop="username">
+          <el-input v-model="editBorrowForm.username" />
+        </el-form-item>
+        <el-form-item :label="$t('adminBorrowManagement.borrowDate')" prop="borrowDate">
+          <el-date-picker
+            v-model="editBorrowForm.borrowDate"
+            type="date"
+            :placeholder="$t('adminBorrowManagement.borrowDate')"
+          />
+        </el-form-item>
+        <el-form-item :label="$t('adminBorrowManagement.dueDate')" prop="dueDate">
+          <el-date-picker
+            v-model="editBorrowForm.dueDate"
+            type="date"
+            :placeholder="$t('adminBorrowManagement.dueDate')"
+          />
+        </el-form-item>
+        <el-form-item :label="$t('adminBorrowManagement.returnDate')" prop="returnDate">
+          <el-date-picker
+            v-model="editBorrowForm.returnDate"
+            type="date"
+            :placeholder="$t('adminBorrowManagement.returnDate')"
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="editBorrowDialogVisible = false">{{ $t('common.cancel') }}</el-button>
+          <el-button type="primary" @click="submitEditBorrowForm">
+            {{ $t('common.confirm') }}
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
+
     <!-- Handle Overdue Dialog -->
     <el-dialog
       :title="$t('adminBorrowManagement.handleOverdue')"
       v-model="overdueDialogVisible"
       width="40%"
     >
-      <div v-if="selectedBorrow" class="overdue-form">
-        <p>{{ $t('adminBorrowManagement.borrowInformation') }}:</p>
-        <el-descriptions :column="1">
-          <el-descriptions-item :label="$t('adminBorrowManagement.book')">{{ selectedBorrow.bookTitle }}</el-descriptions-item>
-          <el-descriptions-item :label="$t('adminBorrowManagement.borrower')">{{ selectedBorrow.username }}</el-descriptions-item>
-          <el-descriptions-item :label="$t('adminBorrowManagement.dueDate')">{{ selectedBorrow.dueDate }}</el-descriptions-item>
-          <el-descriptions-item :label="$t('adminBorrowManagement.overdueDays')">{{ calculateOverdueDays(selectedBorrow) }} days</el-descriptions-item>
-        </el-descriptions>
+    <div v-if="selectedBorrow" class="overdue-form">
+        <el-form :model="selectedBorrow" label-width="150px">
+          <el-form-item :label="$t('adminBorrowManagement.book')">
+            {{ selectedBorrow.bookTitle }}
+          </el-form-item>
+          <el-form-item :label="$t('adminBorrowManagement.borrower')">
+            {{ selectedBorrow.username }}
+          </el-form-item>
+          <el-form-item :label="$t('adminBorrowManagement.dueDate')">
+            {{ selectedBorrow.dueDate }}
+          </el-form-item>
+          <el-form-item :label="$t('adminBorrowManagement.overdueDays')">
+            {{ calculateOverdueDays(selectedBorrow) }}
+          </el-form-item>
+          <el-form-item :label="$t('adminBorrowManagement.status')">
+            <el-tag :type="getBorrowStatusType(getCalculatedStatus(selectedBorrow))">
+              {{ getBorrowStatusText(getCalculatedStatus(selectedBorrow)) }}
+            </el-tag>
+          </el-form-item>
+        </el-form>
 
-        <el-form :model="overdueForm" label-width="100px" class="overdue-handle-form">
+        <el-form :model="overdueForm" label-width="150px" class="overdue-handle-form">
           <el-form-item :label="$t('adminBorrowManagement.handleMethod')">
             <el-radio-group v-model="overdueForm.handleMethod">
               <el-radio :label="'fine'">{{ $t('adminBorrowManagement.fine') }}</el-radio>
@@ -161,12 +274,27 @@ export default {
       borrows: [
         {
           id: 1,
-          bookTitle: 'The Three-Body Problem',
+          bookTitle: 'Introduction to Algorithms',
           username: 'user1',
-          borrowDate: '2024-02-01',
-          dueDate: '2024-03-01',
+          borrowDate: '2025-01-01',
+          dueDate: '2025-02-01',
+          returnDate: '2025-01-15',
+        },
+        {
+          id: 2,
+          bookTitle: 'Artificial Intelligence: A Modern Approach',
+          username: 'user2',
+          borrowDate: '2025-02-15',
+          dueDate: '2025-05-15',
           returnDate: null,
-          status: 'borrowing'
+        },
+        {
+          id: 3,
+          bookTitle: 'Computer Networks',
+          username: 'user3',
+          borrowDate: '2025-01-01',
+          dueDate: '2025-02-01',
+          returnDate: null,
         }
       ],
       currentPage: 1,
@@ -174,6 +302,57 @@ export default {
       total: 100,
       overdueDialogVisible: false,
       selectedBorrow: null,
+      addBorrowDialogVisible: false,
+      addBorrowForm: {
+        bookTitle: '',
+        username: '',
+        borrowDate: '',
+        dueDate: '',
+        returnDate: ''
+      },
+      addBorrowRules: {
+        bookTitle: [
+          { required: true, message: this.$t('adminBorrowManagement.pleaseEnterBookTitle'), trigger: 'blur' }
+        ],
+        username: [
+          { required: true, message: this.$t('adminBorrowManagement.pleaseEnterUsername'), trigger: 'blur' }
+        ],
+        borrowDate: [
+          { required: true, message: this.$t('adminBorrowManagement.pleaseSelectBorrowDate'), trigger: 'change' }
+        ],
+        dueDate: [
+          { required: true, message: this.$t('adminBorrowManagement.pleaseSelectDueDate'), trigger: 'change' }
+        ],
+        returnDate: [
+          { required: false, message: this.$t('adminBorrowManagement.pleaseSelectReturnDate'), trigger: 'change' }
+        ]
+      },
+      editBorrowDialogVisible: false,
+      editBorrowForm: {
+        id: null,
+        bookTitle: '',
+        username: '',
+        borrowDate: '',
+        dueDate: '',
+        returnDate: ''
+      },
+      editBorrowRules: {
+        bookTitle: [
+          { required: true, message: this.$t('adminBorrowManagement.pleaseEnterBookTitle'), trigger: 'blur' }
+        ],
+        username: [
+          { required: true, message: this.$t('adminBorrowManagement.pleaseEnterUsername'), trigger: 'blur' }
+        ],
+        borrowDate: [
+          { required: true, message: this.$t('adminBorrowManagement.pleaseSelectBorrowDate'), trigger: 'change' }
+        ],
+        dueDate: [
+          { required: true, message: this.$t('adminBorrowManagement.pleaseSelectDueDate'), trigger: 'change' }
+        ],
+        returnDate: [
+          { required: false, message: this.$t('adminBorrowManagement.pleaseSelectReturnDate'), trigger: 'change' }
+        ]
+      },
       overdueForm: {
         handleMethod: 'fine',
         fineAmount: 0,
@@ -202,25 +381,94 @@ export default {
       }
       return texts[status] || status
     },
-    async confirmReturn(borrow) {
+    getCalculatedStatus(borrow) {
+      const today = new Date();
+      const dueDate = new Date(borrow.dueDate);
+      const returnDate = borrow.returnDate? new Date(borrow.returnDate) : null;
+
+      if (returnDate) {
+        return returnDate <= dueDate? 'returned' : 'overdue';
+      } else {
+        return today <= dueDate? 'borrowing' : 'overdue';
+      }
+    },
+    showAddBorrowDialog() {
+      this.addBorrowForm = {
+        bookTitle: '',
+        username: '',
+        borrowDate: '',
+        dueDate: ''
+      }
+      this.addBorrowDialogVisible = true
+    },
+    async submitAddBorrowForm() {
+      try {
+        await this.$refs.addBorrowFormRef.validate()
+        // Call API
+        // const newBorrow = await addBorrowApi(this.addBorrowForm)
+        const newBorrow = {
+          id: this.borrows.length + 1,
+          ...this.addBorrowForm,
+          returnDate: null,
+          status: 'borrowing'
+        }
+        this.borrows.push(newBorrow)
+        ElMessage.success(this.$t('adminBorrowManagement.borrowRecordAddedSuccessfully'))
+        this.addBorrowDialogVisible = false
+        this.fetchBorrows()
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    showEditBorrowDialog(borrow) {
+      this.editBorrowForm = {
+        id: borrow.id,
+        bookTitle: borrow.bookTitle,
+        username: borrow.username,
+        borrowDate: borrow.borrowDate,
+        dueDate: borrow.dueDate,
+        status: borrow.status
+      }
+      this.editBorrowDialogVisible = true
+    },
+    async submitEditBorrowForm() {
+      try {
+        await this.$refs.editBorrowFormRef.validate()
+        // Call API
+        // await editBorrowApi(this.editBorrowForm)
+        const index = this.borrows.findIndex(item => item.id === this.editBorrowForm.id)
+        if (index!== -1) {
+          this.borrows[index] = { ...this.editBorrowForm }
+        }
+        ElMessage.success(this.$t('adminBorrowManagement.borrowRecordUpdatedSuccessfully'))
+        this.editBorrowDialogVisible = false
+        this.fetchBorrows()
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async deleteBorrow(borrow) {
       try {
         await ElMessageBox.confirm(
-          this.$t('adminBorrowManagement.confirmReturnMessage'),
-          this.$t('adminBorrowManagement.confirm'),
+          this.$t('adminBorrowManagement.confirmDeleteRecord'),
+          this.$t('adminBorrowManagement.warning'),
           {
             confirmButtonText: this.$t('common.confirm'),
             cancelButtonText: this.$t('common.cancel'),
-            type: 'info'
+            type: 'warning'
           }
         )
         // Call API
-        // await confirmReturnApi(borrow.id)
-        borrow.status = 'returned'
-        borrow.returnDate = new Date().toISOString().split('T')[0]
-        ElMessage.success(this.$t('adminBorrowManagement.returnConfirmedSuccessfully'))
+        // await deleteBorrowApi(borrow.id)
+        const index = this.borrows.findIndex(item => item.id === borrow.id)
+        if (index!== -1) {
+          this.borrows.splice(index, 1)
+        }
+        ElMessage.success(this.$t('adminBorrowManagement.borrowRecordDeletedSuccessfully'))
+        this.fetchBorrows()
       } catch (error) {
-        if (error !== 'cancel') {
-          ElMessage.error(this.$t('adminBorrowManagement.failedToConfirmReturn'))
+        if (error!== 'cancel') {
+          ElMessage.error(this.$t('adminBorrowManagement.failedToDeleteRecord'))
         }
       }
     },
@@ -229,10 +477,13 @@ export default {
       this.overdueDialogVisible = true
     },
     calculateOverdueDays(borrow) {
-      const dueDate = new Date(borrow.dueDate)
-      const today = new Date()
-      const diffTime = Math.abs(today - dueDate)
-      return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+      const dueDate = new Date(borrow.dueDate);
+      const returnDate = borrow.returnDate? new Date(borrow.returnDate) : null;
+      if (!returnDate) {
+        return this.$t('adminBorrowManagement.pleaseFillReturnDate');
+      }
+      const diffTime = Math.abs(returnDate - dueDate);
+      return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + ' days';
     },
     async submitOverdueHandle() {
       try {

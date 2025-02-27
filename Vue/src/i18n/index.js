@@ -353,6 +353,7 @@ const messages = {
         },
         adminUserManagement: {
             userManagement: "用户管理",
+            addNewUser: "添加新用户",
             searchUsers: "搜索用户...",
             userStatus: "用户状态",
             all: "全部",
@@ -389,6 +390,7 @@ const messages = {
         },
         adminBorrowManagement: {
             borrowManagement: "借阅管理",
+            addBorrowRecord: "添加借阅记录",
             searchBooksOrUsers: "搜索书籍...",
             borrowStatus: "借阅状态",
             all: "全部",
@@ -402,10 +404,14 @@ const messages = {
             borrower: "借阅者",
             borrowDate: "借阅日期",
             dueDate: "应归还日期",
+            returnDate: "实际归还日期",
+            overdueDays: "逾期天数",
             actualReturnDate: "实际归还日期",
             status: "状态",
             actions: "操作",
-            confirmReturn: "确认归还",
+            editRecord: "编辑记录",
+            deleteRecord: "删除记录",
+            confirmDeleteRecord: "你确定要删除这条借阅记录吗？",
             handleOverdue: "处理逾期",
             borrowInformation: "借阅信息",
             handleMethod: "处理方式",
@@ -420,7 +426,8 @@ const messages = {
             failedToConfirmReturn: "无法确认归还",
             handledSuccessfully: "处理成功",
             failedToHandle: "处理失败",
-            overdueDays: "逾期天数"
+            overdueDays: "逾期天数",
+            pleaseFillReturnDate: "请填写实际归还日期",
         },
         footer: {
             libraryTitle: '图书馆',
@@ -783,6 +790,7 @@ const messages = {
         },
         adminUserManagement: {
             userManagement: "User Management",
+            addNewUser: "Add New User",
             searchUsers: "Search Users...",
             userStatus: "User Status",
             all: "All",
@@ -819,6 +827,7 @@ const messages = {
         },
         adminBorrowManagement: {
             borrowManagement: "Borrow Management",
+            addBorrowRecord: "Add Borrow Record",
             searchBooksOrUsers: "Search Books",
             borrowStatus: "Borrow Status",
             all: "All",
@@ -832,10 +841,14 @@ const messages = {
             borrower: "Borrower",
             borrowDate: "Borrow Date",
             dueDate: "Due Date",
+            returnDate: "Return Date",
+            overdueDays: "Overdue Days",
             actualReturnDate: "Actual Return Date",
             status: "Status",
             actions: "Actions",
-            confirmReturn: "Confirm Return",
+            editRecord: "Edit Record",
+            deleteRecord: "Delete Record",
+            confirmDeleteRecord: "Are you sure you want to delete this record?",
             handleOverdue: "Handle Overdue",
             borrowInformation: "Borrow Information",
             handleMethod: "Handle Method",
@@ -850,7 +863,8 @@ const messages = {
             failedToConfirmReturn: "Failed to confirm return",
             handledSuccessfully: "Handled successfully",
             failedToHandle: "Failed to handle",
-            overdueDays: "Overdue Days"
+            overdueDays: "Overdue Days",
+            pleaseFillReturnDate: "Please fill in the actual return date",
         },
         footer: {
             libraryTitle: 'Library',

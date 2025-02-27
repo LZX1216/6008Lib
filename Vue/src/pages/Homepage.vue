@@ -627,6 +627,7 @@ footer {
   padding: 100px 20px;
   border-radius: 15px;
   margin-bottom: 40px;
+  margin-top: 20px;
 }
 
 .hero-title {

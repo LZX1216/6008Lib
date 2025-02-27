@@ -189,14 +189,14 @@ export default {
         {
           id: 1,
           username: 'Reader A',
-          date: '2024-03-15',
+          date: '2025-03-15',
           rating: 5,
           content: 'This book is a must-have for any computer science student. The explanations are clear and detailed.'
         },
         {
           id: 2,
           username: 'Reader B',
-          date: '2024-03-14',
+          date: '2025-03-14',
           rating: 4,
           content: 'Great resource for understanding complex algorithms. Highly recommended!'
         }

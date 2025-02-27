@@ -2,6 +2,9 @@
   <div class="user-management">
     <div class="page-header">
       <h2>{{ $t('adminUserManagement.userManagement') }}</h2>
+      <el-button type="primary" @click="showAddUserDialog">
+        {{ $t('adminUserManagement.addNewUser') }}
+      </el-button>
     </div>
 
     <!-- Search and Filter -->
@@ -35,46 +38,46 @@
       <el-table-column prop="role" :label="$t('adminUserManagement.role')" width="180" sortable>
         <template #default="scope">
           <el-tag
-              :type="scope.row.role === 'admin' ? 'success' : scope.row.role === 'superadmin' ? 'danger' : 'info'">
+            :type="scope.row.role === 'admin'? 'success' : scope.row.role ==='superadmin'? 'danger' : 'info'">
             {{
-              scope.row.role === 'admin' ? $t('adminUserManagement.administrator') : scope.row.role === 'superadmin' ? $t('adminUserManagement.superAdmin') : $t('adminUserManagement.user')
+              scope.row.role === 'admin'? $t('adminUserManagement.administrator') : scope.row.role ==='superadmin'? $t('adminUserManagement.superAdmin') : $t('adminUserManagement.user')
             }}
           </el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="status" :label="$t('adminUserManagement.status')" width="120" sortable>
         <template #default="scope">
-          <el-tag :type="scope.row.status === 'active' ? 'success' : 'danger'">
-            {{ scope.row.status === 'active' ? $t('adminUserManagement.active') : $t('adminUserManagement.disabled') }}
+          <el-tag :type="scope.row.status === 'active'? 'success' : 'danger'">
+            {{ scope.row.status === 'active'? $t('adminUserManagement.active') : $t('adminUserManagement.disabled') }}
           </el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="currentBorrows" :label="$t('adminUserManagement.currentBorrows')" sortable/>
       <el-table-column prop="totalBorrows" :label="$t('adminUserManagement.totalBorrows')" sortable/>
       <el-table-column prop="overdueTimes" :label="$t('adminUserManagement.overdueTimes')" sortable/>
-      <el-table-column :label="$t('adminUserManagement.actions')">
+      <el-table-column :label="$t('adminUserManagement.actions')" width="300">
         <template #default="scope">
           <el-button
-              :type="scope.row.status === 'active' ? 'danger' : 'success'"
-              size="small"
-              @click="toggleUserStatus(scope.row)"
+            :type="scope.row.status === 'active'? 'danger' :'success'"
+            size="small"
+            @click="toggleUserStatus(scope.row)"
           >
-            {{ scope.row.status === 'active' ? $t('adminUserManagement.disable') : $t('adminUserManagement.enable') }}
+            {{ scope.row.status === 'active'? $t('adminUserManagement.disable') : $t('adminUserManagement.enable') }}
           </el-button>
           <el-button
-              type="warning"
-              size="small"
-              @click="resetPassword(scope.row)"
+            type="warning"
+            size="small"
+            @click="resetPassword(scope.row)"
           >
             {{ $t('adminUserManagement.resetPassword') }}
           </el-button>
           <el-button
-              v-if="currentUser.role === 'superadmin' && scope.row.role !== 'superadmin'"
-              type="primary"
-              size="small"
-              @click="toggleAdminRole(scope.row)"
+            v-if="currentUser.role ==='superadmin' && scope.row.role!=='superadmin'"
+            type="primary"
+            size="small"
+            @click="toggleAdminRole(scope.row)"
           >
-            {{ scope.row.role === 'admin' ? $t('adminUserManagement.demote') : $t('adminUserManagement.promote') }}
+            {{ scope.row.role === 'admin'? $t('adminUserManagement.demote') : $t('adminUserManagement.promote') }}
           </el-button>
         </template>
       </el-table-column>
@@ -95,31 +98,44 @@
       />
     </div>
 
-    <!-- User Details Dialog -->
+    <!-- Add User Dialog -->
     <el-dialog
-      :title="$t('adminUserManagement.userDetails')"
-      v-model="dialogVisible"
+      :title="$t('adminUserManagement.addNewUser')"
+      v-model="addUserDialogVisible"
       width="50%"
     >
-      <div v-if="selectedUser" class="user-details">
-        <h3>{{ $t('adminUserManagement.basicInformation') }}</h3>
-        <el-descriptions :column="2">
-          <el-descriptions-item :label="$t('adminUserManagement.username')">{{ selectedUser.username }}</el-descriptions-item>
-          <el-descriptions-item :label="$t('adminUserManagement.name')">{{ selectedUser.name }}</el-descriptions-item>
-          <el-descriptions-item :label="$t('adminUserManagement.status')">
-            <el-tag :type="selectedUser.status === 'active' ? 'success' : 'danger'">
-              {{ selectedUser.status === 'active' ? $t('adminUserManagement.active') : $t('adminUserManagement.disabled') }}
-            </el-tag>
-          </el-descriptions-item>
-        </el-descriptions>
-
-        <h3>{{ $t('adminUserManagement.borrowingStatistics') }}</h3>
-        <el-descriptions :column="2">
-          <el-descriptions-item :label="$t('adminUserManagement.currentBorrows')">{{ selectedUser.currentBorrows }}</el-descriptions-item>
-          <el-descriptions-item :label="$t('adminUserManagement.totalBorrows')">{{ selectedUser.totalBorrows }}</el-descriptions-item>
-          <el-descriptions-item :label="$t('adminUserManagement.overdueTimes')">{{ selectedUser.overdueTimes }}</el-descriptions-item>
-        </el-descriptions>
+      <div class="dialog-content">
+        <div class="form-content">
+          <el-form :model="userForm" :rules="rules" ref="userForm" label-width="150px">
+            <el-form-item :label="$t('adminUserManagement.username')" prop="username">
+              <el-input v-model="userForm.username" />
+            </el-form-item>
+            <el-form-item :label="$t('adminUserManagement.name')" prop="name">
+              <el-input v-model="userForm.name" />
+            </el-form-item>
+            <el-form-item :label="$t('adminUserManagement.role')" prop="role">
+              <el-select v-model="userForm.role">
+                <el-option label="User" value="user" />
+                <el-option label="Administrator" value="admin" />
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="$t('adminUserManagement.status')" prop="status">
+              <el-select v-model="userForm.status">
+                <el-option label="Active" value="active" />
+                <el-option label="Disabled" value="disabled" />
+              </el-select>
+            </el-form-item>
+          </el-form>
+        </div>
       </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="addUserDialogVisible = false">{{ $t('common.cancel') }}</el-button>
+          <el-button type="primary" @click="submitUserForm">
+            {{ $t('common.confirm') }}
+          </el-button>
+        </span>
+      </template>
     </el-dialog>
   </div>
 </template>
@@ -162,29 +178,61 @@ export default {
           id: 3,
           username: 'user3',
           name: 'User Three',
-          role: 'superadmin',
+          role:'superadmin',
           status: 'active',
           currentBorrows: 1,
           totalBorrows: 3,
           overdueTimes: 0
         }
       ],
+      userForm: {
+        username: '',
+        name: '',
+        role: 'user',
+        status: 'active',
+        currentBorrows: 0,
+        totalBorrows: 0,
+        overdueTimes: 0
+      },
       currentPage: 1,
       pageSize: 10,
       total: 100,
-      dialogVisible: false,
-      selectedUser: null,
-      currentUser: JSON.parse(sessionStorage.getItem('userInfo'))
+      addUserDialogVisible: false,
+      currentUser: JSON.parse(sessionStorage.getItem('userInfo')),
+      rules: {
+        username: [
+          { required: true, message: this.$t('adminUserManagement.pleaseEnterUsername'), trigger: 'blur' }
+        ],
+        name: [
+          { required: true, message: this.$t('adminUserManagement.pleaseEnterName'), trigger: 'blur' }
+        ],
+        role: [
+          { required: true, message: this.$t('adminUserManagement.pleaseSelectRole'), trigger: 'change' }
+        ],
+        status: [
+          { required: true, message: this.$t('adminUserManagement.pleaseSelectStatus'), trigger: 'change' }
+        ]
+      }
     }
   },
   methods: {
+    showAddUserDialog() {
+      this.dialogType = 'add'
+      this.userForm = {
+        username: '',
+        name: '',
+        role: 'user',
+        status: 'active'
+      }
+      this.addUserDialogVisible = true
+    },
     searchUsers() {
       // Implement search logic
       console.log('Search:', this.searchQuery)
     },
     async toggleUserStatus(user) {
       try {
-        const action = user.status === 'active' ? $t('adminUserManagement.disable') : $t('adminUserManagement.enable')
+        const action = user.status === 'active'? $t('adminUserManagement.disable') : $t('adminUserManagement.enable')
         await ElMessageBox.confirm(
           this.$t('adminUserManagement.confirmAction', { action: action }),
           this.$t('adminUserManagement.warning'),
@@ -196,10 +244,10 @@ export default {
         )
         // Call API
         // await toggleUserStatusApi(user.id)
-        user.status = user.status === 'active' ? 'disabled' : 'active'
+        user.status = user.status === 'active'? 'disabled' : 'active'
         ElMessage.success(this.$t('adminUserManagement.actionSuccess', { action: action.charAt(0).toUpperCase() + action.slice(1) }))
       } catch (error) {
-        if (error !== 'cancel') {
+        if (error!== 'cancel') {
           ElMessage.error(this.$t('adminUserManagement.actionFailed', { action: action }))
         }
       }
@@ -210,8 +258,8 @@ export default {
           this.$t('adminUserManagement.confirmResetPassword'),
           this.$t('adminUserManagement.warning'),
           {
-            confirmButtonText: this.$t('adminUserManagement.confirm'),
-            cancelButtonText: this.$t('adminUserManagement.cancel'),
+            confirmButtonText: this.$t('common.confirm'),
+            cancelButtonText: this.$t('common.cancel'),
             type: 'warning'
           }
         )
@@ -219,23 +267,19 @@ export default {
         // const newPassword = await resetPasswordApi(user.id)
         ElMessage.success(this.$t('adminUserManagement.resetPasswordSuccess'))
       } catch (error) {
-        if (error !== 'cancel') {
+        if (error!== 'cancel') {
           ElMessage.error(this.$t('adminUserManagement.resetPasswordFailed'))
         }
       }
     },
     async toggleAdminRole(user) {
-      const newRole = user.role === 'admin' ? $t('adminUserManagement.user') : $t('adminUserManagement.administrator')
+      const newRole = user.role === 'admin'? $t('adminUserManagement.user') : $t('adminUserManagement.administrator')
       if (user.role === 'admin') {
         user.role = 'user'
       } else {
         user.role = 'admin'
       }
       ElMessage.success(this.$t('adminUserManagement.roleUpdated', { role: newRole }))
-    },
-    viewUserDetails(user) {
-      this.selectedUser = user
-      this.dialogVisible = true
     },
     handleSizeChange(val) {
       this.pageSize = val
@@ -267,6 +311,18 @@ export default {
     fetchUsers() {
       // Implement the logic of getting the user list
       console.log('Getting the user list')
+    },
+    async submitUserForm() {
+      try {
+        await this.$refs.userForm.validate()
+        // 调用添加用户的API
+        // await addUserApi(this.userForm)
+        ElMessage.success(this.$t('adminUserManagement.addedSuccessfully'))
+        this.addUserDialogVisible = false
+        this.fetchUsers()
+      } catch (error) {
+        console.error(error)
+      }
     }
   },
   created() {
@@ -303,9 +359,12 @@ export default {
   text-align: right;
 }
 
-.user-details h3 {
-  margin: 20px 0 10px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #eee;
+.dialog-content {
+  display: flex;
+  gap: 20px;
+}
+
+.form-content {
+  flex: 1;
 }
 </style>

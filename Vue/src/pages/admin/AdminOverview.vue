@@ -107,21 +107,21 @@ export default {
       recentActivities: [
         {
           id: 1,
-          time: '2024-03-15 14:30',
+          time: '2025-03-15 14:30',
           type: 'success',
           contentKey: 'userReturnedBook',
           params: { user: 'Zhang San', book: 'Introduction to Algorithms' }
         },
         {
           id: 2,
-          time: '2024-03-15 13:20',
+          time: '2025-03-15 13:20',
           type: 'warning',
           contentKey: 'newBookAdded',
           params: { book: 'Artificial Intelligence: A Modern Approach' }
         },
         {
           id: 3,
-          time: '2024-03-15 11:45',
+          time: '2025-03-15 11:45',
           type: 'danger',
           contentKey: 'userLoanOverdue',
           params: { user: 'Li Si' }

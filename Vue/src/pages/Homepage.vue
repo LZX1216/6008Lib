@@ -21,14 +21,31 @@
             <template #append>
               <div class="filter-and-button-wrapper">
                 <el-select
+                  v-model="searchType"
+                  class="type-select"
+                  @change="handleSearchTypeChange"
+                >
+                  <el-option
+                    :label="$t('search.typeBook')"
+                    value="books"
+                  />
+                  <el-option
+                    :label="$t('search.typePaper')"
+                    value="papers"
+                  />
+                </el-select>
+                <el-select
                   v-model="selectedFilter"
-                  placeholder="Filter by"
+                  :placeholder="$t('search.filterBy')"
                   class="filter-select"
                   @change="updatePlaceholder"
                 >
-                  <el-option :label="$t('book.title')" value="title" />
-                  <el-option :label="$t('book.author')" value="author" />
-                  <el-option :label="$t('book.isbn')" value="isbn" />
+                  <el-option
+                    v-for="option in currentFilterOptions"
+                    :key="option.value"
+                    :label="option.label"
+                    :value="option.value"
+                  />
                 </el-select>
                 <el-button @click="searchBooks" class="search-button">
                   <el-icon class="search-icon">
@@ -195,11 +212,19 @@ export default {
       sections: 5,
       searchQuery: '',
       selectedFilter: 'title',
+      searchType: 'books',
       inputPlaceholder: this.$t('search.searchBooks'),
-      searchFieldMap: {
-        title: ['title'],
-        author: ['author'],
-        isbn: ['isbn']
+      filterOptions: {
+        books: [
+          { value: 'title', label: this.$t('book.title') },
+          { value: 'author', label: this.$t('book.author') },
+          { value: 'isbn', label: this.$t('book.isbn') }
+        ],
+        papers: [
+          { value: 'title', label: this.$t('paper.title') },
+          { value: 'author', label: this.$t('paper.authors') },
+          { value: 'doi', label: this.$t('paper.doi') }
+        ]
       },
       recentEvents: [
         {
@@ -458,23 +483,25 @@ export default {
     this.setupIntersectionObserver();
   },
   methods: {
+
     clearSearch() {
     this.searchQuery = '';
     },
     updatePlaceholder() {
-      switch (this.selectedFilter) {
-        case 'title':
-          this.inputPlaceholder = this.$t('search.searchByTitle');
-          break;
-        case 'author':
-          this.inputPlaceholder = this.$t('search.searchByAuthor');
-          break;
-        case 'isbn':
-          this.inputPlaceholder = this.$t('search.searchByISBN');
-          break;
-        default:
-          this.inputPlaceholder = this.$t('search.searchBooks');
+      const placeholderMap = {
+        books: {
+          title: this.$t('search.searchBookByTitle'),
+          author: this.$t('search.searchBookByAuthor'),
+          isbn: this.$t('search.searchBookByISBN')
+        },
+        papers: {
+          title: this.$t('search.searchPaperByTitle'),
+          author: this.$t('search.searchPaperByAuthor'),
+          doi: this.$t('search.searchPaperByDOI')
+        }
       }
+      this.inputPlaceholder = placeholderMap[this.searchType][this.selectedFilter] || 
+        this.$t('search.searchDefault')
     },
     fetchBooks() {
       // Fetch popular books
@@ -495,11 +522,24 @@ export default {
           console.error('Failed to fetch new arrivals:', error);
         });
     },
+    handleSearchTypeChange() {
+      // Reset search filter when search type changes
+      this.selectedFilter = 'title'
+      this.updatePlaceholder()
+    },
     searchBooks() {
       // Navigate to search results page
+      const routeMap = {
+        books: '/books',
+        papers: '/papers'
+      }
       this.$router.push({
-        path: '/books',
-        query: { search: this.searchQuery }
+        path: routeMap[this.searchType],
+        query: {
+          search: this.searchQuery,
+          type: this.searchType,
+          field: this.selectedFilter
+        }
       });
     },
     viewBookDetails(bookId) {
@@ -531,6 +571,9 @@ export default {
     }
   },
   computed: {
+    currentFilterOptions() {
+      return this.filterOptions[this.searchType]
+    },
     filteredPopularBooks() {
       return this.popularBooks.filter(book => {
         const searchFields = this.searchFieldMap[this.selectedFilter] || ['title'];
@@ -652,9 +695,20 @@ footer {
   transition: all 0.3s ease;
 }
 
+.type-select {
+  width: 120px;
+  margin-right: 0px;
+}
+
 .filter-select {
   width: 120px;
-  margin-right: 16px;
+  margin-right: 8px;
+}
+
+.filter-and-button-wrapper {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .search-input {
@@ -674,25 +728,14 @@ footer {
   background-color: rgba(255, 255, 255, 0.9);
 }
 
-.search-button {
-  background-color: #3b82f6;
-  border-color: #3b82f6;
-  color: white;
-  font-size: 18px;
-  position: absolute;
-  right: 14px;
-  top: 15px;
-  transform: translateY(-50%);
-  padding: 8px 16px;
-  transition: all 0.2s ease-in-out;
-  border-top-right-radius: 30px;
-  border-bottom-right-radius: 30px;
+.search-input :deep(.el-input-group__append) {
+  padding: 0 10px;
+  background: white;
 }
 
-.search-button:hover {
-  background-color: #2563eb;
-  border-color: #2563eb;
-  transform: translateY(-50%) scale(1.05);
+.search-button {
+  padding: 12px 20px;
+  flex-shrink: 0;
 }
 
 .search-icon {
@@ -888,6 +931,11 @@ footer {
   .books-container {
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   }
+
+  .type-select,
+  .filter-select {
+    min-width: 100%;
+  }
 }
 
 @keyframes fadeInUp {
@@ -969,12 +1017,29 @@ footer {
   .hero-subtitle,
   .search-section,
   .recent-events,
-  .book-section {
+    .book-section {
     animation-name: fadeIn;
     animation-duration: 0.5s;
   }
   .el-dialog {
     width: 90%;
+  }
+    
+  .type-select,
+  .filter-select {
+    flex: 1;
+    min-width: 120px;
+  }
+  
+  .filter-and-button-wrapper {
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 6px;
+  }
+  
+  .search-button {
+    position: static;
+    transform: none;
   }
 
   .event-dialog-content {

@@ -6,12 +6,15 @@ import {ElMessage} from "element-plus";
 const routes = [
     { path: '/', name: 'home', component: () => import('@/pages/Homepage.vue'), alias: '/Homepage' },
     { path: '/books', name: 'books', component: () => import('@/pages/BookList.vue') },
+    { path: '/papers', name: 'papers', component: () => import('@/pages/PaperList.vue') },
+    { path: '/journal', name: 'journal', component: () => import('@/pages/Journal.vue') },
     { path: '/about', name: 'about', component: () => import('@/pages/AboutUs.vue') },
     { path: '/help', name: 'help', component: () => import('@/pages/HelpSupport.vue') },
     { path: '/login', name: 'login', component: () => import('@/pages/Login.vue') },
     { path: '/register', name: 'register', component: () => import('@/pages/Register.vue') },
     { path: '/user', name: 'user', component: () => import('@/pages/User.vue'), meta: { requiresAuth: true } },
     { path: '/book/:id', name: 'bookDetail', component: () => import('@/pages/BookDetail.vue') },
+    { path: '/paper/:id', name: 'paperDetail', component: () => import('@/pages/PaperDetail.vue') },
     {
         path: '/admin',
         component: () => import('@/pages/admin/AdminDashboard.vue'),

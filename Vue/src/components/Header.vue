@@ -11,6 +11,14 @@
       <router-link to="/books">{{ $t('nav.books') }}</router-link>
     </el-menu-item>
 
+    <el-menu-item index="/papers">
+      <router-link to="/papers">{{ $t('nav.papers') }}</router-link>
+    </el-menu-item>
+
+    <el-menu-item index="/journal">
+      <router-link to="/journal">{{ $t('nav.journal') }}</router-link>
+    </el-menu-item>
+
     <el-menu-item index="/about">
       <router-link to="/about">{{ $t('nav.about') }}</router-link>
     </el-menu-item>

@@ -35,7 +35,7 @@
       </template>
 
       <!-- Purchase Request List -->
-      <el-table :data="purchaseRequests" style="width: 100%">
+      <el-table :data="paginatedPurchaseRequests" style="width: 100%">
         <el-table-column prop="title" :label="$t('book.title')" />
         <el-table-column prop="author" :label="$t('book.author')" />
         <el-table-column prop="isbn" :label="$t('book.isbn')" width="120" />
@@ -48,6 +48,18 @@
           </template>
         </el-table-column>
       </el-table>
+
+      <div class="pagination" style="margin-top: 20px;">
+        <el-pagination
+          :current-page="purchaseCurrentPage"
+          :page-size="purchasePageSize"
+          @update:current-page="handlePurchaseCurrentChange"
+          @update:page-size="handlePurchaseSizeChange"
+          :total="purchaseTotal"
+          :page-sizes="[10, 20, 50]"
+          layout="total, sizes, prev, pager, next, jumper"
+        />
+      </div>
     </el-card>
 
     <!-- Contact Form -->
@@ -197,6 +209,25 @@ export default {
         { id: 2, name: 'Deputy Director Li', avatar: '/avatars/2.jpg' },
         { id: 3, name: 'Teacher Wang', avatar: '/avatars/3.jpg' }
       ],
+      allPurchaseRequests: [  // 所有原始数据
+        {
+          title: 'Deep Learning in Action',
+          author: 'Zhang San',
+          isbn: '9787111111111',
+          requestDate: '2025-03-15',
+          status: 'pending'
+        },
+        {
+          title: 'Clean Code',
+          author: 'Robert C. Martin',
+          isbn: '9780132350884',
+          requestDate: '2025-03-16',
+          status: 'approved'
+        }
+      ],
+      purchaseCurrentPage: 1,
+      purchasePageSize: 10,
+      purchaseTotal: 0,
       purchaseRequests: [
         {
           title: 'Deep Learning in Action',
@@ -289,6 +320,19 @@ export default {
           }
         }
       })
+    },
+    fetchPurchaseRequests() {
+      this.allPurchaseRequests = [/* 从后端获取的所有数据 */]; // 示例数据已在data中
+      this.purchaseTotal = this.allPurchaseRequests.length;
+    },
+
+    // 分页切换
+    handlePurchaseSizeChange(val) {
+      this.purchasePageSize = val;
+      this.purchaseCurrentPage = 1; // 切换页大小后回到第一页
+    },
+    handlePurchaseCurrentChange(val) {
+      this.purchaseCurrentPage = val;
     }
   }
 }

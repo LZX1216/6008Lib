@@ -161,7 +161,7 @@
       v-model="purchaseRequestsDialogVisible"
       width="70%"
     >
-      <el-table :data="purchaseRequests" style="width: 100%" default-sort="{ prop: 'id', order: 'descending' }" @sort-change="handleSortChange">
+      <el-table :data="paginatedPurchaseRequests" style="width: 100%" default-sort="{ prop: 'id', order: 'descending' }" @sort-change="handleSortChange">
         <el-table-column prop="title" :label="$t('book.title')" sortable/>
         <el-table-column prop="author" :label="$t('book.author')" sortable/>
         <el-table-column prop="publisher" :label="$t('book.publisher')" sortable/>
@@ -196,6 +196,18 @@
           </template>
         </el-table-column>
       </el-table>
+
+      <div class="pagination">
+        <el-pagination
+          :current-page="purchaseCurrentPage"
+          :page-size="purchasePageSize"
+          @update:current-page="handlePurchaseCurrentChange"
+          @update:page-size="handlePurchaseSizeChange"
+          :total="purchaseTotal"
+          :page-sizes="[10, 20, 50]"
+          layout="total, sizes, prev, pager, next, jumper"
+        />
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -296,7 +308,7 @@ export default {
         ]
       },
       purchaseRequestsDialogVisible: false,
-      purchaseRequests: [
+      allpurchaseRequests: [
         {
           id: 1,
           title: 'Database System Concepts',
@@ -307,8 +319,23 @@ export default {
           reason: 'It\'s a good book!',
           requestDate: '2025-03-15',
           status: 'Pending'
+        },
+        {
+          id: 2,
+          title: 'Clean Code',
+          author: 'Robert C. Martin',
+          publisher: 'Pearson',
+          isbn: '9780132350884',
+          publishDate: '2008-08-01',
+          reason: 'Need for code quality training',
+          requestDate: '2025-03-16',
+          status: 'Pending'
         }
-      ]
+      ],
+      purchaseRequests: [],
+      purchaseCurrentPage: 1,
+      purchasePageSize: 10,
+      purchaseTotal: 0
     }
   },
   methods: {
@@ -386,24 +413,37 @@ export default {
       this.currentPage = val
       this.fetchBooks()
     },
-    handleSortChange(tableName, { prop, order }) {
-      const data = this[tableName];
+    handlePurchaseSizeChange(val) {
+      this.purchasePageSize = val;
+      this.purchaseCurrentPage = 1; // 切换页大小后回到第一页
+      this.fetchPurchaseRequests();
+    },
+    handlePurchaseCurrentChange(val) {
+      this.purchaseCurrentPage = val;
+      this.fetchPurchaseRequests();
+    },
+    handleSortChange(tableType, { prop, order }) {
+      let dataArray = tableType === 'books' ? this.books : this.allPurchaseRequests;
       if (order === 'ascending') {
-        data.sort((a, b) => {
-          if (prop === 'publishDate' || prop === 'requestDate') {
+        dataArray.sort((a, b) => {
+          if (['publishDate', 'requestDate'].includes(prop)) {
             return new Date(a[prop]) - new Date(b[prop]);
           }
-          return a[prop] > b[prop]? 1 : -1;
+          return a[prop] > b[prop] ? 1 : -1;
         });
       } else if (order === 'descending') {
-        data.sort((a, b) => {
-          if (prop === 'publishDate' || prop === 'requestDate') {
+        dataArray.sort((a, b) => {
+          if (['publishDate', 'requestDate'].includes(prop)) {
             return new Date(b[prop]) - new Date(a[prop]);
           }
-          return a[prop] < b[prop]? 1 : -1;
+          return a[prop] < b[prop] ? 1 : -1;
         });
       }
-      this[tableName] = [...data];
+      if (tableType === 'purchaseRequests') {
+        this.allPurchaseRequests = [...dataArray];
+        this.purchaseCurrentPage = 1; // 排序后重置页码
+      }
+      this.fetchPurchaseRequests(); // 重新分页
     },
     fetchBooks() {
       // Implement logic to fetch book list
@@ -460,8 +500,10 @@ export default {
       }
     },
     fetchPurchaseRequests() {
-      console.log('Fetching purchase requests')
-    }
+    this.purchaseRequests = this.paginatedPurchaseRequests;
+    this.purchaseTotal = this.allPurchaseRequests.length;
+  }
+
   },
   created() {
     this.fetchBooks()
@@ -516,5 +558,10 @@ export default {
   width: 100%;
   height: auto;
   object-fit: contain;
+}
+
+.el-dialog__body .pagination {
+  margin: 15px 0;
+  padding: 0 20px;
 }
 </style> 

@@ -112,7 +112,64 @@
           {{ $t('journal.disclaimer') }}
         </p>
       </el-card>
-    </div>
+
+      <!-- 新增权威期刊排行 -->
+      <el-card class="top-journals-section">
+        <template #header>
+          <div class="section-header">
+            <h2 class="sub-title">{{ $t('journal.topJournals') }}</h2>
+            <div class="recommend-filter">
+              <el-select 
+                v-model="recommendType" 
+                :placeholder="$t('journal.recommendType')"
+                @change="updateRecommendations"
+              >
+                <el-option
+                  v-for="item in recommendOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </div>
+          </div>
+        </template>
+        
+        <el-table :data="recommendedPapers" highlight-current-row>
+          <el-table-column
+            prop="title"
+            :label="$t('journal.recommendTitle')"
+            min-width="300"
+          />
+          <el-table-column
+            prop="citationCount"
+            :label="$t('journal.citationCount')"
+            width="150"
+            sortable
+          />
+          <el-table-column
+            prop="publicationDate"
+            :label="$t('journal.publicationDate')"
+            width="180"
+            sortable
+          />
+          <el-table-column
+            :label="$t('journal.actions')"
+            width="120"
+          >
+            <template #default="scope">
+              <el-button 
+                link 
+                type="primary"
+                @click="viewPaperDetails(scope.row.id)"
+              >
+                {{ $t('journal.viewDetails') }}
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-card>
+    </div>  
   </template>
   
   <script>
@@ -165,7 +222,15 @@
           { value: 'Q2', label: 'JCR Q2' },
           { value: 'Q3', label: 'JCR Q3' },
           { value: 'Q4', label: 'JCR Q4' }
-        ]
+        ],
+        recommendType: 'latest',
+        recommendOptions: [
+          { value: 'latest', label: this.$t('journal.latestPublish') },
+          { value: 'citation', label: this.$t('journal.highCitation') },
+          { value: 'trending', label: this.$t('journal.trending') }
+        ],
+        // 新增示例论文数据（实际应从API获取）
+        recommendedPapers: []
       }
     },
     computed: {
@@ -190,6 +255,11 @@
         }
   
         return result
+      },
+      topJournals() {
+      return this.journals
+        .sort((a, b) => b.impactFactor - a.impactFactor)
+        .slice(0, 5)
       }
     },
     methods: {
@@ -214,6 +284,30 @@
           .catch(() => {
             ElMessage.error(this.$t('journal.copyError'))
           })
+      },
+      // 更新推荐论文
+      async updateRecommendations() {
+      // 模拟API调用
+        this.recommendedPapers = await this.fetchRecommendations()
+      },
+      
+      // 获取推荐论文（示例逻辑）
+      async fetchRecommendations() {
+        const params = {
+          type: this.recommendType,
+          journals: this.topJournals.map(j => j.name)
+        }
+        
+        // 实际应替换为API调用
+        return mockPapers.filter(p => {
+          if (this.recommendType === 'latest') {
+            return new Date(p.publicationDate) > new Date('2023-01-01')
+          }
+          if (this.recommendType === 'citation') {
+            return p.citationCount > 100
+          }
+          return p.citationCount > 50 && p.citationRate > 0.5
+        })
       }
     }
   }
@@ -281,6 +375,23 @@
   
   :deep(.el-table th.el-table__cell) {
     background-color: #f8f9fa;
+  }
+
+  .top-journals-section {
+    margin-top: 24px;
+    animation: fadeInUp 0.6s ease-out 0.6s both;
+  }
+
+  .sub-title {
+    font-size: 1.5rem;
+    color: #34495e;
+    display: inline-block;
+    margin-right: 2rem;
+  }
+
+  .recommend-filter {
+    display: inline-block;
+    width: 240px;
   }
   
   @keyframes fadeInUp {

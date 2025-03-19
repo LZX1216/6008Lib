@@ -103,7 +103,17 @@ const messages = {
             resetAll: "重置所有筛选",
             actions: "操作",
             addToList: "加入列表",
-            viewDetails: "查看详情"
+            viewDetails: "查看详情",
+            publicationDate: "发表日期范围",
+            citationFilter: "被引量筛选",
+            minCitation: "最小被引",
+            maxCitation: "最大被引",
+            startDate: "开始日期",
+            endDate: "结束日期",
+            allTime: "全部时间",
+            last1Year: "最近1年",
+            last3Years: "最近3年",
+            last5Years: "最近5年"
         },
         paper: {
             title: "标题",
@@ -176,7 +186,17 @@ const messages = {
             copyLink: "复制链接",
             disclaimer: "注：本推荐列表基于最新JCR分区和影响因子数据，投稿前请务必访问期刊官网确认最新要求。",
             copySuccess: "链接已复制到剪贴板！",
-            copyError: "复制失败，请手动复制链接"
+            copyError: "复制失败，请手动复制链接",
+            topJournals: "权威期刊排行",
+            recommendType: "推荐类型",
+            latestPublish: "最新发表",
+            highCitation: "高被引论文",
+            trending: "趋势论文",
+            recommendTitle: "推荐论文",
+            citationCount: "被引量",
+            publicationDate: "发表日期",
+            actions: "操作",
+            viewDetails: "查看详情"
         },
         aboutUs: {
             title: '关于我们',
@@ -623,7 +643,17 @@ const messages = {
             resetAll: "Reset All Filters",
             actions: "Actions",
             addToList: "Add to List",
-            viewDetails: "View Details"
+            viewDetails: "View Details",
+            publicationDate: "Publication Date Range",
+            citationFilter: "Citation Filter",
+            minCitation: "Min Citation",
+            maxCitation: "Max Citation",
+            startDate: "Start Date",
+            endDate: "End Date",
+            allTime: "All Time",
+            last1Year: "Last 1 Year",
+            last3Years: "Last 3 Years",
+            last5Years: "Last 5 Years"
         },
         paper: {
             title: "Title",
@@ -689,7 +719,17 @@ const messages = {
             copyLink: "Copy Link",
             disclaimer: "Note: Recommendations based on latest JCR data. Please verify requirements on official journal websites before submission.",
             copySuccess: "Link copied to clipboard!",
-            copyError: "Copy failed, please copy manually"
+            copyError: "Copy failed, please copy manually",
+            topJournals: "Top Journals",
+            recommendType: "Recommend Type",
+            latestPublish: "Latest Publish",
+            highCitation: "High Citation",
+            trending: "Trending",
+            recommendTitle: "Recommend Papers",
+            citationCount: "Citation Count",
+            publicationDate: "Publication Date",
+            actions: "Actions",
+            viewDetails: "View Details"
         },
         aboutUs: {
             title: 'About Us',

@@ -100,6 +100,39 @@
             </el-tag>
           </div>
         </div>
+
+        <div class="filter-group">
+          <h4>{{ $t('paperList.citationFilter') }}</h4>
+          <div class="citation-filter">
+            <el-input-number 
+              v-model="citationFilter.min" 
+              :min="0" 
+              :placeholder="$t('paperList.minCitation')"
+            />
+            <span class="filter-separator">-</span>
+            <el-input-number 
+              v-model="citationFilter.max" 
+              :min="citationFilter.min" 
+              :placeholder="$t('paperList.maxCitation')"
+            />
+            <el-select 
+              v-model="citationFilter.timeRange" 
+              class="time-range-select"
+            >
+              <el-option
+                v-for="item in [
+                  { value: 'all', label: $t('paperList.allTime') },
+                  { value: '1y', label: $t('paperList.last1Year') },
+                  { value: '3y', label: $t('paperList.last3Years') },
+                  { value: '5y', label: $t('paperList.last5Years') }
+                ]"
+                :key="item.value"
+                v-bind="item"
+              />
+            </el-select>
+          </div>
+        </div>
+
         <el-button
           @click="resetFilters"
           class="reset-btn"
@@ -185,11 +218,6 @@ export default {
         {value: 'Neuroscience', label: 'Neuroscience'},
         {value: 'Biotechnology', label: 'Biotechnology'}
       ],
-      sortOptions: [
-        {key: 'releaseTime', label: 'Release Time'},
-        {key: 'rating', label: 'Rating'},
-        {key: 'comments', label: 'Comments'},
-      ],
       papers: [
         {
           id: 1,
@@ -199,7 +227,7 @@ export default {
           publicationYear: 2017,
           field: "Computer Science",
           rating: 4.8,
-          citationCount: 12345
+          citationCount: 1234
         },
         {
           id: 2,
@@ -209,7 +237,7 @@ export default {
           publicationYear: 2018,
           field: "Natural Language Processing",
           rating: 4.7,
-          citationCount: 23456
+          citationCount: 2345
         },
       ],
       searchFieldMap: {
@@ -220,7 +248,17 @@ export default {
       currentPage: 1,
       pageSize: 10,
       total: 100,
-      inputPlaceholder: this.$t('search.searchPapers')
+      inputPlaceholder: this.$t('search.searchPapers'),
+      sortOptions: [
+        { value: 'citationCount', label: this.$t('paper.citationCount') },
+        { value: 'citationRate', label: this.$t('paper.citationRate') }
+      ],
+      citationFilter: {
+      min: 0,
+      max: 5000,
+      timeRange: 'all'
+    },
+    publicationDateRange: []
     }
   },
   computed: {
@@ -237,9 +275,10 @@ export default {
                             searchFields.some(field =>
                               String(paper[field]).toLowerCase()
                                .includes(this.searchQuery.toLowerCase()));
-
-        return matchesRating && matchesYear && matchesField && matchesSearch;
-      });
+        const citationTimeCondition = this.citationFilter.timeRange === 'all' || 
+          paper.publicationYear >= (new Date().getFullYear() - parseInt(this.citationFilter.timeRange));
+        const matchesCitation = paper.citationCount >= this.citationFilter.min && paper.citationCount <= this.citationFilter.max
+      return matchesRating && matchesYear && matchesField && matchesSearch && citationTimeCondition && matchesCitation      });
     },
     sortedPapers() {
       return this.filteredPapers.sort((a, b) => {
@@ -267,6 +306,12 @@ export default {
       this.selectedCategories = [];
       this.ratingRange = [0, 5];
       this.yearRange = [1990, 2025];
+      this.citationFilter = {
+        min: 0,
+        max: 5000,
+        timeRange: 'all'
+      };
+      this.publicationDateRange = []
     },
     toggleSort(option) {
       if (this.sortOption === option) {
@@ -549,6 +594,22 @@ export default {
   background-color: #2563eb;
 }
 
+.citation-filter {
+  display: grid;
+  grid-template-columns: 1fr 24px 1fr 120px;
+  gap: 8px;
+  align-items: center;
+}
+
+.filter-separator {
+  text-align: center;
+  color: #999;
+}
+
+.time-range-select {
+  width: 120px;
+}
+
 .tag-container {
   display: flex;
   flex-wrap: wrap;
@@ -782,6 +843,19 @@ export default {
     flex: none;
     width: 100%;
     margin-bottom: 24px;
+  }
+
+  .citation-filter {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-separator {
+    display: none;
+  }
+    
+  .el-input-number,
+  .time-range-select {
+    width: 100%;
   }
 
   :deep(.el-pagination__total) {

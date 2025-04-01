@@ -1,37 +1,34 @@
 <template>
   <div class="book-detail">
-    <el-row :gutter="20">
+    <el-row :gutter="24">
       <!-- Left side book information -->
       <el-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
-        <el-card class="book-cover-card">
+        <div class="book-cover-container">
           <img :src="book.cover" class="book-cover" alt="Book cover" />
           <div class="book-actions">
             <el-button type="primary" :disabled="!book.available" @click="borrowBook">
               {{ book.available ? $t('bookDetail.borrow') : $t('bookDetail.unavailable') }}
             </el-button>
-            <el-button type="primary" @click="addToWishlist">
+            <el-button type="default" @click="addToWishlist">
               {{$t('bookDetail.addToList')}}
             </el-button>
           </div>
           <div class="rating">
             <el-rate v-model="book.rating" disabled show-score/>
           </div>
-        </el-card>
+        </div>
 
         <!-- Similar Books Section -->
-        <el-card class="similar-books-card">
-          <template #header>
-            <div class="similar-books-header">
-              <h3>{{ $t('bookDetail.similarBooksTitle') }}</h3>
-            </div>
-          </template>
+        <div class="similar-books-card">
+          <div class="card-header">
+            <h3>{{ $t('bookDetail.similarBooksTitle') }}</h3>
+          </div>
           <div class="similar-books-list">
             <div
               v-for="similarBook in similarBooks"
               :key="similarBook.id"
               class="similar-book-item"
               @click="goToBookDetail(similarBook.id)"
-              style="cursor: pointer;"
             >
               <img :src="similarBook.cover" class="similar-book-cover" alt="Similar Book Cover" />
               <div class="similar-book-info">
@@ -40,12 +37,12 @@
               </div>
             </div>
           </div>
-        </el-card>
+        </div>
       </el-col>
 
       <!-- Right side detailed information -->
       <el-col :xs="24" :sm="24" :md="16" :lg="16" :xl="16">
-        <el-card class="book-info-card">
+        <div class="book-info-card">
           <h1 class="book-title">{{ book.title }}</h1>
           <div class="book-meta">
             <p class="author"><i class="el-icon-user"></i> {{ $t('book.author') }}: {{ book.author }}</p>
@@ -55,14 +52,14 @@
             <p class="category"><i class="el-icon-collection-tag"></i> {{ $t('book.category') }}: {{ book.category }}</p>
           </div>
 
-          <el-divider></el-divider>
+          <div class="section-divider"></div>
 
           <div class="book-description">
             <h3>{{ $t('bookDetail.descriptionTitle') }}</h3>
             <p>{{ book.description }}</p>
           </div>
 
-          <el-divider></el-divider>
+          <div class="section-divider"></div>
 
           <div class="book-status">
             <h3>{{ $t('bookDetail.libraryInfoTitle') }}</h3>
@@ -81,25 +78,25 @@
               >{{ book.totalCopies }}</el-descriptions-item>
             </el-descriptions>
           </div>
-        </el-card>
+        </div>
 
         <!-- Comments section -->
-        <el-card class="comments-card">
-          <template #header>
-            <div class="comments-header">
-              <h3>{{ $t('bookDetail.commentsTitle') }}</h3>
-              <el-button type="primary"  @click="showCommentDialog">
-                {{ $t('bookDetail.writeCommentTitle') }}
-              </el-button>
-            </div>
-          </template>
+        <div class="comments-card">
+          <div class="card-header">
+            <h3>{{ $t('bookDetail.commentsTitle') }}</h3>
+            <el-button type="primary" plain @click="showCommentDialog">
+              {{ $t('bookDetail.writeCommentTitle') }}
+            </el-button>
+          </div>
 
           <div class="comments-list">
             <div v-for="comment in comments" :key="comment.id" class="comment-item">
               <div class="comment-header">
-                <el-avatar :size="32">{{ comment.username.charAt(0) }}</el-avatar>
-                <span class="username">{{ comment.username }}</span>
-                <span class="comment-date">{{ comment.date }}</span>
+                <el-avatar :size="36">{{ comment.username.charAt(0) }}</el-avatar>
+                <div class="comment-user-info">
+                  <span class="username">{{ comment.username }}</span>
+                  <span class="comment-date">{{ comment.date }}</span>
+                </div>
               </div>
               <div class="comment-rating">
                 <el-rate v-model="comment.rating" disabled />
@@ -107,7 +104,7 @@
               <p class="comment-content">{{ comment.content }}</p>
             </div>
           </div>
-        </el-card>
+        </div>
       </el-col>
     </el-row>
 
@@ -284,360 +281,374 @@ export default {
 
 <style scoped>
 .book-detail {
-  padding: 20px;
-  animation: fadeIn 0.8s ease-out;
+  padding: 30px 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  color: #333;
+  font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
 }
 
-.book-cover-card {
-  text-align: center;
-  animation: slideInUp 0.8s ease-out 0.2s both;
+/* Book Cover Section */
+.book-cover-container {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  margin-bottom: 24px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.book-cover-container:hover {
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
 }
 
 .book-cover {
   width: 100%;
-  max-width: 300px;
+  max-width: 260px;
   height: auto;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  margin: 0 auto 24px;
+  display: block;
+  transition: transform 0.4s ease;
 }
 
 .book-cover:hover {
-  transform: scale(1.05);
+  transform: scale(1.03);
 }
 
 .book-actions {
-  margin-top: 20px;
   display: flex;
-  gap: 10px;
+  gap: 12px;
+  margin-top: 24px;
   justify-content: center;
 }
 
 .book-actions .el-button {
-  border: none;
-  color: white;
-  font-size: 16px;
-  padding: 10px 20px;
+  flex: 1;
+  padding: 12px 20px;
   border-radius: 8px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 45%;
 }
 
-.book-actions .el-button:hover {
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+.book-actions .el-button--primary {
+  background: linear-gradient(135deg, #4771d0, #3756a4);
+  border: none;
+  box-shadow: 0 4px 10px rgba(71, 113, 208, 0.3);
+}
+
+.book-actions .el-button--primary:hover {
+  background: linear-gradient(135deg, #5080e0, #4265b3);
   transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(71, 113, 208, 0.4);
+}
+
+.book-actions .el-button--default {
+  border: 1px solid #e0e0e0;
+  color: #666;
+  background: #fff;
+}
+
+.book-actions .el-button--default:hover {
+  border-color: #4771d0;
+  color: #4771d0;
+  background: #f8faff;
 }
 
 .rating {
-  display: flex;
-  align-items: center;
-  margin: 15px 0;
-  justify-content: center;
-}
-
-.rating span {
-  font-size: 1.2rem;
-  margin-right: 10px;
-  color: #4a5568;
-}
-
-.el-rate {
-  font-size: 24px;
-  color: #ff9900;
-}
-
-.el-rate .el-rate__icon {
-  margin-right: 5px;
-}
-
-.el-rate .el-rate__icon.is-active {
-  color: #ff9900;
-}
-
-.el-rate .el-rate__icon.is-active {
-  color: #ff9900;
+  margin: 20px 0;
+  text-align: center;
 }
 
 .similar-books-card {
-  margin-top: 20px;
-  margin-bottom: 20px;
-  animation: slideInUp 0.8s ease-out 0.2s both;
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
 }
 
-.similar-books-header h3 {
-  font-size: 1.5rem;
-  color: #303133;
-  margin-bottom: 10px;
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.card-header h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
 }
 
 .similar-books-list {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 16px;
 }
 
 .similar-book-item {
   display: flex;
   align-items: center;
+  padding: 12px;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.similar-book-item:hover {
+  background-color: #f8faff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transform: translateX(4px);
 }
 
 .similar-book-cover {
-  width: 60px;
-  height: 80px;
+  width: 70px;
+  height: 100px;
   object-fit: cover;
-  margin-right: 10px;
-  border-radius: 4px;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-right: 16px;
 }
 
 .similar-book-info {
-  display: flex;
-  flex-direction: column;
+  flex: 1;
 }
 
 .similar-book-title {
   font-size: 1rem;
-  color: #303133;
-  margin: 0;
+  font-weight: 500;
+  color: #333;
+  margin: 0 0 6px;
 }
 
 .similar-book-author {
   font-size: 0.9rem;
-  color: #606266;
+  color: #666;
   margin: 0;
 }
 
+/* Book Info Section */
 .book-info-card {
-  margin-bottom: 20px;
-  animation: slideInUp 0.8s ease-out 0.4s both;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  margin-bottom: 24px;
 }
 
 .book-title {
-  font-size: 2.2rem;
-  color: #1a365d;
-  margin-bottom: 25px;
-  position: relative;
-  padding-bottom: 10px;
-}
-
-.book-title::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 60px;
-  height: 3px;
-  background: #409eff;
-  border-radius: 2px;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 24px;
+  line-height: 1.3;
+  letter-spacing: -0.5px;
 }
 
 .book-meta {
-  color: #4a5568;
-  line-height: 1.8;
+  background-color: #f8faff;
+  border-radius: 12px;
   padding: 20px;
-  background: #f8fafc;
-  border-radius: 8px;
 }
 
 .book-meta p {
   margin: 12px 0;
   display: flex;
   align-items: center;
-  font-size: 1.05rem;
+  font-size: 1rem;
+  color: #444;
 }
 
 .book-meta i {
   margin-right: 12px;
-  font-size: 1.2rem;
-  color: #409eff;
-  min-width: 24px;
-  text-align: center;
+  color: #4771d0;
+  font-size: 1.1rem;
 }
 
-.book-description {
-  margin: 20px 0;
+.section-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, #e0e0e0, transparent);
+  margin: 30px 0;
 }
 
-.book-description h3 {
-  font-size: 1.5rem;
-  color: #303133;
-  margin-bottom: 10px;
-  font-weight: bold;
+.book-description h3, .book-status h3 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16px;
 }
 
-.book-status h3 {
-  font-size: 1.5rem;
-  color: #303133;
-  margin-bottom: 10px;
-  font-weight: bold;
+.book-description p {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #444;
 }
 
-.book-status .el-descriptions {
-  animation: fadeIn 0.8s ease-out;
-}
-
-.book-status .el-descriptions__body {
-  border-radius: 8px;
+/* Library Info */
+:deep(.el-descriptions__body) {
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.book-status .el-descriptions__label {
+:deep(.el-descriptions__label) {
   background-color: #f5f7fa;
-  font-weight: bold;
-  padding: 12px 15px;
+  padding: 14px 16px;
+  font-weight: 500;
+  color: #444;
 }
 
-.book-status .el-descriptions__content {
-  padding: 12px 15px;
+:deep(.el-descriptions__content) {
+  padding: 14px 16px;
+  color: #666;
 }
 
-.book-status .el-descriptions__label,
-.book-status .el-descriptions__content {
-  transition: background-color 0.3s ease;
-}
-
-.book-status .el-descriptions__row:hover .el-descriptions__label,
-.book-status .el-descriptions__row:hover .el-descriptions__content {
-  background-color: #ecf5ff;
-}
-
+/* Comments Section */
 .comments-card {
-  margin-top: 20px;
-  animation: fadeInUp 0.8s ease-out;
-}
-
-.comments-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.comments-header h3 {
-  font-size: 1.5rem;
-  color: #303133;
-  margin-bottom: 10px;
-  font-weight: bold;
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
 }
 
 .comments-list {
-  max-height: 400px;
+  max-height: 500px;
   overflow-y: auto;
+  padding-right: 8px;
+}
+
+.comments-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.comments-list::-webkit-scrollbar-track {
+  background: #f5f5f5;
+  border-radius: 10px;
+}
+
+.comments-list::-webkit-scrollbar-thumb {
+  background: #e0e0e0;
+  border-radius: 10px;
 }
 
 .comment-item {
-  padding: 15px;
-  border-bottom: 1px solid #ebeef5;
-  transition: background-color 0.3s ease;
-  animation: fadeIn 0.5s ease-out;
-}
-
-.comment-item:last-child {
-  border-bottom: none;
+  padding: 18px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  background-color: #f8faff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .comment-item:hover {
-  background-color: #f5f7fa;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
 }
 
 .comment-header {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
-.comment-header .el-avatar {
-  margin-right: 10px;
+.comment-user-info {
+  display: flex;
+  flex-direction: column;
+  margin-left: 12px;
 }
 
 .username {
-  font-weight: bold;
-  margin-right: 10px;
+  font-weight: 600;
+  color: #333;
+  font-size: 1rem;
 }
 
 .comment-date {
-  color: #909399;
-  font-size: 0.9rem;
+  color: #888;
+  font-size: 0.85rem;
 }
 
 .comment-rating {
-  margin-bottom: 5px;
+  margin: 10px 0;
 }
 
 .comment-content {
-  color: #606266;
-  line-height: 1.5;
+  color: #444;
+  line-height: 1.6;
+  font-size: 1rem;
+  margin-top: 10px;
 }
 
-@keyframes slideInUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (max-width: 768px) {
-  .similar-book-item {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .similar-book-cover {
-    width: 100%;
-    max-width: 150px;
-    height: auto;
-    margin: 0 auto 10px;
-  }
-
-  .similar-book-info {
-    text-align: center;
-  }
-}
-
-@media (max-width: 480px) {
-  .similar-books-header h3 {
-    font-size: 1.2rem;
-  }
-
-  .similar-book-title {
-    font-size: 0.95rem;
-  }
-
-  .similar-book-author {
-    font-size: 0.85rem;
-  }
-}
-
-:deep(.el-descriptions__body) {
-  background-color: #f8fafc !important;
-}
-
-:deep(.el-descriptions__label) {
-  font-weight: 600;
-  color: #2d3748 !important;
-  background-color: #e2e8f0 !important;
-}
-
-:deep(.el-descriptions__content) {
-  color: #4a5568 !important;
+/* Dialog */
+:deep(.el-dialog) {
+  border-radius: 16px;
+  overflow: hidden;
 }
 
 :deep(.el-dialog__header) {
-  border-bottom: 1px solid #e2e8f0;
+  background-color: #f8faff;
+  padding: 20px 24px;
 }
 
 :deep(.el-dialog__title) {
-  color: #1a365d;
   font-weight: 600;
+  color: #333;
+}
+
+:deep(.el-dialog__body) {
+  padding: 24px;
+}
+
+:deep(.el-textarea__inner) {
+  border-radius: 8px;
+  padding: 12px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .book-detail {
+    padding: 20px 16px;
+  }
+  
+  .book-cover-container, .book-info-card, .comments-card, .similar-books-card {
+    padding: 20px;
+    border-radius: 14px;
+  }
+  
+  .book-title {
+    font-size: 1.6rem;
+  }
+  
+  .book-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .book-actions .el-button {
+    max-width: 100%;
+  }
+  
+  .comment-item {
+    padding: 15px;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.book-cover-container, .book-info-card, .comments-card, .similar-books-card {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.comment-item {
+  animation: fadeIn 0.4s ease-out;
 }
 </style>

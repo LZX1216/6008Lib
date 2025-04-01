@@ -48,27 +48,12 @@
           <h4>{{ $t('paperList.sortBy') }}</h4>
           <el-select v-model="sortOption" :placeholder="$t('paperList.selectSortOption')">
             <el-option :label="$t('paper.publicationYear')" value="publicationYear" />
-            <el-option :label="$t('paper.citationCount')" value="citationCount" />
-            <el-option :label="$t('paper.rating')" value="rating" />
+            <el-option :label="$t('paper.citedCount')" value="citedCount" />
           </el-select>
           <el-select v-model="sortOrder" :placeholder="$t('paperList.order')">
             <el-option :label="$t('paperList.ascending')" value="asc" />
             <el-option :label="$t('paperList.descending')" value="desc" />
           </el-select>
-        </div>
-
-        <!-- Rating Filter -->
-        <div class="filter-group">
-          <h4>{{ $t('paperList.ratingRange') }} </h4>
-          <el-slider
-            v-model="ratingRange"
-            range
-            :marks="{0: '0', 5: '5'}"
-            :min="0"
-            :max="5"
-            :step="0.1"
-            :format-tooltip="formatRating"
-          />
         </div>
 
         <!-- Year Filter -->
@@ -85,52 +70,18 @@
           />
         </div>
 
-        <!-- Field Tags -->
+        <!-- Cited Count Filter -->
         <div class="filter-group">
-          <h4>{{ $t('paperList.popularFields') }}</h4>
-          <div class="tag-container">
-            <el-tag
-              v-for="field in fields"
-              :key="field.value"
-              :type="selectedFields.includes(field.value) ? 'primary' : 'info'"
-              @click="toggleField(field.value)"
-              class="sidebar-tag"
-            >
-              {{ field.label }}
-            </el-tag>
-          </div>
-        </div>
-
-        <div class="filter-group">
-          <h4>{{ $t('paperList.citationFilter') }}</h4>
-          <div class="citation-filter">
-            <el-input-number 
-              v-model="citationFilter.min" 
-              :min="0" 
-              :placeholder="$t('paperList.minCitation')"
-            />
-            <span class="filter-separator">-</span>
-            <el-input-number 
-              v-model="citationFilter.max" 
-              :min="citationFilter.min" 
-              :placeholder="$t('paperList.maxCitation')"
-            />
-            <el-select 
-              v-model="citationFilter.timeRange" 
-              class="time-range-select"
-            >
-              <el-option
-                v-for="item in [
-                  { value: 'all', label: $t('paperList.allTime') },
-                  { value: '1y', label: $t('paperList.last1Year') },
-                  { value: '3y', label: $t('paperList.last3Years') },
-                  { value: '5y', label: $t('paperList.last5Years') }
-                ]"
-                :key="item.value"
-                v-bind="item"
-              />
-            </el-select>
-          </div>
+          <h4>{{ $t('paperList.citedCountRange') }}</h4>
+          <el-slider
+            v-model="citedCountRange"
+            range
+            :marks="{0: '0', 5000: '5000'}"
+            :min="0"
+            :max="5000"
+            :step="1"
+            :format-tooltip="formatCitedCount"
+          />
         </div>
 
         <el-button
@@ -148,18 +99,8 @@
           <el-table-column :label="$t('paper.title')" prop="title" />
           <el-table-column :label="$t('paper.authors')" prop="authors" width="250" />
           <el-table-column :label="$t('paper.doi')" prop="doi" width="180" />
-          <el-table-column :label="$t('paper.field')" prop="field" width="150" />
           <el-table-column :label="$t('paper.publicationYear')" prop="publicationYear" width="120" />
-          <el-table-column :label="$t('paper.rating')" width="180">
-            <template #default="scope">
-              <el-rate
-                v-model="scope.row.rating"
-                disabled
-                show-score
-                text-color="#ff9900"
-              />
-            </template>
-          </el-table-column>
+          <el-table-column :label="$t('paper.citedCount')" prop="citedCount" width="120" />
           <el-table-column :label="$t('paperList.actions')" width="200">
             <template #default="scope">
               <el-button-group class="paper-actions">
@@ -193,31 +134,20 @@
 
 <script>
 import { Search } from '@element-plus/icons-vue'
-import { Plus, View } from '@element-plus/icons-vue'
 
 export default {
   name: 'PaperList',
   components: {
-    Search,
-    Plus,
-    View
+    Search
   },
   data() {
     return {
-      ratingRange: [0, 5],
       yearRange: [1990, 2025],
+      citedCountRange: [0, 5000],
       searchQuery: '',
       selectedFilter: 'title',
-      selectedFields: [],
       sortOption: 'publicationYear',
       sortOrder: 'desc',
-      fields: [ // 替换category为field
-        {value: 'Computer Science', label: 'Computer Science'},
-        {value: 'Artificial Intelligence', label: 'Artificial Intelligence'},
-        {value: 'Machine Learning', label: 'Machine Learning'},
-        {value: 'Neuroscience', label: 'Neuroscience'},
-        {value: 'Biotechnology', label: 'Biotechnology'}
-      ],
       papers: [
         {
           id: 1,
@@ -225,9 +155,7 @@ export default {
           authors: "Vaswani, Ashish; Shazeer, Noam; Parmar, Niki",
           doi: "10.48550/arXiv.1706.03762",
           publicationYear: 2017,
-          field: "Computer Science",
-          rating: 4.8,
-          citationCount: 1234
+          citedCount: 1234
         },
         {
           id: 2,
@@ -235,9 +163,7 @@ export default {
           authors: "Devlin, Jacob; Chang, Ming-Wei; Lee, Kenton",
           doi: "10.48550/arXiv.1810.04805",
           publicationYear: 2018,
-          field: "Natural Language Processing",
-          rating: 4.7,
-          citationCount: 2345
+          citedCount: 2345
         },
       ],
       searchFieldMap: {
@@ -249,46 +175,30 @@ export default {
       pageSize: 10,
       total: 100,
       inputPlaceholder: this.$t('search.searchPapers'),
-      sortOptions: [
-        { value: 'citationCount', label: this.$t('paper.citationCount') },
-        { value: 'citationRate', label: this.$t('paper.citationRate') }
-      ],
-      citationFilter: {
-      min: 0,
-      max: 5000,
-      timeRange: 'all'
-    },
-    publicationDateRange: []
     }
   },
   computed: {
     filteredPapers() {
       return this.papers.filter(paper => {
-        const matchesRating = paper.rating >= this.ratingRange[0] &&
-                            paper.rating <= this.ratingRange[1];
         const matchesYear = paper.publicationYear >= this.yearRange[0] &&
                            paper.publicationYear <= this.yearRange[1];
-        const matchesField = this.selectedFields.length ?
-                           this.selectedFields.includes(paper.field) : true;
+        const matchesCitedCount = paper.citedCount >= this.citedCountRange[0] &&
+                                paper.citedCount <= this.citedCountRange[1];
         const searchFields = this.searchFieldMap[this.selectedFilter] || ['title'];
         const matchesSearch = this.searchQuery === '' ||
                             searchFields.some(field =>
                               String(paper[field]).toLowerCase()
                                .includes(this.searchQuery.toLowerCase()));
-        const citationTimeCondition = this.citationFilter.timeRange === 'all' || 
-          paper.publicationYear >= (new Date().getFullYear() - parseInt(this.citationFilter.timeRange));
-        const matchesCitation = paper.citationCount >= this.citationFilter.min && paper.citationCount <= this.citationFilter.max
-      return matchesRating && matchesYear && matchesField && matchesSearch && citationTimeCondition && matchesCitation      });
+        return matchesYear && matchesCitedCount && matchesSearch;
+      });
     },
     sortedPapers() {
       return this.filteredPapers.sort((a, b) => {
         let comparison = 0;
         if (this.sortOption === 'publicationYear') {
           comparison = a.publicationYear - b.publicationYear;
-        } else if (this.sortOption === 'citationCount') {
-          comparison = (a.citationCount || 0) - (b.citationCount || 0);
-        } else if (this.sortOption === 'rating') {
-          comparison = a.rating - b.rating;
+        } else if (this.sortOption === 'citedCount') {
+          comparison = a.citedCount - b.citedCount;
         }
         return this.sortOrder === 'asc' ? comparison : -comparison;
       });
@@ -303,15 +213,8 @@ export default {
     },
     resetFilters() {
       this.searchQuery = '';
-      this.selectedCategories = [];
-      this.ratingRange = [0, 5];
       this.yearRange = [1990, 2025];
-      this.citationFilter = {
-        min: 0,
-        max: 5000,
-        timeRange: 'all'
-      };
-      this.publicationDateRange = []
+      this.citedCountRange = [0, 5000];
     },
     toggleSort(option) {
       if (this.sortOption === option) {
@@ -321,33 +224,10 @@ export default {
         this.sortOrder = 'asc';
       }
     },
-    toggleField(field) {
-      if (this.selectedFields.includes(field)) {
-        this.selectedFields = this.selectedFields.filter(f => f !== field)
-      } else {
-        this.selectedFields = [...this.selectedFields, field]
-      }
-    },
     formatYear(value) {
       return `${value}`
     },
-    sortIcon(key) {
-      return this.sortOption === key
-          ? (this.sortOrder === 'asc' ? 'el-icon-top' : 'el-icon-bottom')
-          : 'el-icon-bottom'
-    },
-    sortStyle(key) {
-      return {
-        color: this.sortOption === key
-            ? (this.sortOrder === 'asc' ? '#409EFF' : '#F56C6C')
-            : '#C0C4CC',
-        marginLeft: '5px'
-      }
-    },
-    formatRating(value) {
-      return `${value}`
-    },
-    formatYear(value) {
+    formatCitedCount(value) {
       return `${value}`
     },
     viewPaperDetails(paperId) {
@@ -950,4 +830,4 @@ export default {
     display: none; /* Hide text on small screens */
   }
 }
-</style>
+</style>    

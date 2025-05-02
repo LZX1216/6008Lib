@@ -21,17 +21,17 @@
             <template #append>
               <div class="filter-and-button-wrapper">
                 <el-select
-                  v-model="searchType"
-                  class="type-select"
-                  @change="handleSearchTypeChange"
+                    v-model="searchType"
+                    class="type-select"
+                    @change="handleSearchTypeChange"
                 >
                   <el-option
-                    :label="$t('search.typeBook')"
-                    value="books"
+                      :label="$t('search.typeBook')"
+                      value="books"
                   />
                   <el-option
-                    :label="$t('search.typePaper')"
-                    value="papers"
+                      :label="$t('search.typePaper')"
+                      value="papers"
                   />
                 </el-select>
                 <el-select
@@ -41,10 +41,10 @@
                   @change="updatePlaceholder"
                 >
                   <el-option
-                    v-for="option in currentFilterOptions"
-                    :key="option.value"
-                    :label="option.label"
-                    :value="option.value"
+                      v-for="option in currentFilterOptions"
+                      :key="option.value"
+                      :label="option.label"
+                      :value="option.value"
                   />
                 </el-select>
                 <el-button @click="searchBooks" class="search-button">
@@ -211,8 +211,8 @@ export default {
       observer: null,
       sections: 5,
       searchQuery: '',
-      selectedFilter: 'title',
       searchType: 'books',
+      selectedFilter: 'title',
       inputPlaceholder: this.$t('search.searchBooks'),
       filterOptions: {
         books: [
@@ -483,7 +483,6 @@ export default {
     this.setupIntersectionObserver();
   },
   methods: {
-
     clearSearch() {
     this.searchQuery = '';
     },
@@ -500,23 +499,23 @@ export default {
           doi: this.$t('search.searchPaperByDOI')
         }
       }
-      this.inputPlaceholder = placeholderMap[this.searchType][this.selectedFilter] || 
-        this.$t('search.searchDefault')
+      this.inputPlaceholder = placeholderMap[this.searchType][this.selectedFilter] ||
+          this.$t('search.searchDefault')
     },
     fetchBooks() {
       // Fetch popular books
-      axios.get('http://localhost:8080/api/popular-books') // Make sure this URL is correct
+      axios.get('http://localhost:8080/home') // Make sure this URL is correct
         .then(response => {
-          this.popularBooks = response.data; // Assuming the returned data is an array of books
+          this.popularBooks = response.data.data.topBooks; // Assuming the returned data is an array of books
         })
         .catch(error => {
           console.error('Failed to fetch popular books:', error);
         });
 
       // Fetch new arrivals
-      axios.get('http://localhost:8080/api/new-books') // Replace with the actual backend API address
+      axios.get('http://localhost:8080/home') // Replace with the actual backend API address
         .then(response => {
-          this.newBooks = response.data; // Assuming the returned data is an array of books
+          this.newBooks = response.data.data.newBooks; // Assuming the returned data is an array of books
         })
         .catch(error => {
           console.error('Failed to fetch new arrivals:', error);
@@ -694,14 +693,13 @@ footer {
   align-items: center;
   transition: all 0.3s ease;
 }
-
 .type-select {
   width: 120px;
   margin-right: 0px;
 }
-
 .filter-select {
   width: 120px;
+  margin-right: 16px;
   margin-right: 8px;
 }
 
@@ -727,7 +725,6 @@ footer {
 .search-input :deep(.el-input__wrapper) {
   background-color: rgba(255, 255, 255, 0.9);
 }
-
 .search-input :deep(.el-input-group__append) {
   padding: 0 10px;
   background: white;
@@ -736,6 +733,12 @@ footer {
 .search-button {
   padding: 12px 20px;
   flex-shrink: 0;
+}
+
+.search-button:hover {
+  background-color: #2563eb;
+  border-color: #2563eb;
+  transform: translateY(-50%) scale(1.05);
 }
 
 .search-icon {
@@ -1017,26 +1020,26 @@ footer {
   .hero-subtitle,
   .search-section,
   .recent-events,
-    .book-section {
+  .book-section {
     animation-name: fadeIn;
     animation-duration: 0.5s;
   }
   .el-dialog {
     width: 90%;
   }
-    
+
   .type-select,
   .filter-select {
     flex: 1;
     min-width: 120px;
   }
-  
+
   .filter-and-button-wrapper {
     flex-wrap: wrap;
     width: 100%;
     gap: 6px;
   }
-  
+
   .search-button {
     position: static;
     transform: none;

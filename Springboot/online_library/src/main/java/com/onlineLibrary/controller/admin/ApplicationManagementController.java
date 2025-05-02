@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin()
 @RequestMapping("/admin")
 public class ApplicationManagementController {
 
@@ -25,6 +26,7 @@ public class ApplicationManagementController {
     @GetMapping("/request")
     @CrossOrigin()
     public Result<PageResult> pageQuery(RequestPageQueryDTO requestPageQueryDTO) {
+        System.out.println(requestPageQueryDTO);
         PageResult pageResult = helpPageService.pageQuery(requestPageQueryDTO);
         return Result.success(pageResult);
     }

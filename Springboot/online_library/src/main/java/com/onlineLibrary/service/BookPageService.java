@@ -2,7 +2,11 @@ package com.onlineLibrary.service;
 
 import com.onlineLibrary.DTO.BooksPageQueryDTO;
 import com.onlineLibrary.DTO.CommentsDTO;
+import com.onlineLibrary.VO.BooksVO;
+import com.onlineLibrary.Entity.Comments;
 import com.onlineLibrary.result.PageResult;
+
+import java.util.List;
 
 public interface BookPageService {
 
@@ -35,4 +39,8 @@ public interface BookPageService {
     PageResult pageQuery(BooksPageQueryDTO booksPageQueryDTO);
 
     PageResult slideQuery(BooksPageQueryDTO booksPageQueryDTO);
+
+    BooksVO BookQuery(Integer bookId);
+
+    List<Comments> CommentQuery(Integer bookId);
 }

@@ -9,7 +9,7 @@
         <div class="stats-badge">
           <span class="citation-badge">
             <i class="el-icon-trophy"></i>
-            {{ $t('paper.citedCount') }}: {{ paper.citationCount.toLocaleString() }} 
+            {{ $t('paper.citedCount') }}: {{ paper.citedCount }}
           </span>
           <span class="year-badge">
             <i class="el-icon-time"></i>
@@ -27,7 +27,7 @@
       </div>
 
       <div class="info-grid">
-        <div class="info-item doi-item">
+        <div v-if="paper.doi && paper.doi !=='null' " class="info-item doi-item">
           <label><i class="el-icon-link"></i> DOI：</label>
           <a :href="paper.doi" target="_blank" class="doi-link">
             {{ paper.doi }}
@@ -38,19 +38,19 @@
         <div class="divider"></div>
 
         <div class="action-buttons">
-          <el-button 
-            type="primary" 
-            class="action-btn"
-            @click="downloadPaper"
+          <el-button
+              type="primary"
+              class="action-btn"
+              @click="downloadPaper"
           >
             <i class="el-icon-download"></i>
             {{ $t('paperDetail.download') }}
           </el-button>
-          
-          <el-button 
-            type="success" 
-            class="action-btn"
-            @click="addToReadingList"
+
+          <el-button
+              type="success"
+              class="action-btn"
+              @click="addToReadingList"
           >
             <i class="el-icon-notebook-2"></i>
             {{ $t('paperDetail.addToList') }}
@@ -64,12 +64,15 @@
 <script>
 import { ElMessage } from 'element-plus';
 import { auth } from '@/utils/auth.js';
+import axios from "axios";
 
 export default {
   name: 'PaperDetail',
   computed: {
     formattedAuthors() {
-      return this.paper.authors.replace(/,\s*/g, ' · ');
+      return this.paper.authors
+          // .replace(/,\s*/g, ' · ')
+      ;
     }
   },
   data() {
@@ -79,10 +82,17 @@ export default {
         title: 'PROTEIN MEASUREMENT WITH THE FOLIN PHENOL REAGENT',
         authors: 'Oliver H. Lowry, Nira J. Rosebrough, A. Farr, Rose J. Randall',
         publicationYear: '1951',
-        citationCount: 319941,
+        citedCount: 319941,
         doi: 'https://doi.org/10.1016/s0021-9258(19)52451-6'
       },
     };
+  },
+  created() {
+    // Add API call to fetch book details here
+    const paperId = this.$route.params.id;
+    // fetchBookDetails(bookId);
+    // Add API call to fetch book details here
+    this.fetchPaperDetails(paperId)
   },
   methods: {
     downloadPaper() {
@@ -100,6 +110,17 @@ export default {
         return;
       }
       ElMessage.success(this.$t('paperDetail.addToReadingListSuccess'));
+    },
+    fetchPaperDetails(paperId) {
+      axios.get(`http://localhost:8080/paper/id/${paperId}`) // Make sure this URL is correct
+          .then(response => {
+            this.paper = response.data; // Assuming the returned data is an array of books
+          })
+          .catch(error => {
+            console.error('Failed to papers:', error);
+          });
+      console.log(response);
+
     },
   },
 };
@@ -296,7 +317,7 @@ export default {
 
   .info-grid .action-buttons {
     flex-direction: column;
-    
+
     .el-button {
       width: 100%;
     }

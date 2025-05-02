@@ -161,7 +161,7 @@
       v-model="purchaseRequestsDialogVisible"
       width="70%"
     >
-      <el-table :data="paginatedPurchaseRequests" style="width: 100%" default-sort="{ prop: 'id', order: 'descending' }" @sort-change="handleSortChange">
+      <el-table :data="allpurchaseRequests" style="width: 100%" default-sort="{ prop: 'id', order: 'descending' }" @sort-change="handleSortChange">
         <el-table-column prop="title" :label="$t('book.title')" sortable/>
         <el-table-column prop="author" :label="$t('book.author')" sortable/>
         <el-table-column prop="publisher" :label="$t('book.publisher')" sortable/>
@@ -196,16 +196,15 @@
           </template>
         </el-table-column>
       </el-table>
-
       <div class="pagination">
         <el-pagination
-          :current-page="purchaseCurrentPage"
-          :page-size="purchasePageSize"
-          @update:current-page="handlePurchaseCurrentChange"
-          @update:page-size="handlePurchaseSizeChange"
-          :total="purchaseTotal"
-          :page-sizes="[10, 20, 50]"
-          layout="total, sizes, prev, pager, next, jumper"
+            :current-page="purchaseCurrentPage"
+            :page-size="purchasePageSize"
+            @update:current-page="handlePurchaseCurrentChange"
+            @update:page-size="handlePurchaseSizeChange"
+            :total="purchaseTotal"
+            :page-sizes="[10, 20, 50]"
+            layout="total, sizes, prev, pager, next, jumper"
         />
       </div>
     </el-dialog>
@@ -215,6 +214,8 @@
 <script>
 import { Search, Plus } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import axios from "axios"
+import {auth} from "@/utils/auth.js";
 
 export default {
   name: 'AdminBookManagement',
@@ -367,38 +368,156 @@ export default {
       this.bookForm = { ...book }
       this.dialogVisible = true
     },
+
+    // async deleteBook(book) {
+    //   try {
+    //     await ElMessageBox.confirm(
+    //       this.$t('adminBookManagement.confirmDeleteBook'),
+    //       this.$t('adminBookManagement.warning'),
+    //       {
+    //         confirmButtonText: this.$t('common.confirm'),
+    //         cancelButtonText: this.$t('common.cancel'),
+    //         type: 'warning'
+    //       }
+    //     )
+    //     // Call delete API
+    //     // await deleteBookApi(book.id)
+    //     ElMessage.success(this.$t('adminBookManagement.deletedSuccessfully'))
+    //     // Refresh list
+    //     this.fetchBooks()
+    //   } catch (error) {
+    //     if (error !== 'cancel') {
+    //       ElMessage.error(this.$t('adminBookManagement.failedToDelete'))
+    //     }
+    //   }
+    // },
+
     async deleteBook(book) {
       try {
+        const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+        const token = userInfo.token
         await ElMessageBox.confirm(
-          this.$t('adminBookManagement.confirmDeleteBook'),
-          this.$t('adminBookManagement.warning'),
-          {
-            confirmButtonText: this.$t('common.confirm'),
-            cancelButtonText: this.$t('common.cancel'),
-            type: 'warning'
-          }
+            this.$t('adminBookManagement.confirmDeleteBook'),
+            this.$t('adminBookManagement.warning'),
+            {
+              confirmButtonText: this.$t('common.confirm'),
+              cancelButtonText: this.$t('common.cancel'),
+              type: 'warning'
+            }
         )
         // Call delete API
         // await deleteBookApi(book.id)
-        ElMessage.success(this.$t('adminBookManagement.deletedSuccessfully'))
+        this.axios({
+          url: 'http://localhost:8080/admin/book',
+          method: 'DELETE',
+          headers: {
+            // 请求头
+            "token": token,
+            "Content-Type": "application/json",
+          },
+          params: {
+            ids: book.id
+          }
+        }).then(res => {
+          if (res.data.code === 1) {
+            // this.$message.success(res.data.msg);
+            // ElMessage.success('Deleted successfully')
+            ElMessage.success(this.$t('adminBookManagement.deletedSuccessfully'))
+            this.fetchBooks()
+            console.log(res)
+            // this.$router.push("/");
+          } else {
+            // this.$message.error(res.data.msg);
+            ElMessage.error(this.$t('adminBookManagement.failedToDelete'))
+          }
+        });
+
         // Refresh list
         this.fetchBooks()
       } catch (error) {
         if (error !== 'cancel') {
+          console.log(error)
           ElMessage.error(this.$t('adminBookManagement.failedToDelete'))
         }
       }
     },
+
+
     async submitBookForm() {
       try {
+        const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+        const token = userInfo.token
         await this.$refs.bookForm.validate()
         if (this.dialogType === 'add') {
-          // await addBookApi(this.bookForm)
-          ElMessage.success(this.$t('adminBookManagement.addedSuccessfully'))
-        } else {
+
+          this.axios({
+            url: 'http://localhost:8080/admin/book',
+            method: 'POST',
+            headers: {
+              // 请求头
+              "token": token,
+              "Content-Type": "application/json",
+            },
+            data: {
+              title: this.bookForm.title,
+              author: this.bookForm.author,
+              isbn: this.bookForm.isbn,
+              publishDate: this.bookForm.publishDate,
+              description: this.bookForm.description,
+              cover: this.bookForm.cover,
+              available: this.bookForm.available?1:0,
+            }
+          }).then(res => {
+            if (res.data.code === 1) {
+              // this.$message.success(res.data.msg);
+              // ElMessage.success('Added successfully')
+              ElMessage.success(this.$t('adminBookManagement.addedSuccessfully'))
+              console.log(res)
+              this.fetchBooks()
+              // this.$router.push("/");
+            } else {
+              this.$message.error(res.data.msg);
+            }
+          });
+
+        }else {
+
+          this.axios({
+            url: 'http://localhost:8080/admin/book',
+            method: 'PUT',
+            headers: {
+              // 请求头
+              "token": token,
+              "Content-Type": "application/json",
+            },
+            data: {
+              id: this.bookForm.id,
+              title: this.bookForm.title,
+              author: this.bookForm.author,
+              isbn: this.bookForm.isbn,
+              publishDate: this.bookForm.publishDate,
+              description: this.bookForm.description,
+              cover: this.bookForm.cover,
+              available: this.bookForm.available?1:0,
+            }
+          }).then(res => {
+            if (res.data.code === 1) {
+              this.$message.success(res.data.msg);
+              // ElMessage.success('Added successfully')
+              ElMessage.success(this.$t('adminBookManagement.updatedSuccessfully'))
+              console.log(res)
+              this.fetchBooks()
+              // this.$router.push("/");
+            } else {
+              this.$message.error(res.data.msg);
+            }
+          });
+
           // await updateBookApi(this.bookForm)
-          ElMessage.success(this.$t('adminBookManagement.updatedSuccessfully'))
+          // ElMessage.success('Updated successfully')
+
         }
+
         this.dialogVisible = false
         this.fetchBooks()
       } catch (error) {
@@ -406,12 +525,13 @@ export default {
       }
     },
     handleSizeChange(val) {
-      this.pageSize = val
-      this.fetchBooks()
+      this.pageSize = val;
+      this.fetchBooks();
     },
+
     handleCurrentChange(val) {
-      this.currentPage = val
-      this.fetchBooks()
+      this.currentPage = val;
+      this.fetchBooks();
     },
     handlePurchaseSizeChange(val) {
       this.purchasePageSize = val;
@@ -446,8 +566,29 @@ export default {
       this.fetchPurchaseRequests(); // 重新分页
     },
     fetchBooks() {
-      // Implement logic to fetch book list
-      console.log('Fetching book list')
+      const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+      const token = userInfo.token
+      axios({
+        url: 'http://localhost:8080/admin/book/page', method: "GET", headers: {
+          "token": token,// 请求头
+          "Content-Type": "application/json",
+        },params:
+            {
+              page: this.currentPage,
+              pageSize: this.pageSize,
+            }
+      }) // Make sure this URL is correct
+          .then(response => {
+            console.log(response)
+            this.books = response.data.data.records; // Assuming the returned data is an array of books
+            this.total = response.data.data.total;
+            console.log(response.data.data.records);
+            console.log(this.books);
+
+          })
+          .catch(error => {
+            console.error('Failed to fetch books:', error);
+          })
     },
     showPurchaseRequestsDialog() {
       this.purchaseRequestsDialogVisible = true
@@ -500,13 +641,37 @@ export default {
       }
     },
     fetchPurchaseRequests() {
-    this.purchaseRequests = this.paginatedPurchaseRequests;
-    this.purchaseTotal = this.allPurchaseRequests.length;
-  }
+      console.log('Fetching purchase requests')
+      const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+      const token = userInfo.token
+      axios({
+        url: 'http://localhost:8080/admin/request', method: "GET", headers: {
+          "token": token,// 请求头
+          "Content-Type": "application/json",
+        },params:
+            {
+              page: this.purchaseCurrentPage,
+              pageSize: this.purchasePageSize,
+            }
+      }) // Make sure this URL is correct
+          .then(response => {
+            console.log(response)
+            this.allpurchaseRequests = response.data.data.records; // Assuming the returned data is an array of books
+            this.purchaseTotal = response.data.data.total;
+            console.log(response.data.data.records);
+            console.log(this.books);
 
+          })
+          .catch(error => {
+            console.error('Failed to fetch books:', error);
+          })
+
+
+    }
   },
   created() {
     this.fetchBooks()
+    this.fetchPurchaseRequests()
   }
 }
 </script>
@@ -559,7 +724,6 @@ export default {
   height: auto;
   object-fit: contain;
 }
-
 .el-dialog__body .pagination {
   margin: 15px 0;
   padding: 0 20px;

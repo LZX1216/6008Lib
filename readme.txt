@@ -1,0 +1,9 @@
+1.LoginVo没有role属性，前端没法识别用户权限
+2.书籍的是否可用available数据类型应为Boolean
+3.对于用户管理前后端的方式还不一样，前端使用的是通过status更改用户权限，后端是直接删除用户数据
+4.重置密码的方式还不明确
+5.前端对requestform的显示没有使用带pagesize/pagenum的列表，后端对requestform的使用的是类似主页书籍使用pagequery的方式无法正常返回数据
+6.token拦截参数有缺陷，直接排除/book/**会让发送评论部分的拦截失效
+7.滑动搜索前端使用的是年份判断，后端的publishdate使用的是年月日，二者判断部分无效没法显示
+
+

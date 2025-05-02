@@ -10,16 +10,19 @@ public class LoginVO {
     private String username;
     private String name;
     private String token;
+    private Integer role;
 
     // 无参构造函数
-    public LoginVO() {}
+    public LoginVO() {
+    }
 
     // 带参构造函数
-    public LoginVO(Integer id, String username, String name, String token) {
+    public LoginVO(Integer id, String username, String name, String token, Integer role) {
         this.id = id;
         this.username = username;
         this.name = name;
         this.token = token;
+        this.role = role;
     }
 
     public Integer getId() {
@@ -52,5 +55,13 @@ public class LoginVO {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public Integer getRole() {
+        return role;
+    }
+
+    public void setRole(Integer role) {
+        this.role = role;
     }
 }

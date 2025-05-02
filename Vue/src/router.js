@@ -42,7 +42,7 @@ const routes = [
         ],
         beforeEnter: (to, from, next) => {
             const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
-            if (userInfo && (userInfo.role === 'admin' || userInfo.role === 'superadmin')) {
+            if (userInfo && (userInfo.role === 2 || userInfo.role === 1)) {
                 next();
             } else {
                 next('/login');

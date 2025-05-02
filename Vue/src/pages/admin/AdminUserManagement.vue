@@ -38,9 +38,9 @@
       <el-table-column prop="role" :label="$t('adminUserManagement.role')" width="180" sortable>
         <template #default="scope">
           <el-tag
-            :type="scope.row.role === 'admin'? 'success' : scope.row.role ==='superadmin'? 'danger' : 'info'">
+            :type="scope.row.role === '1' ?'success' : scope.row.role === '2' ? 'danger' : 'info'">
             {{
-              scope.row.role === 'admin'? $t('adminUserManagement.administrator') : scope.row.role ==='superadmin'? $t('adminUserManagement.superAdmin') : $t('adminUserManagement.user')
+              scope.row.role ==='1'?$t('adminUserManagement.administrator') : scope.row.role ==='2'?$t('adminUserManagement.superAdmin') : $t('adminUserManagement.user')
             }}
           </el-tag>
         </template>
@@ -72,12 +72,12 @@
             {{ $t('adminUserManagement.resetPassword') }}
           </el-button>
           <el-button
-            v-if="currentUser.role ==='superadmin' && scope.row.role!=='superadmin'"
+            v-if="currentUser.role ===2 && scope.row.role!=='2'"
             type="primary"
             size="small"
             @click="toggleAdminRole(scope.row)"
           >
-            {{ scope.row.role === 'admin'? $t('adminUserManagement.demote') : $t('adminUserManagement.promote') }}
+            {{ scope.row.role === '1'? $t('adminUserManagement.demote') : $t('adminUserManagement.promote') }}
           </el-button>
         </template>
       </el-table-column>
@@ -143,6 +143,7 @@
 <script>
 import { Search } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import axios from "axios";
 
 export default {
   name: 'AdminUserManagement',
@@ -158,7 +159,7 @@ export default {
           id: 1,
           username: 'user1',
           name: 'User One',
-          role: 'user',
+          role: 0,
           status: 'active',
           currentBorrows: 2,
           totalBorrows: 10,
@@ -168,7 +169,7 @@ export default {
           id: 2,
           username: 'user2',
           name: 'User Two',
-          role: 'admin',
+          role: 1,
           status: 'inactive',
           currentBorrows: 0,
           totalBorrows: 5,
@@ -178,7 +179,7 @@ export default {
           id: 3,
           username: 'user3',
           name: 'User Three',
-          role:'superadmin',
+          role:2,
           status: 'active',
           currentBorrows: 1,
           totalBorrows: 3,
@@ -188,7 +189,7 @@ export default {
       userForm: {
         username: '',
         name: '',
-        role: 'user',
+        role: 0,
         status: 'active',
         currentBorrows: 0,
         totalBorrows: 0,
@@ -221,7 +222,7 @@ export default {
       this.userForm = {
         username: '',
         name: '',
-        role: 'user',
+        role: 0,
         status: 'active'
       }
       this.addUserDialogVisible = true
@@ -273,11 +274,11 @@ export default {
       }
     },
     async toggleAdminRole(user) {
-      const newRole = user.role === 'admin'? $t('adminUserManagement.user') : $t('adminUserManagement.administrator')
-      if (user.role === 'admin') {
-        user.role = 'user'
+      const newRole = user.role === 1? $t('adminUserManagement.user') : $t('adminUserManagement.administrator')
+      if (user.role === 1) {
+        user.role = 0
       } else {
-        user.role = 'admin'
+        user.role = 1
       }
       ElMessage.success(this.$t('adminUserManagement.roleUpdated', { role: newRole }))
     },
@@ -308,10 +309,41 @@ export default {
       }
       this[tableName] = [...data];
     },
+
     fetchUsers() {
+      const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+      const token = userInfo.token
+      axios({
+        url: 'http://localhost:8080/admin/user/page', method: "GET", headers: {
+          "token": token,// 请求头
+          "Content-Type": "application/json",
+        },params:
+            {
+              page: this.currentPage,
+              pageSize: this.pageSize,
+            }
+      }) // Make sure this URL is correct
+          .then(response => {
+            console.log(response)
+            this.users = response.data.data.records; // Assuming the returned data is an array of books
+            this.total = response.data.data.total;
+            console.log(response.data.data.records);
+            console.log(this.users);
+
+          })
+          .catch(error => {
+            console.error('Failed to fetch users:', error);
+          })
+
+
+
+
       // Implement the logic of getting the user list
       console.log('Getting the user list')
     },
+
+
+
     async submitUserForm() {
       try {
         await this.$refs.userForm.validate()

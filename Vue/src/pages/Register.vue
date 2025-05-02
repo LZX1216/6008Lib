@@ -99,7 +99,7 @@ export default {
           const hashedPassword = await hashSHA256(this.registerForm.password);
           try {
             const response = await this.axios({
-              url: 'http://localhost:8080/register',
+              url: 'http://localhost:8080/register01',
               method: "post",
               headers: {
                 "Content-Type": "application/json",
@@ -109,7 +109,7 @@ export default {
                 password: hashedPassword,
               },
             });
-            if (response.data.code === '0') {
+            if (response.data.code === 1) {
               ElMessage.success(response.data.msg);
               this.$router.push('/login');
             } else {

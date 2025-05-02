@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.onlineLibrary.mapper.PublicationPageMapper">
+
+    <!--查询期刊-->
+    <select id="select" resultType="com.onlineLibrary.Entity.Publication">
+        select * from publications
+        <where>
+            <if test="citedCountRange0 != null"> and cited_count BETWEEN #{citedCountRange0} AND #{citedCountRange1}</if>
+            <!--  判断 publishDate 是否不为空，若不为空则添加 publishDate 年份范围筛选条件  -->
+            <if test="yearRange0 != null ">
+                <!--  将传入的日期转换为年份，然后筛选出年份在传入年份前后 1 年的记录  -->
+                and YEAR(publication_year) BETWEEN YEAR(#{yearRange0}) AND YEAR(#{yearRange1})
+            </if>
+            <if test="title != null and title !=''">
+                and title like concat('%',#{title},'%')
+            </if>
+            <if test="doi != null and doi !=''">
+                and doi = #{doi}
+            </if>
+<!--            <if test="publicationYear != null">-->
+<!--                and publication_year = #{publicationYear}-->
+<!--            </if>-->
+            <if test="authors != null and authors !=''">
+                and authors like concat('%',#{authors},'%')
+            </if>
+        </where>
+    </select>
+    <select id="selectById" resultType="com.onlineLibrary.DTO.PublicationVO">
+            select *
+            from publications
+            where id = #{bookId}
+        </select>
+</mapper>

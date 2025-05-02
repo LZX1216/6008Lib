@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/help")
+@CrossOrigin()
 public class HelpPageController {
 
     @Autowired
@@ -50,6 +51,7 @@ public class HelpPageController {
     @GetMapping("/myrequest")
     @CrossOrigin()
     public Result<PageResult> pageQuery(RequestPageQueryDTO requestPageQueryDTO) {
+        System.out.println(requestPageQueryDTO);
         PageResult pageResult = helpPageService.queryMyRequest(requestPageQueryDTO);
         return Result.success(pageResult);
     }

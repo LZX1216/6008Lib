@@ -3,15 +3,15 @@ package com.onlineLibrary.controller;
 import com.onlineLibrary.DTO.LoginDTO;
 import com.onlineLibrary.DTO.UserDTO;
 import com.onlineLibrary.VO.LoginVO;
-import com.onlineLibrary.entity.User;
+import com.onlineLibrary.Entity.User;
 import com.onlineLibrary.result.Result;
 import com.onlineLibrary.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping()
+@CrossOrigin()
 public class LoginController {
     @Autowired
     private LoginService loginService;
@@ -25,8 +25,8 @@ public class LoginController {
     @CrossOrigin()
     public Result<LoginVO> login01(@RequestBody LoginDTO loginDTO) {
 
-        String password = loginDTO.getPassword();
-        loginDTO.setPassword(DigestUtils.md5DigestAsHex(password.getBytes()));
+//        String password = loginDTO.getPassword();
+//        loginDTO.setPassword(DigestUtils.md5DigestAsHex(password.getBytes()));
 
         LoginVO loginVO =  loginService.login01(loginDTO);
 
@@ -52,8 +52,8 @@ public class LoginController {
     @CrossOrigin()
     public Result register01(@RequestBody UserDTO userDTO) {
         User user1 = loginService.selectByUsername(userDTO);
-        String password = userDTO.getPassword();
-        userDTO.setPassword(DigestUtils.md5DigestAsHex(password.getBytes()));
+//        String password = userDTO.getPassword();
+//        userDTO.setPassword(DigestUtils.md5DigestAsHex(password.getBytes()));
 
         if (user1 != null) {
             System.out.println("username:"+ user1.getUsername()+"is existed");

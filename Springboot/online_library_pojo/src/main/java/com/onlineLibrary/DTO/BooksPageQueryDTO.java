@@ -24,7 +24,10 @@ public class BooksPageQueryDTO implements Serializable {
     private LocalDate publishDate; // 出版日期
     private String category; // 分类
     private double rating;
-
+    private double ratingRange0;
+    private double ratingRange1;
+    private LocalDate  yearRange0;
+    private LocalDate  yearRange1;
 
     //页码
     private int page;

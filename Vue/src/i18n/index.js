@@ -1,5 +1,4 @@
 import {createI18n} from 'vue-i18n'
-
 const messages = {
     zh: {
         common: {
@@ -13,7 +12,7 @@ const messages = {
             reset: '重置',
             remove: '删除',
             close: '关闭',
-            loginRequired: '请先登录',
+            loginRequired:'请登录',
         },
         nav: {
             home: '首页',
@@ -100,10 +99,12 @@ const messages = {
             descending: "降序",
             ratingRange: "评分范围",
             yearRange: "出版年份范围",
+            popularFields: "热门领域",
             citedCountRange: "被引量范围",
             resetAll: "重置所有筛选",
             actions: "操作",
             addToList: "加入列表",
+            viewDetails: "查看详情",
             viewDetails: "查看详情",
             publicationDate: "发表日期范围",
             citationFilter: "被引量筛选",
@@ -121,8 +122,10 @@ const messages = {
             authors: "作者",
             conference: "会议",
             doi: "DOI",
+            field: "领域",
             citedCount: "被引量",
             publicationYear: "出版年份",
+            rating: "评分",
             citationCount: "引用次数",
             referenceCount: "参考文献",
             downloads: "下载次数",
@@ -546,7 +549,7 @@ const messages = {
             submit: 'Submit',
             reset: 'Reset',
             close: 'Close',
-            loginRequired: 'Login required',
+            loginRequired:'Please login first',
         },
         nav: {
             home: 'Home',
@@ -641,6 +644,7 @@ const messages = {
             ratingRange: "Rating Range",
             yearRange: "Publication Year Range",
             citedCountRange: "Cited Count Range",
+            popularFields: "Popular Fields",
             resetAll: "Reset All Filters",
             actions: "Actions",
             addToList: "Add to List",
@@ -660,9 +664,11 @@ const messages = {
             title: "Title",
             authors: "Authors",
             doi: "DOI",
+            field: "Field",
             citedCount: "Cited Count",
             conference: "Conference",
             publicationYear: "Publication Year",
+            rating: "Rating",
             citationCount: "Citation Count",
             referenceCount: "References",
             downloads: "Downloads",

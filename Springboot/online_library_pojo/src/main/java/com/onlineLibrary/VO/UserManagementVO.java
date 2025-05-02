@@ -9,8 +9,9 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserManagementVO {
 
+public class UserManagementVO {
+    private int id;
     private String username;
     private String role;
 

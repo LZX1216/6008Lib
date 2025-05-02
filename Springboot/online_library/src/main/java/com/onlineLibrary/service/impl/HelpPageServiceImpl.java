@@ -6,12 +6,10 @@ import com.onlineLibrary.DTO.ContactDTO;
 import com.onlineLibrary.DTO.RequestFormDTO;
 import com.onlineLibrary.DTO.RequestPageQueryDTO;
 import com.onlineLibrary.VO.RequestManagementVO;
-import com.onlineLibrary.VO.UserManagementVO;
 import com.onlineLibrary.context.BaseContext;
-import com.onlineLibrary.entity.ContactForm;
-import com.onlineLibrary.entity.RequestForm;
+import com.onlineLibrary.Entity.ContactForm;
+import com.onlineLibrary.Entity.RequestForm;
 import com.onlineLibrary.mapper.HelpPageMapper;
-import com.onlineLibrary.mapper.HomePageMapper;
 import com.onlineLibrary.result.PageResult;
 import com.onlineLibrary.service.HelpPageService;
 import org.springframework.beans.BeanUtils;
@@ -97,8 +95,7 @@ public class HelpPageServiceImpl implements HelpPageService {
         //设置分页参数
         PageHelper.startPage(requestPageQueryDTO.getPage(), requestPageQueryDTO.getPageSize());
         //调用Mapper查数据
-        Integer userId = BaseContext.getCurrentId();
-        requestPageQueryDTO.setCreateUser(userId);
+
         Page<RequestManagementVO> page = helpPageMapper.select03(requestPageQueryDTO);
         //数据封装
         long total = page.getTotal();

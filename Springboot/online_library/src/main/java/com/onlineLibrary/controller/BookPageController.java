@@ -3,14 +3,19 @@ package com.onlineLibrary.controller;
 
 import com.onlineLibrary.DTO.BooksPageQueryDTO;
 import com.onlineLibrary.DTO.CommentsDTO;
+import com.onlineLibrary.VO.BooksVO;
+import com.onlineLibrary.Entity.Comments;
 import com.onlineLibrary.result.PageResult;
 import com.onlineLibrary.result.Result;
 import com.onlineLibrary.service.BookPageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/book")
+@CrossOrigin()
 public class BookPageController {
 
     @Autowired
@@ -20,7 +25,7 @@ public class BookPageController {
      * @param commentsDTO
      * @return
      */
-    @PostMapping
+    @PostMapping("/submitComment")
     @CrossOrigin()
     public Result insertComments(@RequestBody CommentsDTO commentsDTO){
         //插入评论
@@ -30,6 +35,17 @@ public class BookPageController {
         //更新rating到book表
         bookPageService.updateRating(commentsDTO.getBookId(),averageRating);
         return Result.success(averageRating);
+    }
+
+    @GetMapping("/id/{id}")
+    @CrossOrigin()
+    public BooksVO BookQuery(@PathVariable("id") Integer id)
+    {
+
+        BooksVO booksVO;
+        booksVO = bookPageService.BookQuery(id);
+
+        return booksVO;
     }
 
     /**
@@ -49,5 +65,14 @@ public class BookPageController {
     public Result<PageResult> slideQuery(BooksPageQueryDTO booksPageQueryDTO){
         PageResult pageResult = bookPageService.slideQuery(booksPageQueryDTO);
         return Result.success(pageResult);
+    }
+
+    @GetMapping("/comment/{id}")
+    @CrossOrigin()
+    public List<Comments> CommentQuery(@PathVariable("id") Integer id)
+    {
+        List<Comments> Bookcomments = bookPageService.CommentQuery(id);
+
+        return Bookcomments;
     }
 }

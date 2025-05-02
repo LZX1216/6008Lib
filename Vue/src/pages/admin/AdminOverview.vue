@@ -156,12 +156,12 @@ export default {
         data = [10, 15, 20, 18, 22, 25, 12]
       } else if (period === 'month') {
         labels = [
-          instance.proxy.$t('adminOverview.week1'),
-          instance.proxy.$t('adminOverview.week2'),
-          instance.proxy.$t('adminOverview.week3'),
-          instance.proxy.$t('adminOverview.week4')
+          instance.proxy.$t('adminOverview.jan'),
+          instance.proxy.$t('adminOverview.feb'),
+          instance.proxy.$t('adminOverview.mar'),
+          instance.proxy.$t('adminOverview.apr')
         ]
-        data = [40, 45, 50, 55]
+        data = [10, 60, 30, 20]
       } else if (period === 'year') {
         labels = [
           instance.proxy.$t('adminOverview.jan'),

@@ -1,5 +1,5 @@
 import { reactive } from 'vue'
-
+import {ref} from "vue";
 // 添加测试账号
 const testUsers = [
   {
@@ -20,18 +20,19 @@ const testUsers = [
 ]
 
 export const auth = reactive({
-    isLoggedIn: sessionStorage.getItem('isLoggedIn') === 'true',
+    isLoggedIn: false,
     userInfo: null,
 
     loginstate(user) {
       sessionStorage.setItem('isLoggedIn', 'true')
       sessionStorage.setItem('userInfo', JSON.stringify(user))
       this.isLoggedIn = true
-      this.userInfo = user
+      this.userInfo = user;
     },
 
     logoutstate() {
-        sessionStorage.removeItem('isLoggedIn')
+        sessionStorage.removeItem('isLoggedIn');
+        sessionStorage.removeItem('userInfo');
         this.isLoggedIn = false
         this.userInfo = null;
     },

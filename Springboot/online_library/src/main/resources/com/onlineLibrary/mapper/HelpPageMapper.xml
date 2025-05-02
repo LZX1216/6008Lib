@@ -21,8 +21,8 @@
     <select id="select03" resultType="com.onlineLibrary.VO.RequestManagementVO">
         SELECT * FROM request_form
         where create_user = #{createUser}
-        <if test="status != null">
-             AND status = #{status}
-        </if>
+<!--        <if test="status != null">-->
+<!--             AND status = #{status}-->
+<!--        </if>-->
     </select>
 </mapper>

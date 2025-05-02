@@ -1,3 +1,12 @@
+<script setup>
+import { ElMessage } from 'element-plus'
+import { auth } from '@/utils/auth.js'
+import { computed } from 'vue';
+const isLoggedIn = computed(() => auth.isLoggedIn);
+</script>
+
+
+
 <template>
   <div class="help-support">
     <el-card class="faq-section">
@@ -35,7 +44,7 @@
       </template>
 
       <!-- Purchase Request List -->
-      <el-table :data="paginatedPurchaseRequests" style="width: 100%">
+      <el-table :data="allPurchaseRequests" style="width: 100%" v-if="isLoggedIn">
         <el-table-column prop="title" :label="$t('book.title')" />
         <el-table-column prop="author" :label="$t('book.author')" />
         <el-table-column prop="isbn" :label="$t('book.isbn')" width="120" />
@@ -48,16 +57,15 @@
           </template>
         </el-table-column>
       </el-table>
-
       <div class="pagination" style="margin-top: 20px;">
         <el-pagination
-          :current-page="purchaseCurrentPage"
-          :page-size="purchasePageSize"
-          @update:current-page="handlePurchaseCurrentChange"
-          @update:page-size="handlePurchaseSizeChange"
-          :total="purchaseTotal"
-          :page-sizes="[10, 20, 50]"
-          layout="total, sizes, prev, pager, next, jumper"
+            :current-page="purchaseCurrentPage"
+            :page-size="purchasePageSize"
+            @update:current-page="handlePurchaseCurrentChange"
+            @update:page-size="handlePurchaseSizeChange"
+            :total="purchaseTotal"
+            :page-sizes="[10, 20, 50]"
+            layout="total, sizes, prev, pager, next, jumper"
         />
       </div>
     </el-card>
@@ -156,8 +164,10 @@
 </template>
 
 <script>
-import { ElMessage } from 'element-plus'
-import { auth } from '@/utils/auth.js'
+
+
+import {auth} from "@/utils/auth.js";
+import axios from "axios";
 
 export default {
   name: 'HelpSupport',
@@ -266,11 +276,37 @@ export default {
   methods: {
     async submitForm() {
       try {
+        const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+        const token = userInfo.token
         await this.$refs.contactForm.validate()
+        this.axios({
+          url: 'http://localhost:8080/help/contact',
+          method: 'POST',
+          headers: {
+            // 请求头
+            "token": token,
+            "Content-Type": "application/json",
+          },
+          data: {
+            email: this.contactForm.email,
+            subject: this.contactForm.subject,
+            message: this.contactForm.message,
+          }
+        }).then(res => {
+          if (res.data.code === 1) {
+            // this.$message.success(res.data.msg);
+            // ElMessage.success('Added successfully')
+            ElMessage.success(this.$t('helpSupport.messageSent'));          console.log(res)
+            // this.$router.push("/");
+          } else {
+            this.$message.error(res.data.msg);
+          }
+        });
         // Call API to send message
         // await sendContactMessage(this.contactForm)
-        ElMessage.success(this.$t('helpSupport.messageSent'))
+        // ElMessage.success(this.$t('helpSupport.messageSent'))
         this.resetForm()
+        this.fetchMyRequest()
       } catch (error) {
         console.error(error)
       }
@@ -307,8 +343,40 @@ export default {
     submitRequest() {
       this.$refs.form.validate((valid) => {
         if (valid) {
-          // 这里添加提交采购申请的API调用
-          ElMessage.success(this.$t('helpSupport.purchaseRequestSubmitted'))
+
+          const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+          const token = userInfo.token
+          this.axios({
+            url: 'http://localhost:8080/help/request',
+            method: 'POST',
+            headers: {
+              // 请求头
+              "token": token,
+              "Content-Type": "application/json",
+            },
+            data: {
+              title: this.purchaseRequest.title,
+              author: this.purchaseRequest.author,
+              publisher: this.purchaseRequest.publisher,
+              isbn: this.purchaseRequest.isbn,
+              publishDate: this.purchaseRequest.publishDate,
+              reason: this.purchaseRequest.reason,
+              status: 0,
+            }
+          }).then(res => {
+            if (res.data.code === 1) {
+              // this.$message.success(res.data.msg);
+              // ElMessage.success('Added successfully')
+              ElMessage.success(this.$t('helpSupport.purchaseRequestSubmitted'))
+              console.log(res)
+              this.fetchMyRequest()
+              // this.$router.push("/");
+            } else {
+              this.$message.error(res.data.msg);
+            }
+          });
+
+          // ElMessage.success(this.$t('helpSupport.purchaseRequestSubmitted'))
           this.purchaseRequestDialogVisible = false
           this.purchaseRequest = {
             title: '',
@@ -321,21 +389,68 @@ export default {
         }
       })
     },
-    fetchPurchaseRequests() {
-      this.allPurchaseRequests = [/* 从后端获取的所有数据 */]; // 示例数据已在data中
-      this.purchaseTotal = this.allPurchaseRequests.length;
-    },
+    fetchMyRequest() {
+      if(auth.isLoggedIn) {
+        const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+        const token = userInfo.token
+        axios({
+          url: 'http://localhost:8080/help/myrequest', method: "GET", headers: {
+            "token": token,// 请求头
+            "Content-Type": "application/json",
+          },
+            params:
+                {
+                  page: this.purchaseCurrentPage,
+                  pageSize: this.purchasePageSize,
+                  createUser:userInfo.id,
+                }
+          }).then(response => {
+          console.log(this.purchaseCurrentPage)
+          console.log(this.purchasePageSize)
 
-    // 分页切换
+          console.log(response)
+          console.log(userInfo.id)
+          this.allPurchaseRequests = response.data.data.records; // Assuming the returned data is an array of books
+        })
+
+      }
+
+    },
     handlePurchaseSizeChange(val) {
       this.purchasePageSize = val;
       this.purchaseCurrentPage = 1; // 切换页大小后回到第一页
+      this.fetchMyRequest();
     },
     handlePurchaseCurrentChange(val) {
       this.purchaseCurrentPage = val;
+      this.fetchMyRequest();
+    },
+    created() {
+      this.fetchMyRequest()
     }
-  }
+  },
+
+
+
+
+  created() {
+    this.fetchMyRequest()
+  },
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
 </script>
 
 <style scoped>

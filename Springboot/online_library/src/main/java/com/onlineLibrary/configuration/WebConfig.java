@@ -28,7 +28,12 @@ public class WebConfig implements WebMvcConfigurer {
                         "/register01",
                         "/logout",
                         "/home/**",
-                        "/book/**");
+                        "/book/id/**",
+                        "/book/comment/**",
+                        "/book/page",
+                        "/book/sildeQuery",
+                        "/paper/**"
+                ).addPathPatterns("/book/submitComment");;
 
     }
 

@@ -8,10 +8,10 @@
     <!-- Search bar -->
     <div class="search-section">
       <el-select
-        v-model="selectedFilter"
-        :placeholder="$t('paperList.filterBy')"
-        class="filter-select"
-        @change="updatePlaceholder"
+          v-model="selectedFilter"
+          :placeholder="$t('paperList.filterBy')"
+          class="filter-select"
+          @change="updatePlaceholder"
       >
         <el-option :label="$t('paper.title')" value="title"/>
         <el-option :label="$t('paper.authors')" value="authors"/>
@@ -19,18 +19,18 @@
       </el-select>
 
       <el-input
-        v-model="searchQuery"
-        :placeholder="inputPlaceholder"
-        @keyup.enter="searchPapers"
-        class="search-input"
-        clearable
-        @clear="clearSearch"
+          v-model="searchQuery"
+          :placeholder="inputPlaceholder"
+          @keyup.enter="searchPapers"
+          class="search-input"
+          clearable
+          @clear="clearSearch"
       >
         <template #append>
           <el-button
-            type="primary"
-            class="search-btn"
-            @click="searchPapers"
+              type="primary"
+              class="search-btn"
+              @click="searchPapers"
           >
             <el-icon><Search /></el-icon>
           </el-button>
@@ -60,13 +60,14 @@
         <div class="filter-group">
           <h4>{{ $t('paperList.yearRange') }}</h4>
           <el-slider
-            v-model="yearRange"
-            range
-            :marks="{1990: '1990', 2025: '2025'}"
-            :min="1990"
-            :max="2025"
-            :step="1"
-            :format-tooltip="formatYear"
+              v-model="yearRange"
+              range
+              :marks="{1970: '1970', 2025: '2025'}"
+              :min="1970"
+              :max="2025"
+              :step="1"
+              :format-tooltip="formatYear"
+              @change="handleYearChange"
           />
         </div>
 
@@ -74,19 +75,20 @@
         <div class="filter-group">
           <h4>{{ $t('paperList.citedCountRange') }}</h4>
           <el-slider
-            v-model="citedCountRange"
-            range
-            :marks="{0: '0', 5000: '5000'}"
-            :min="0"
-            :max="5000"
-            :step="1"
-            :format-tooltip="formatCitedCount"
+              v-model="citedCountRange"
+              range
+              :marks="{0: '0', 500000: '500000'}"
+              :min="0"
+              :max="500000"
+              :step="10"
+              :format-tooltip="formatCitedCount"
+              @change="handleCitedChange"
           />
         </div>
 
         <el-button
-          @click="resetFilters"
-          class="reset-btn"
+            @click="resetFilters"
+            class="reset-btn"
         >
           {{ $t('paperList.resetAll') }}
         </el-button>
@@ -98,7 +100,7 @@
         <el-table :data="sortedPapers" class="paper-table">
           <el-table-column :label="$t('paper.title')" prop="title" />
           <el-table-column :label="$t('paper.authors')" prop="authors" width="250" />
-          <el-table-column :label="$t('paper.doi')" prop="doi" width="180" />
+          <el-table-column :label="$t('paper.doi')" prop="doi" width="180" :formatter="formatDoi"/>
           <el-table-column :label="$t('paper.publicationYear')" prop="publicationYear" width="120" />
           <el-table-column :label="$t('paper.citedCount')" prop="citedCount" width="120" />
           <el-table-column :label="$t('paperList.actions')" width="200">
@@ -118,13 +120,13 @@
         <!-- Pagination -->
         <div class="pagination-container">
           <el-pagination
-            :current-page="currentPage"
-            :page-size="pageSize"
-            @update:current-page="handleCurrentChange"
-            @update:page-size="handleSizeChange"
-            :total="total"
-            :page-sizes="[10, 20, 50]"
-            layout="total, sizes, prev, pager, next, jumper"
+              :current-page="currentPage"
+              :page-size="pageSize"
+              @update:current-page="handleCurrentChange"
+              @update:page-size="handleSizeChange"
+              :total="total"
+              :page-sizes="[10, 20, 50]"
+              layout="total, sizes, prev, pager, next, jumper"
           />
         </div>
       </div>
@@ -134,6 +136,7 @@
 
 <script>
 import { Search } from '@element-plus/icons-vue'
+import axios from "axios";
 
 export default {
   name: 'PaperList',
@@ -142,8 +145,8 @@ export default {
   },
   data() {
     return {
-      yearRange: [1990, 2025],
-      citedCountRange: [0, 5000],
+      yearRange: [1970, 2025],
+      citedCountRange: [0, 500000],
       searchQuery: '',
       selectedFilter: 'title',
       sortOption: 'publicationYear',
@@ -175,25 +178,26 @@ export default {
       pageSize: 10,
       total: 100,
       inputPlaceholder: this.$t('search.searchPapers'),
+
+      queryParams: {
+        title: '',
+        author: '',
+        isbn: '',
+        category: '',
+        citedCountRange0: 0,
+        citedCountRange1:500000,
+        yearRange0: 1970,
+        yearRange1:2025,
+        page: 1,
+        pageSize: 10
+      },
+
     }
   },
   computed: {
-    filteredPapers() {
-      return this.papers.filter(paper => {
-        const matchesYear = paper.publicationYear >= this.yearRange[0] &&
-                           paper.publicationYear <= this.yearRange[1];
-        const matchesCitedCount = paper.citedCount >= this.citedCountRange[0] &&
-                                paper.citedCount <= this.citedCountRange[1];
-        const searchFields = this.searchFieldMap[this.selectedFilter] || ['title'];
-        const matchesSearch = this.searchQuery === '' ||
-                            searchFields.some(field =>
-                              String(paper[field]).toLowerCase()
-                               .includes(this.searchQuery.toLowerCase()));
-        return matchesYear && matchesCitedCount && matchesSearch;
-      });
-    },
+
     sortedPapers() {
-      return this.filteredPapers.sort((a, b) => {
+      return this.papers.sort((a, b) => {
         let comparison = 0;
         if (this.sortOption === 'publicationYear') {
           comparison = a.publicationYear - b.publicationYear;
@@ -205,16 +209,21 @@ export default {
     }
   },
   methods: {
+    formatDoi(row, column, value) {
+      return value == null || value =='null' ? '' : value; // 处理 null 或 undefined
+    },
     searchPapers() {
       console.log('Search:', this.searchQuery);
+      this.updateQueryParams();
+      this.fetchFilteredPublications();
     },
     clearSearch() {
       this.searchQuery = '';
     },
     resetFilters() {
       this.searchQuery = '';
-      this.yearRange = [1990, 2025];
-      this.citedCountRange = [0, 5000];
+      this.yearRange = [1970, 2025];
+      this.citedCountRange = [0, 500000];
     },
     toggleSort(option) {
       if (this.sortOption === option) {
@@ -233,11 +242,15 @@ export default {
     viewPaperDetails(paperId) {
       this.$router.push(`/paper/${paperId}`);
     },
+    handleCitedCount(value) {this.searchPapers()},
+    handleYearChange(val) {this.searchPapers()},
     handleSizeChange(val) {
       this.pageSize = val;
+      this.searchPapers();
     },
     handleCurrentChange(val) {
       this.currentPage = val;
+      this.searchPapers();
     },
     updatePlaceholder() {
       switch (this.selectedFilter) {
@@ -257,6 +270,81 @@ export default {
     addToReadingList(paperId) {
       console.log('Add to reading list:', paperId);
     },
+    updateQueryParams() {
+      if (!this.queryParams) {
+        this.queryParams = {
+          title: '',
+          author: '',
+          doi: '',
+          category: '',
+          citedCountRange0: 0,
+          citedCountRange1:500000,
+          yearRange0: 1970,
+          yearRange1:2025,
+          page: 1,
+          pageSize: 10
+        };
+      }
+      // Set the search query based on selected filter
+      if (this.selectedFilter === 'title') {
+        this.queryParams.title = this.searchQuery;
+        this.queryParams.author = '';
+        this.queryParams.doi = '';
+      } else if (this.selectedFilter === 'author') {
+        this.queryParams.title = '';
+        this.queryParams.author = this.searchQuery;
+        this.queryParams.doi = '';
+      } else if (this.selectedFilter === 'doi') {
+        this.queryParams.title = '';
+        this.queryParams.author = '';
+        this.queryParams.doi = this.searchQuery;
+      }
+
+      // Update rating and year (publish date)
+      console.log(this.citedCountCount);
+      this.queryParams.citedCountRange0 = this.citedCountRange[0]; // Using minimum rating threshold
+      this.queryParams.citedCountRange1 = this.citedCountRange[1]; // Using minimum rating threshold
+
+      // Convert year to LocalDate format required by backend
+      if (this.yearRange && this.yearRange[0]) {
+        this.queryParams.yearRange0 = `${this.yearRange[0]}-01-01`;
+        this.queryParams.yearRange1 = `${this.yearRange[1]}-01-01`;
+      }
+
+      // Set category if any selected
+      // this.queryParams.category = this.selectedCategories.length > 0 ?
+      //     this.selectedCategories.join(',') : '';
+
+      // Update pagination
+      this.queryParams.page = this.currentPage;
+      this.queryParams.pageSize = this.pageSize;
+    },
+    fetchFilteredPublications() {
+      axios({
+        url: 'http://localhost:8080/paper/page',
+        method: "GET", // Using GET since your backend is using @GetMapping
+        headers: {
+          "Content-Type": "application/json",
+        },
+        params: this.queryParams
+      })
+          .then(response => {
+            console.log(this.queryParams)
+            console.log('Filtered books response:', response);
+            this.papers = response.data.data.records;
+            this.total = response.data.data.total;
+          })
+          .catch(error => {
+            console.error('Failed to fetch filtered papers:', error);
+          });
+    },
+  },
+  created() {
+    // Initialize query params
+    this.updateQueryParams();
+
+    // Fetch initial data
+    this.fetchFilteredPublications();
   }
 }
 </script>
@@ -346,7 +434,7 @@ export default {
 }
 
 .search-btn .el-icon {
-    color: #ffffff;
+  color: #ffffff;
 }
 
 .search-btn:hover {
@@ -732,7 +820,7 @@ export default {
   .filter-separator {
     display: none;
   }
-    
+
   .el-input-number,
   .time-range-select {
     width: 100%;
@@ -830,4 +918,4 @@ export default {
     display: none; /* Hide text on small screens */
   }
 }
-</style>    
+</style>

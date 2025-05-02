@@ -8,30 +8,23 @@
         </router-link>
       </el-menu-item>
 
-      <div class="nav-links">
-        <el-menu-item index="/books">
-          <router-link to="/books">{{ $t('nav.books') }}</router-link>
-        </el-menu-item>
-
-        <el-menu-item index="/papers">
-          <router-link to="/papers">{{ $t('nav.papers') }}</router-link>
-        </el-menu-item>
-
-        <el-menu-item index="/journal">
-          <router-link to="/journal">{{ $t('nav.journal') }}</router-link>
-        </el-menu-item>
-
-        <el-menu-item index="/about">
-          <router-link to="/about">{{ $t('nav.about') }}</router-link>
-        </el-menu-item>
-
-        <el-menu-item index="/help">
-          <router-link to="/help">{{ $t('nav.help') }}</router-link>
-        </el-menu-item>
-      </div>
-
-      <!-- Right menu items -->
+      <el-menu-item index="/books" class="nav-link">
+        <router-link to="/books">{{ $t('nav.books') }}</router-link>
+      </el-menu-item>
+      <el-menu-item index="/papers" class="nav-link">
+        <router-link to="/papers">{{ $t('nav.papers') }}</router-link>
+      </el-menu-item>
+      <el-menu-item index="/journal" class="nav-link">
+        <router-link to="/journal">{{ $t('nav.journal') }}</router-link>
+      </el-menu-item>
+      <el-menu-item index="/about" class="nav-link">
+        <router-link to="/about">{{ $t('nav.about') }}</router-link>
+      </el-menu-item>
+      <el-menu-item index="/help" class="nav-link">
+        <router-link to="/help">{{ $t('nav.help') }}</router-link>
+      </el-menu-item>
       <div class="right-menu">
+        <!-- Right menu items -->
         <!-- Display login and register when not logged in -->
         <template v-if="!auth.isLoggedIn">
           <el-menu-item index="/login" class="auth-link">
@@ -67,13 +60,12 @@
 
         <!-- Language switch -->
         <div class="language-switch">
-          <LanguageSwitch />
+          <LanguageSwitch/>
         </div>
-      </div>
+      </div>|
     </el-menu>
   </div>
 </template>
-
 <script>
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { auth } from "@/utils/auth.js"
@@ -95,7 +87,7 @@ export default {
       if (!userInfo) return false
       try {
         const user = JSON.parse(userInfo)
-        return user.role === 'admin' || user.role === 'superadmin'
+        return user.role === 2 || user.role === 1
       } catch {
         return false
       }
@@ -122,14 +114,14 @@ export default {
     async logout() {
       try {
         await ElMessageBox.confirm(
-          this.$t('logout.confirmMessage'),
-          this.$t('logout.warningTitle'),
-          {
-            confirmButtonText: this.$t('common.confirm'),
-            cancelButtonText: this.$t('common.cancel'),
-            dangerouslyUseHTMLString: true,
-            customClass: 'custom-confirm-box',
-          }
+            this.$t('logout.confirmMessage'),
+            this.$t('logout.warningTitle'),
+            {
+              confirmButtonText: this.$t('common.confirm'),
+              cancelButtonText: this.$t('common.cancel'),
+              dangerouslyUseHTMLString: true,
+              customClass: 'custom-confirm-box',
+            }
         );
         ElMessage.success(this.$t('logout.successMessage'));
         sessionStorage.removeItem('userInfo');
@@ -160,7 +152,6 @@ export default {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
   transition: all 0.3s ease;
 }
-
 .header-menu:after {
   display: none;
 }
@@ -195,6 +186,11 @@ export default {
   display: flex;
   align-items: center;
   height: 100%;
+}
+
+.flex-push {
+  pointer-events: none;
+  flex: 1;
 }
 
 .language-switch {
@@ -330,77 +326,5 @@ a {
   color: #606266;
 }
 
-/* Mobile Responsiveness */
-@media (max-width: 992px) {
-  .header-menu {
-    padding: 0 16px;
-  }
 
-  :deep(.el-menu-item) {
-    padding: 0 12px;
-    font-size: 14px;
-  }
-}
-
-@media (max-width: 768px) {
-  .header-menu {
-    flex-wrap: wrap;
-    height: auto;
-    padding: 12px 16px;
-  }
-
-  .nav-links {
-    order: 3;
-    width: 100%;
-    margin-top: 12px;
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-  }
-
-  .nav-links::-webkit-scrollbar {
-    height: 3px;
-  }
-
-  .nav-links::-webkit-scrollbar-thumb {
-    background-color: #e0e0e0;
-    border-radius: 3px;
-  }
-
-  .logo-item {
-    padding: 0;
-    margin-right: 0;
-    height: 50px;
-    line-height: 50px;
-  }
-
-  .logo-text {
-    font-size: 20px;
-  }
-
-  .right-menu {
-    height: 50px;
-    margin-left: auto;
-  }
-
-  :deep(.el-menu-item) {
-    height: 50px;
-    line-height: 50px;
-    padding: 0 10px;
-  }
-
-  .auth-link:deep(a) {
-    font-size: 13px;
-  }
-
-  .admin-button {
-    font-size: 13px;
-    padding: 0 12px;
-    height: 32px;
-  }
-
-  .language-switch {
-    margin-left: 10px;
-  }
-}
 </style>

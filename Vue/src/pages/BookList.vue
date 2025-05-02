@@ -88,6 +88,7 @@
             :max="5"
             :step="0.1"
             :format-tooltip="formatRating"
+            @change="handleRatingChange"
           />
         </div>
 
@@ -97,11 +98,12 @@
           <el-slider
             v-model="yearRange"
             range
-            :marks="{1990: '1990', 2025: '2025'}"
-            :min="1990"
+            :marks="{1900: '1900', 2025: '2025'}"
+            :min="1900"
             :max="2025"
             :step="1"
             :format-tooltip="formatYear"
+            @change="handleYearChange"
           />
         </div>
 
@@ -131,7 +133,7 @@
       <!-- Content container -->
       <div class="content-container">
         <!-- Card view -->
-        <div v-if="displayMode === 'card' && filteredBooks.length" class="book-grid">
+        <div v-if="displayMode === 'card' && books.length" class="book-grid">
           <el-card
             v-for="book in sortedBooks"
             :key="book.id"
@@ -161,7 +163,7 @@
         </div>
 
         <!-- List view -->
-        <el-table v-else-if="displayMode === 'list' && filteredBooks.length" :data="sortedBooks">
+        <el-table v-else-if="displayMode === 'list' && books.length" :data="sortedBooks">
           <el-table-column :label="$t('book.cover')" width="100">
             <template #default="scope">
               <img :src="scope.row.cover" class="table-book-cover" alt="" />
@@ -218,6 +220,7 @@
 import {Search} from '@element-plus/icons-vue'
 import { Grid, Memo } from '@element-plus/icons-vue'
 import { Plus, View } from '@element-plus/icons-vue'
+import axios from "axios";
 
 export default {
   name: 'BookList',
@@ -231,7 +234,7 @@ export default {
   data() {
     return {
       ratingRange: [0, 5],
-      yearRange: [1990, 2025],
+      yearRange: [1900, 2025],
       searchQuery: '',
       selectedFilter: 'title',
       selectedCategories: [],
@@ -370,26 +373,26 @@ export default {
       inputPlaceholder: this.$t('search.searchBooks')
     }
   },
-  computed: {
-    filteredBooks() {
-      return this.books.filter(book => {
-        const matchesRating = book.rating >= this.ratingRange[0] &&
-            book.rating <= this.ratingRange[1];
-        const matchesYear = book.PublishDate >= this.yearRange[0] &&
-            book.PublishDate <= this.yearRange[1];
-        const matchesCategory = this.selectedCategories.length ?
-            this.selectedCategories.includes(book.category) : true;
-        const searchFields = this.searchFieldMap[this.selectedFilter] || ['title'];
-        const matchesSearch = this.searchQuery === '' ||
-            searchFields.some(field =>
-                String(book[field]).toLowerCase()
-                    .includes(this.searchQuery.toLowerCase()));
+  searchTimeout: null,
+  filterTimeout: null,
+  queryParams: {
+    title: '',
+    author: '',
+    isbn: '',
+    category: '',
+    ratingRange0: 0,
+    ratingRange1:5,
+    yearRange0: 1900,
+    yearRange1:2025,
+    page: 1,
+    pageSize: 10
+  },
 
-        return matchesRating && matchesYear && matchesCategory && matchesSearch;
-      });
-    },
+
+
+  computed: {
     sortedBooks() {
-      return this.filteredBooks.sort((a, b) => {
+      return this.books.sort((a, b) => {
         let comparison = 0;
         if (this.sortOption === 'PublishDate') {
           comparison = a.PublishDate - b.PublishDate;
@@ -404,17 +407,110 @@ export default {
   },
   methods: {
     searchBooks() {
-      console.log('Search:', this.searchQuery);
+      // Clear any pending timeout
+      if (this.searchTimeout) {
+        clearTimeout(this.searchTimeout);
+      }
+
+      // Set parameters based on current filter
+      this.updateQueryParams();
+
+      // Debounce the API call (300ms delay)
+      this.searchTimeout = setTimeout(() => {
+        this.fetchFilteredBooks();
+      }, 300);
     },
+
+    updateQueryParams() {
+      if (!this.queryParams) {
+        this.queryParams = {
+          title: '',
+          author: '',
+          isbn: '',
+          category: '',
+          ratingRange0: 0,
+          ratingRange1:5,
+          yearRange0: 1900,
+          yearRange1:2025,
+          page: 1,
+          pageSize: 10
+        };
+      }
+      // Set the search query based on selected filter
+      if (this.selectedFilter === 'title') {
+        this.queryParams.title = this.searchQuery;
+        this.queryParams.author = '';
+        this.queryParams.isbn = '';
+      } else if (this.selectedFilter === 'author') {
+        this.queryParams.title = '';
+        this.queryParams.author = this.searchQuery;
+        this.queryParams.isbn = '';
+      } else if (this.selectedFilter === 'isbn') {
+        this.queryParams.title = '';
+        this.queryParams.author = '';
+        this.queryParams.isbn = this.searchQuery;
+      }
+
+      // Update rating and year (publish date)
+      console.log(this.ratingRange);
+      this.queryParams.ratingRange0 = this.ratingRange[0]; // Using minimum rating threshold
+      this.queryParams.ratingRange1 = this.ratingRange[1]; // Using minimum rating threshold
+
+      // Convert year to LocalDate format required by backend
+      if (this.yearRange && this.yearRange[0]) {
+        this.queryParams.yearRange0 = `${this.yearRange[0]}-01-01`;
+        this.queryParams.yearRange1 = `${this.yearRange[1]}-01-01`;
+      }
+
+      // Set category if any selected
+      this.queryParams.category = this.selectedCategories.length > 0 ?
+          this.selectedCategories.join(',') : '';
+
+      // Update pagination
+      this.queryParams.page = this.currentPage;
+      this.queryParams.pageSize = this.pageSize;
+    },
+
+    // New method to fetch filtered books
+    fetchFilteredBooks() {
+      axios({
+        url: 'http://localhost:8080/book/sildeQuery',
+        method: "GET", // Using GET since your backend is using @GetMapping
+        headers: {
+          "Content-Type": "application/json",
+        },
+        params: this.queryParams
+      })
+          .then(response => {
+            console.log(this.queryParams)
+            console.log('Filtered books response:', response);
+            this.books = response.data.data.records;
+            this.total = response.data.data.total;
+          })
+          .catch(error => {
+            console.error('Failed to fetch filtered books:', error);
+          });
+    },
+
+    // Update clear search method
     clearSearch() {
       this.searchQuery = '';
+      this.searchBooks(); // This will now trigger an API call
     },
     resetFilters() {
       this.searchQuery = '';
       this.selectedCategories = [];
-      this.ratingRange = [0, 5];
-      this.yearRange = [1990, 2025];
+      this.ratingRange0 = 0;
+      this.yearRange0 = 1900;
+      this.ratingRange1 = 5;
+      this.yearRange1 = 2025;
+      this.currentPage = 1;
+
+      // Send request with reset filters
+      this.updateQueryParams();
+      this.fetchFilteredBooks();
     },
+
     toggleSort(option) {
       if (this.sortOption === option) {
         this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
@@ -425,14 +521,15 @@ export default {
     },
     toggleCategory(category) {
       if (this.selectedCategories.includes(category)) {
-        this.selectedCategories = this.selectedCategories.filter(c => c !== category)
+        this.selectedCategories = this.selectedCategories.filter(c => c !== category);
       } else {
-        this.selectedCategories = [...this.selectedCategories, category]
+        this.selectedCategories = [...this.selectedCategories, category];
       }
+
+      // Trigger search with updated category filters
+      this.searchBooks();
     },
-    formatYear(value) {
-      return `${value}`
-    },
+
     sortIcon(key) {
       return this.sortOption === key
           ? (this.sortOrder === 'asc' ? 'el-icon-top' : 'el-icon-bottom')
@@ -455,11 +552,42 @@ export default {
     viewBookDetails(bookId) {
       this.$router.push(`/book/${bookId}`);
     },
+
+    handleYearChange() {
+      // Clear any pending timeout
+      if (this.filterTimeout) {
+        clearTimeout(this.filterTimeout);
+      }
+
+
+      // Debounce the API call
+      this.filterTimeout = setTimeout(() => {
+        this.searchBooks();
+      }, 500);
+    },
+
+    handleRatingChange() {
+      // Clear any pending timeout
+      if (this.filterTimeout) {
+        clearTimeout(this.filterTimeout);
+      }
+
+
+      // Debounce the API call
+      this.filterTimeout = setTimeout(() => {
+        this.searchBooks();
+      }, 500);
+    },
+
+    // Update pagination methods
     handleSizeChange(val) {
       this.pageSize = val;
+      this.searchBooks();
     },
+
     handleCurrentChange(val) {
       this.currentPage = val;
+      this.searchBooks();
     },
     updatePlaceholder() {
       switch (this.selectedFilter) {
@@ -475,7 +603,40 @@ export default {
         default:
           this.inputPlaceholder = this.$t('search.searchBooks');
       }
+
+      // Clear search and update with new filter type
+      this.searchQuery = '';
+      this.searchBooks();
     },
+    fetchBooks() {
+      axios({
+        url: 'http://localhost:8080/book/sildeQuery', method: "GET", headers: {
+          "Content-Type": "application/json",
+        },params:
+            {
+              page: this.currentPage,
+              pageSize: this.pageSize,
+            }
+      }) // Make sure this URL is correct
+          .then(response => {
+            console.log(response)
+            this.books = response.data.data.records; // Assuming the returned data is an array of books
+            this.total = response.data.data.total;
+            console.log(response.data.data.records);
+            console.log(this.books);
+
+          })
+          .catch(error => {
+            console.error('Failed to fetch books:', error);
+          })
+    },
+  },
+  created() {
+    // Initialize query params
+    this.updateQueryParams();
+
+    // Fetch initial data
+    this.fetchFilteredBooks();
   }
 }
 </script>
